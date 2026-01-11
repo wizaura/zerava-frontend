@@ -5,13 +5,13 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
 const navItems = [
+    { label: "Home", href: "/" },
     { label: "Services", href: "/services-and-pricing" },
     { label: "Pricing", href: "services-and-pricing#pricing" },
     { label: "Our Works", href: "#" },
     { label: "Fleet", href: "#" },
     { label: "About", href: "#" },
     { label: "Contact", href: "#" },
-    { label: "Holder", href: "#" },
 ];
 
 export default function Navbar() {
@@ -32,7 +32,7 @@ export default function Navbar() {
                 </div>
 
                 {/* Desktop Nav */}
-                <nav className="hidden items-center gap-8 text-sm text-text-secondary md:flex">
+                <nav className="hidden items-center gap-8 text-sm font-medium text-text-secondary md:flex">
                     {navItems.map((item) => (
                         <Link
                             key={item.label}
@@ -74,7 +74,7 @@ export default function Navbar() {
             {/* Mobile Menu */}
             {open && (
                 <div className="md:hidden border-t border-white/10 bg-eco-black/95 backdrop-blur-md">
-                    <nav className="flex flex-col gap-4 px-6 py-6 text-sm text-text-secondary">
+                    <nav className="flex flex-col gap-4 px-6 py-6 text-sm font-medium text-text-secondary">
                         {navItems.map((item) => (
                             <Link
                                 key={item.label}

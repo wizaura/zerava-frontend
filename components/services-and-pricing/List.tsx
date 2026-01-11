@@ -8,8 +8,8 @@ const services = [
             "Complete exterior wash using our eco-smart waterless formula. Safe for all paint types.",
         icon: Droplets,
         images: {
-            before: "/images/services/exterior-before.jpg",
-            after: "/images/services/exterior-after.jpg",
+            before: "/image-2.jpg",
+            after: "/image-1.jpg",
         },
         includes: [
             "Full body clean",

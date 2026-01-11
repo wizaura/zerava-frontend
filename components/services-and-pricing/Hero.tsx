@@ -12,7 +12,7 @@ export default function ServicesPricingHero() {
                 <h1 className="text-4xl font-light leading-tight text-gray-100 sm:text-5xl md:text-6xl">
                     Premium care,
                     <br />
-                    <span className="font-normal">zero compromise</span>
+                    <span className="font-normal text-electric-teal">zero compromise</span>
                 </h1>
 
                 {/* Description */}
