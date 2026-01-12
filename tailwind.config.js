@@ -10,7 +10,7 @@ module.exports = {
       colors: {
         "eco-black": "#0A0A0A",
         "mobility-green": "#0B2E28",
-        "electric-teal": "#38D6C4",
+        "electric-teal": "#20C997",
         "mint-glow": "#A8F3D6",
         "text-primary": "#F5F5F5",
         "text-secondary": "#B5B5B5",
