@@ -1,6 +1,6 @@
+import FinalCTA from "@/components/common/FinalCTA";
+import PageHero from "@/components/common/PageHero";
 import AddOnsSection from "@/components/services-and-pricing/AddOns";
-import ServicesFinalCTA from "@/components/services-and-pricing/CTA";
-import ServicesPricingHero from "@/components/services-and-pricing/Hero";
 import ServicesList from "@/components/services-and-pricing/List";
 import PricingSection from "@/components/services-and-pricing/Pricing";
 import WhySubscribe from "@/components/services-and-pricing/Why";
@@ -8,12 +8,44 @@ import WhySubscribe from "@/components/services-and-pricing/Why";
 export default function ServicesAndPricing() {
     return (
         <div>
-            <ServicesPricingHero />
+            <PageHero
+                badge="Services & Pricing"
+                title="Premium care,"
+                highlight="zero compromise"
+                description="From quick exterior refreshes to complete valet packages, every service uses our signature waterless, biodegradable formula — with simple, transparent pricing and no hidden fees."
+                buttons={[
+                    {
+                        label: "View Packages",
+                        href: "#pricing",
+                        variant: "primary",
+                    },
+                    {
+                        label: "Book Now",
+                        href: "/booking",
+                        variant: "secondary",
+                    },
+                ]}
+            />
             <ServicesList />
             <AddOnsSection />
             <PricingSection />
             <WhySubscribe />
-            <ServicesFinalCTA />
+            <FinalCTA
+                title="Questions about pricing?"
+                description="Get in touch and we'll help you find the perfect package for your needs."
+                buttons={[
+                    {
+                        label: "Book Now",
+                        href: "/booking",
+                        variant: "primary",
+                    },
+                    {
+                        label: "Contact Us",
+                        href: "/contact",
+                        variant: "secondary",
+                    },
+                ]}
+            />
         </div>
     )
 }

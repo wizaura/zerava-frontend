@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 const galleryImages = [
-    "/images/gallery/gallery-1.jpg",
+    "/fleet-2.jfif",
     "/images/gallery/gallery-2.jpg",
     "/images/gallery/gallery-3.jpg",
     "/images/gallery/gallery-4.jpg",

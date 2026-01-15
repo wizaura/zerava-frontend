@@ -9,8 +9,8 @@ const navItems = [
     { label: "Services", href: "/services-and-pricing" },
     { label: "Pricing", href: "services-and-pricing#pricing" },
     { label: "Our Works", href: "#" },
-    { label: "Fleet", href: "#" },
-    { label: "About", href: "#" },
+    { label: "Fleet", href: "/fleet" },
+    { label: "About", href: "/about" },
     { label: "Contact", href: "#" },
 ];
 
@@ -54,7 +54,7 @@ export default function Navbar() {
                     </Link>
 
                     <Link
-                        href="#"
+                        href="/booking"
                         className="rounded-md bg-electric-teal px-4 py-2 text-sm font-semibold text-eco-black transition hover:brightness-110"
                     >
                         Book Now
