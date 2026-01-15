@@ -42,7 +42,7 @@ export default function OurStorySection() {
                         className="relative h-[420px] w-full"
                     >
                         <Image
-                            src="/about-1.jfif"
+                            src="/about-1.jpg"
                             alt="Premium eco-friendly car care by Zerava"
                             fill
                             className="object-cover transition hover:scale-[1.20]"

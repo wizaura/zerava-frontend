@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, Leaf } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 export default function Hero() {
@@ -39,10 +40,11 @@ export default function Hero() {
                     maskImage: `radial-gradient(circle 320px at ${mouse.x}% ${mouse.y}%, white 0%, transparent 60%)`,
                 }}
             >
-                <img
-                    src="/home-1.jfif" // ← replace with your image
+                <Image
+                    src="/home-1.jpg"
                     alt="Zerava vehicle care"
                     className="h-full w-full object-cover opacity-90"
+                    fill
                 />
             </div>
 

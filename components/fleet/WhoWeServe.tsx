@@ -88,7 +88,7 @@ export default function WhoWeServeSection() {
                     <div className="flex justify-center">
                         <div className="relative h-[420px] w-[300px] overflow-hidden rounded-3xl">
                             <Image
-                                src="/about-1.jfif"
+                                src="/about-1.jpg"
                                 alt="Fleet services"
                                 fill
                                 className="object-cover hover:translate hover:scale-[1.10]"

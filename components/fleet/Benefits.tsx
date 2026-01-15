@@ -9,7 +9,7 @@ export default function EmployeeBenefitsSection() {
                     {/* IMAGE */}
                     <div className="relative h-[420px] w-full overflow-hidden rounded-3xl">
                         <Image
-                            src="/fleet-2.jfif"
+                            src="/fleet-2.jpg"
                             alt="Modern workplace interior"
                             fill
                             className="object-cover translate hover:scale-[1.05]"
