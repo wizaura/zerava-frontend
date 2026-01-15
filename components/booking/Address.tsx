@@ -26,7 +26,7 @@ export default function AddressStep({
                 <label className="text-sm font-medium">
                     Full Address
                 </label>
-                <textarea
+                {/* <textarea
                     rows={3}
                     value={bookingDraft.address || ""}
                     onChange={(e) =>
@@ -37,7 +37,7 @@ export default function AddressStep({
                     }
                     placeholder="House / Flat number, Street, City"
                     className="w-full rounded-lg border px-3 py-2"
-                />
+                /> */}
             </div>
 
             {/* Notes */}
@@ -45,7 +45,7 @@ export default function AddressStep({
                 <label className="text-sm font-medium">
                     Special Instructions (optional)
                 </label>
-                <textarea
+                {/* <textarea
                     rows={3}
                     value={bookingDraft.notes || ""}
                     onChange={(e) =>
@@ -56,7 +56,7 @@ export default function AddressStep({
                     }
                     placeholder="Gate code, parking info, call before arrival, etc."
                     className="w-full rounded-lg border px-3 py-2"
-                />
+                /> */}
             </div>
 
             {/* Footer */}
