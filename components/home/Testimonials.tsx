@@ -1,26 +1,31 @@
 import { Quote, Star } from "lucide-react";
+import Image from "next/image";
 
 export default function TestimonialsSection() {
     const testimonials = [
         {
             name: "James Cooper",
             role: "Fleet Manager, TechCorp",
+            image: "/about-1.jpg",
             content:
                 "We switched our entire company fleet to Zerava and couldn't be happier. The convenience of on-site cleaning saves our team hours each week, and the cost savings from their corporate plan are significant. Highly recommended for any business.",
         },
         {
             name: "Sarah Williams",
             role: "Private Customer",
+            image: "/avatars/sarah.jpg",
             content:
                 "Zerava transformed my weekly car care routine. No more driving to the car wash — they come to my office! The waterless method is brilliant, and my BMW looks incredible.",
         },
         {
             name: "Emma Richardson",
             role: "NHS Worker",
+            image: "/avatars/emma.jpg",
             content:
                 "As an NHS worker with long shifts, finding time for car maintenance was impossible. Zerava’s service is perfect — they clean my car while I'm at work.",
         },
     ];
+
 
     return (
         <section className="bg-white px-6 py-20">
@@ -69,8 +74,14 @@ export default function TestimonialsSection() {
 
                             {/* Footer */}
                             <div className="flex items-center gap-3">
-                                {/* Avatar placeholder */}
-                                <div className="h-10 w-10 rounded-full bg-gray-200" />
+                                <div className="relative h-10 w-10 overflow-hidden rounded-full">
+                                    <Image
+                                        src={item.image}
+                                        alt={item.name}
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
 
                                 <div>
                                     <p className="text-sm font-semibold text-eco-black">

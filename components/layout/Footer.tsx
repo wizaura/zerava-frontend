@@ -32,12 +32,12 @@ export default function Footer() {
                         </h4>
                         <ul className="space-y-3 text-sm text-text-secondary">
                             <li>
-                                <Link href="/services" className="hover:text-text-primary transition">
+                                <Link href="/services-and-pricing" className="hover:text-text-primary transition">
                                     Waterless Wash
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/pricing" className="hover:text-text-primary transition">
+                                <Link href="/services-and-pricing#pricing" className="hover:text-text-primary transition">
                                     Pricing
                                 </Link>
                             </li>
