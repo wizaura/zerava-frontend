@@ -4,22 +4,27 @@ import { ArrowRight, Leaf } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export default function Hero() {
-    const containerRef = useRef(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
     const [mouse, setMouse] = useState({ x: 50, y: 50 });
 
     useEffect(() => {
-        const handleMouseMove = (e) => {
-            const rect = containerRef.current.getBoundingClientRect();
+        const el = containerRef.current;
+        if (!el) return;
+
+        const handleMouseMove = (e: MouseEvent) => {
+            const rect = el.getBoundingClientRect();
             const x = ((e.clientX - rect.left) / rect.width) * 100;
             const y = ((e.clientY - rect.top) / rect.height) * 100;
             setMouse({ x, y });
         };
 
-        const el = containerRef.current;
         el.addEventListener("mousemove", handleMouseMove);
 
-        return () => el.removeEventListener("mousemove", handleMouseMove);
+        return () => {
+            el.removeEventListener("mousemove", handleMouseMove);
+        };
     }, []);
+
 
     return (
         <section
