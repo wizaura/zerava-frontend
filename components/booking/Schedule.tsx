@@ -14,9 +14,7 @@ type Slot = {
     id: string;
     timeFrom: string;
     timeTo: string;
-    operator: {
-        name: string;
-    };
+    operator: string;
 };
 
 type Props = {
@@ -95,7 +93,7 @@ export default function ScheduleStep({
             postcode,
         });
 
-        setSlots(res.data);
+        setSlots(res.data.slots || []);
         console.log(slots, 'slots')
     }
 
@@ -218,6 +216,8 @@ export default function ScheduleStep({
                                         setBookingDraft((d) => ({
                                             ...d,
                                             timeSlotId: slot.id,
+                                            timeFrom: slot.timeFrom,
+                                            timeTo: slot.timeTo
                                         }))
                                     }
                                     className={[
@@ -232,7 +232,7 @@ export default function ScheduleStep({
                                         {slot.timeFrom} – {slot.timeTo}
                                     </div>
                                     <p className="mt-1 text-xs text-gray-500">
-                                        Operator: {slot.operator.name}
+                                        Operator: {slot.operator}
                                     </p>
                                 </button>
                             );

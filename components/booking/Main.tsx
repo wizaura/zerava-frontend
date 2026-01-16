@@ -21,6 +21,8 @@ export type BookingDraft = {
     postcode: string | null;
     date: string | null;
     timeSlotId: string | null;
+    timeFrom: string | null;
+    timeTo: string | null;
     address: string | null;
     notes: string | null;
     name: string | null;
@@ -45,6 +47,8 @@ export default function BookingClient({
         postcode: null,
         date: null,
         timeSlotId: null,
+        timeFrom: null,
+        timeTo: null,
         address: null,
         notes: null,
         name: null,
