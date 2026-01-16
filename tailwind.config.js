@@ -12,7 +12,7 @@ module.exports = {
         "mobility-green": "#0B2E28",
         "electric-teal": "#10b981",
         "mint-glow": "#A8F3D6",
-        "text-primary": "#F5F5F5",
+        "text-primary": "#242424",
         "text-secondary": "#B5B5B5",
         "text-muted": "#8A8A8A",
       },

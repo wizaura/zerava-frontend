@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
@@ -26,7 +28,7 @@ const faqs = [
 
 export default function FAQsPreview() {
     return (
-        <section className="bg-white py-16">
+        <section data-aos="fade-up" className="bg-white py-16">
             <div className="mx-auto max-w-6xl px-6">
 
                 {/* Heading */}
@@ -35,7 +37,7 @@ export default function FAQsPreview() {
                         FAQs
                     </p>
 
-                    <h2 className="text-3xl font-semibold text-gray-900 sm:text-4xl">
+                    <h2 className="text-3xl font-light text-gray-900 sm:text-5xl">
                         Common questions, answered
                     </h2>
 

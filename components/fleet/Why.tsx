@@ -70,9 +70,9 @@ export default function WhyZeravaSection() {
                     </div>
 
                     {/* RIGHT CARD */}
-                    <div className="flex items-center">
-                        <div className="w-full rounded-xl bg-eco-black px-16 py-8 shadow-xl">
-                            <h3 className="mb-6 text-lg font-medium text-gray-100">
+                    <div className="flex items-center translate hover:scale-[1.01]">
+                        <div className="w-full rounded-xl bg-gray-50 px-16 py-8 shadow-xl">
+                            <h3 className="mb-6 text-lg font-medium text-gray-900">
                                 What's included
                             </h3>
 
@@ -80,7 +80,7 @@ export default function WhyZeravaSection() {
                                 {includes.map((item) => (
                                     <li
                                         key={item}
-                                        className="flex items-center gap-3 text-sm text-gray-300"
+                                        className="flex items-center gap-3 text-sm text-gray-700"
                                     >
                                         <span className="flex h-6 w-6 items-center justify-center rounded-full bg-electric-teal">
                                             <CheckIcon className="h-4 w-4 text-white" />

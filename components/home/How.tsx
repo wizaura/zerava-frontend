@@ -1,3 +1,5 @@
+"use client";
+
 import { Calendar, MapPin, ShieldCheck } from "lucide-react";
 
 const steps = [
@@ -26,7 +28,7 @@ const steps = [
 
 export default function HowItWorks() {
     return (
-        <section className="bg-white py-20">
+        <section data-aos="fade-up" className="bg-white py-20">
             <div className="mx-auto max-w-7xl px-6 text-center">
 
                 {/* Small label */}
@@ -35,7 +37,7 @@ export default function HowItWorks() {
                 </p>
 
                 {/* Heading */}
-                <h2 className="text-3xl font-semibold text-gray-900 sm:text-4xl">
+                <h2 className="text-3xl font-light text-gray-900 sm:text-5xl">
                     Simple. Sustainable. Seamless.
                 </h2>
 

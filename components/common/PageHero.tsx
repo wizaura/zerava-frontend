@@ -21,7 +21,7 @@ export default function PageHero({
     buttons = [],
 }: PageHeroProps) {
     return (
-        <section className="bg-eco-black py-20">
+        <section data-aos="fade-up" className="bg-eco-black py-20">
             <div className="mx-auto max-w-5xl px-6 text-center">
 
                 {/* Badge */}

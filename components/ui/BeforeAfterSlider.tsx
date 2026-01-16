@@ -13,7 +13,7 @@ export default function BeforeAfterSlider({ before, after, alt }: Props) {
     const [value, setValue] = useState(50);
 
     return (
-        <div className="relative aspect-[15/8] w-full overflow-hidden bg-black">
+        <div className="relative aspect-[15/8] w-full overflow-hidden bg-black text-gray-200">
             {/* After image */}
             <Image
                 src={after}

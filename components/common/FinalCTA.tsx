@@ -19,7 +19,7 @@ export default function FinalCTA({
     buttons = [],
 }: FinalCTAProps) {
     return (
-        <section className="px-6 py-20 bg-white">
+        <section data-aos="fade-up" className="px-6 py-20 bg-white">
             <div className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl bg-eco-black py-20">
 
                 {/* Gradient glow */}
@@ -30,7 +30,7 @@ export default function FinalCTA({
 
                 {/* Content */}
                 <div className="relative mx-auto max-w-4xl px-6 text-center">
-                    <h2 className="text-3xl font-light leading-tight text-text-primary sm:text-4xl md:text-5xl">
+                    <h2 className="text-3xl font-light leading-tight text-gray-200 sm:text-4xl md:text-5xl">
                         {title}
                     </h2>
 
@@ -49,9 +49,9 @@ export default function FinalCTA({
 
                                 const variants = {
                                     primary:
-                                        "bg-electric-teal text-eco-black hover:brightness-110",
+                                        "bg-electric-teal text-eco-black hover:brightness-110 hover:text-gray-200",
                                     secondary:
-                                        "border border-white/20 text-text-primary hover:border-white/40",
+                                        "border border-white text-white hover:border-electric-teal hover:text-electric-teal",
                                 };
 
                                 const className = `${base} ${variants[btn.variant || "primary"]

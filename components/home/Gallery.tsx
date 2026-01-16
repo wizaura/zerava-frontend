@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 
@@ -11,7 +13,7 @@ const galleryImages = [
 
 export default function GalleryPreview() {
     return (
-        <section className="bg-white py-16">
+        <section data-aos="fade-up" className="bg-white py-16">
             <div className="mx-auto max-w-7xl px-6 text-center">
 
                 {/* Heading */}
@@ -20,7 +22,7 @@ export default function GalleryPreview() {
                         Our Work
                     </p>
 
-                    <h2 className="text-3xl font-semibold text-gray-900 sm:text-4xl">
+                    <h2 className="text-3xl font-light text-gray-900 sm:text-5xl">
                         Clean results you can see
                     </h2>
 

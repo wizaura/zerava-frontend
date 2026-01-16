@@ -3,16 +3,17 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { Toaster } from "react-hot-toast";
+import AOSProvider from "@/components/ui/AOSProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+import { Cormorant_Garamond } from "next/font/google";
+
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
+  weight: ["300", "400"],
+  variable: "--font-serif",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,11 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`bg-eco-black text-text-primary ${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`bg-eco-black text-text-primary ${cormorant.variable} antialiased`}
       >
+        <AOSProvider />
         <Navbar />
         {children}
         <Footer />
+        <Toaster position="top-right" />
       </body>
     </html>
   );

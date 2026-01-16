@@ -1,5 +1,5 @@
+import FinalCTA from "@/components/common/FinalCTA";
 import FleetStatsSection from "@/components/fleet/Stats";
-import FinalCTA from "@/components/home/CTA";
 import FAQsPreview from "@/components/home/FAQs";
 import FleetPreview from "@/components/home/Fleet";
 import GalleryPreview from "@/components/home/Gallery";
@@ -18,12 +18,27 @@ export default function Home() {
       <ServiceHighlights />
       <PricingPreview />
       <WhyZerava />
-      <FleetStatsSection />
       <FleetPreview />
       <TestimonialsSection />
+      <FleetStatsSection />
       <GalleryPreview />
       <FAQsPreview />
-      <FinalCTA />
+      <FinalCTA
+        title="Ready to discuss your fleet needs?"
+        description="Get a tailored quote for your organisation. We'll design a solution that fits your requirements and budget."
+        buttons={[
+          {
+            label: "Request a Quote",
+            href: "/contact?type=fleet",
+            variant: "primary",
+          },
+          {
+            label: "Email Us",
+            href: "mailto:fleet@zerava.co.uk",
+            variant: "secondary",
+          },
+        ]}
+      />
     </div>
   );
 }

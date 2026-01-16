@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Droplets,
     Leaf,
@@ -48,7 +50,7 @@ const features = [
 
 export default function WhyZerava() {
     return (
-        <section className="relative bg-eco-black py-20">
+        <section data-aos="fade-up" className="relative bg-eco-black py-20">
             <div className="mx-auto max-w-7xl px-6 text-center">
 
                 {/* Label */}
@@ -57,7 +59,7 @@ export default function WhyZerava() {
                 </p>
 
                 {/* Heading */}
-                <h2 className="text-3xl font-light text-text-primary sm:text-4xl">
+                <h2 className="text-3xl font-light text-gray-200 sm:text-5xl">
                     Designed for the future
                 </h2>
 
@@ -83,7 +85,7 @@ export default function WhyZerava() {
                                 </div>
 
                                 {/* Title */}
-                                <h3 className="text-base font-semibold text-text-primary">
+                                <h3 className="text-base font-semibold text-gray-200">
                                     {item.title}
                                 </h3>
 

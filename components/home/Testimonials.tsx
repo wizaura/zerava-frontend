@@ -1,3 +1,5 @@
+"use client";
+
 import { Quote, Star } from "lucide-react";
 import Image from "next/image";
 
@@ -28,7 +30,7 @@ export default function TestimonialsSection() {
 
 
     return (
-        <section className="bg-white px-6 py-20">
+        <section data-aos="fade-up" className="bg-white px-6 py-20">
             <div className="mx-auto max-w-6xl">
 
                 {/* Header */}
@@ -36,7 +38,7 @@ export default function TestimonialsSection() {
                     <p className="mb-3 text-xs font-semibold tracking-widest text-electric-teal">
                         TESTIMONIALS
                     </p>
-                    <h2 className="mb-6 text-3xl font-light text-eco-black sm:text-4xl">
+                    <h2 className="mb-6 text-3xl font-light text-eco-black sm:text-5xl">
                         Loved by thousands across Southampton
                     </h2>
                     <p className="mx-auto max-w-xl text-sm text-gray-500 sm:text-base">

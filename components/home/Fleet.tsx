@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Building2, Clock, ShieldCheck } from "lucide-react";
@@ -22,7 +24,7 @@ const benefits = [
 
 export default function FleetPreview() {
     return (
-        <section className="relative bg-eco-black py-20">
+        <section data-aos="fade-up" className="relative bg-eco-black py-20">
             <div className="mx-auto max-w-7xl px-6">
                 <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-2">
 
@@ -32,7 +34,7 @@ export default function FleetPreview() {
                             For Business
                         </p>
 
-                        <h2 className="text-3xl font-light text-text-primary sm:text-4xl leading-tight">
+                        <h2 className="text-3xl font-light text-gray-200 sm:text-5xl leading-tight">
                             Fleet & Corporate <br />
                             <span className="text-electric-teal">Solutions</span>
                         </h2>
@@ -56,7 +58,7 @@ export default function FleetPreview() {
 
                         {/* Image block (FIRST CARD) */}
                         {/* Image card (NORMAL GRID ITEM) */}
-                        <div className="relative overflow-visible rounded-xl border border-white/10 bg-eco-black/60 hover:scale-[1.03]">
+                        <div className="relative overflow-visible text-gray-200 rounded-xl border border-white/10 bg-eco-black/60 hover:scale-[1.03]">
                             <div className="relative h-full overflow-hidden rounded-xl">
                                 <Image
                                     src="/images/fleet-preview.jpg"
@@ -88,7 +90,7 @@ export default function FleetPreview() {
                                         <Icon size={18} />
                                     </div>
 
-                                    <h3 className="text-sm font-semibold text-text-primary">
+                                    <h3 className="text-md font-semibold text-gray-200">
                                         {item.title}
                                     </h3>
 

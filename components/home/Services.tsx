@@ -1,3 +1,5 @@
+"use client";
+
 import { Droplets, Sparkles, Disc, Plus } from "lucide-react";
 import Link from "next/link";
 import BeforeAfterSlider from "../ui/BeforeAfterSlider";
@@ -44,7 +46,7 @@ const services = [
 
 export default function ServiceHighlights() {
     return (
-        <section className="bg-eco-black py-20">
+        <section data-aos="fade-up" className="bg-eco-black py-20">
             <div className="mx-auto max-w-7xl px-6 text-center">
 
                 {/* Heading */}
@@ -52,7 +54,7 @@ export default function ServiceHighlights() {
                     <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-electric-teal">
                         Services
                     </p>
-                    <h2 className="text-3xl font-semibold text-text-primary sm:text-4xl">
+                    <h2 className="text-3xl font-light text-gray-200 sm:text-5xl">
                         Premium services, minimal effort
                     </h2>
                     <p className="mx-auto mt-4 max-w-2xl text-sm text-gray-400 sm:text-base">
@@ -95,7 +97,7 @@ export default function ServiceHighlights() {
                                             <Icon size={14} />
                                         </div>
 
-                                        <h3 className="text-md font-semibold text-text-primary tracking-tight">
+                                        <h3 className="text-md font-semibold text-gray-200 tracking-tight">
                                             {service.title}
                                         </h3>
                                     </div>
@@ -113,7 +115,7 @@ export default function ServiceHighlights() {
                 <div className="mt-12">
                     <Link
                         href="/services"
-                        className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-text-secondary hover:bg-electric-teal hover:text-text-primary transition"
+                        className="inline-flex items-center gap-2 rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-text-secondary hover:bg-electric-teal hover:border-electric-teal hover:text-white transition"
                     >
                         View All Services
                     </Link>

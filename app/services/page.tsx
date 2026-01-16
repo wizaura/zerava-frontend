@@ -1,9 +1,9 @@
 import FinalCTA from "@/components/common/FinalCTA";
 import PageHero from "@/components/common/PageHero";
-import AddOnsSection from "@/components/services-and-pricing/AddOns";
-import ServicesList from "@/components/services-and-pricing/List";
-import PricingSection from "@/components/services-and-pricing/Pricing";
-import WhySubscribe from "@/components/services-and-pricing/Why";
+import AddOnsSection from "@/components/services/AddOns";
+import ServicesList from "@/components/services/List";
+import PricingSection from "@/components/services/Pricing";
+import WhySubscribe from "@/components/services/Why";
 
 export default function ServicesAndPricing() {
     return (

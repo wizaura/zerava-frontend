@@ -1,8 +1,10 @@
+"use client";
+
 import Link from "next/link";
 
 export default function PricingPreview() {
     return (
-        <section className="bg-white py-20">
+        <section data-aos="fade-up" className="bg-white py-20">
             <div className="mx-auto max-w-7xl px-6 text-center">
 
                 {/* Heading */}
@@ -10,7 +12,7 @@ export default function PricingPreview() {
                     <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-electric-teal">
                         Pricing
                     </p>
-                    <h2 className="text-3xl font-semibold text-gray-900 sm:text-4xl">
+                    <h2 className="text-3xl font-light text-gray-900 sm:text-5xl">
                         Simple, transparent pricing
                     </h2>
                     <p className="mx-auto mt-4 max-w-2xl text-sm text-gray-600 sm:text-base">
@@ -36,7 +38,7 @@ export default function PricingPreview() {
                         </p>
 
                         <Link
-                            href="/book"
+                            href="/booking"
                             className="mt-6 inline-block rounded-md bg-gray-900 px-6 py-3 text-sm font-semibold text-white hover:bg-gray-800 transition"
                         >
                             Book One-Off
@@ -59,7 +61,7 @@ export default function PricingPreview() {
                         </p>
 
                         <Link
-                            href="/pricing"
+                            href="/services#pricing"
                             className="mt-6 inline-block rounded-md bg-electric-teal px-6 py-3 text-sm font-semibold text-eco-black hover:brightness-110 transition"
                         >
                             View Plans

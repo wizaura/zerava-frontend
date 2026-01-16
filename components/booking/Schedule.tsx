@@ -4,10 +4,7 @@ import { useEffect, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import api from "@/lib/axios";
-import {
-    CheckCircleIcon,
-    ClockIcon,
-} from "@heroicons/react/20/solid";
+import { CheckCircleIcon, ClockIcon } from "@heroicons/react/20/solid";
 import { BookingDraft } from "./Main";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -15,7 +12,11 @@ const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/;
 
 type Slot = {
     id: string;
-    time: string;
+    timeFrom: string;
+    timeTo: string;
+    operator: {
+        name: string;
+    };
 };
 
 type Props = {
@@ -32,7 +33,7 @@ export default function ScheduleStep({
     onContinue,
 }: Props) {
     const [postcode, setPostcode] = useState(bookingDraft.postcode || "");
-    const [allowedWeekdays, setAllowedWeekdays] = useState<number[] | null>(null);
+    const [serviceDays, setServiceDays] = useState<number[] | null>(null);
     const [selectedDate, setSelectedDate] = useState<string | null>(
         bookingDraft.date
     );
@@ -40,7 +41,7 @@ export default function ScheduleStep({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    /* ---------------- AUTO POSTCODE CHECK ---------------- */
+    /* ---------------- POSTCODE CHECK ---------------- */
 
     useEffect(() => {
         if (!UK_POSTCODE_REGEX.test(postcode)) return;
@@ -51,16 +52,17 @@ export default function ScheduleStep({
                 setError(null);
 
                 const res = await api.get(
-                    `/service-areas/${postcode.toUpperCase()}`
+                    `/service-zones/check/${postcode.toUpperCase()}`
                 );
 
                 if (!res.data.available) {
                     setError("Service not available in this postcode");
-                    setAllowedWeekdays(null);
+                    setServiceDays(null);
                     return;
                 }
 
-                setAllowedWeekdays(res.data.weekdays);
+                setServiceDays(res.data.serviceDays);
+
                 setBookingDraft((d) => ({
                     ...d,
                     postcode: postcode.toUpperCase(),
@@ -77,6 +79,7 @@ export default function ScheduleStep({
         return () => clearTimeout(timeout);
     }, [postcode, setBookingDraft]);
 
+
     /* ---------------- DATE ---------------- */
 
     async function selectDate(date: string) {
@@ -87,13 +90,24 @@ export default function ScheduleStep({
             timeSlotId: null,
         }));
 
-        const res = await api.get("/slots", { params: { date } });
+        const res = await api.post("/availability/check", {
+            date,
+            postcode,
+        });
+
         setSlots(res.data);
+        console.log(slots, 'slots')
     }
 
     function isAllowedDate(date: Date) {
-        return allowedWeekdays?.includes(date.getDay());
+        if (!serviceDays) return false;
+
+        const jsDay = date.getDay(); // 0–6
+        const dbDay = jsDay === 0 ? 7 : jsDay;
+
+        return serviceDays.includes(dbDay);
     }
+
 
     /* ---------------- UI ---------------- */
 
@@ -104,17 +118,19 @@ export default function ScheduleStep({
             </h2>
 
             {/* Postcode */}
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
+            <div className="rounded-2xl border bg-white p-6 shadow-sm space-y-4">
                 <label className="text-sm font-medium text-gray-600">
                     Your Postcode
                 </label>
 
                 <input
                     value={postcode}
-                    onChange={(e) => setPostcode(e.target.value.toUpperCase())}
+                    onChange={(e) =>
+                        setPostcode(e.target.value.toUpperCase())
+                    }
                     placeholder="SO16"
-                    className="w-full rounded-xl border border-gray-300 text-gray-700 px-4 py-3 text-sm uppercase
-               focus:border-electric-teal focus:outline-none"
+                    className="w-full rounded-xl border px-4 py-3 text-sm uppercase
+                               focus:border-electric-teal focus:outline-none"
                 />
 
                 {loading && (
@@ -124,103 +140,73 @@ export default function ScheduleStep({
                 )}
 
                 {error && (
-                    <p className="text-sm text-red-600">
-                        {error}
-                    </p>
+                    <p className="text-sm text-red-600">{error}</p>
                 )}
             </div>
 
-
             {/* Success Banner */}
-            {allowedWeekdays && (
-                <div className="flex items-start gap-4 rounded-2xl border border-electric-teal bg-electric-teal/10 p-5">
+            {serviceDays && (
+                <div className="flex gap-4 rounded-2xl border border-electric-teal bg-electric-teal/10 p-5">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-electric-teal">
                         <CheckCircleIcon className="h-5 w-5 text-white" />
                     </div>
 
-                    <div className="text-sm text-gray-800">
+                    <div className="text-sm">
                         <p className="font-medium">
                             Great! We serve your area
                         </p>
                         <p>
-                            Zerava cleans in{" "}
-                            <span className="font-medium">{postcode.toUpperCase()}</span>{" "}
-                            on{" "}
+                            Zerava cleans on{" "}
                             <span className="font-medium text-electric-teal">
-                                {allowedWeekdays.map((d) => WEEKDAYS[d]).join(", ")}
+                                {serviceDays
+                                    ?.map((d) => WEEKDAYS[d % 7])
+                                    .join(", ")}
                             </span>
+
                         </p>
                     </div>
                 </div>
             )}
 
-
             {/* Calendar */}
-            {allowedWeekdays && (
-                <div className="rounded-2xl w-full border border-gray-300 bg-white p-6 shadow-sm">
+            {serviceDays && (
+                <div className="rounded-2xl border bg-white p-6 shadow-sm">
                     <DayPicker
                         mode="single"
-                        selected={selectedDate ? new Date(selectedDate) : undefined}
+                        selected={
+                            selectedDate
+                                ? new Date(selectedDate)
+                                : undefined
+                        }
                         onSelect={(date) => {
                             if (!date) return;
-                            selectDate(date.toISOString().slice(0, 10));
+                            const localDate = [
+                                date.getFullYear(),
+                                String(date.getMonth() + 1).padStart(2, "0"),
+                                String(date.getDate()).padStart(2, "0"),
+                            ].join("-");
+
+                            selectDate(localDate);
                         }}
                         disabled={[
                             { before: new Date() },
-                            (date) => !allowedWeekdays.includes(date.getDay()),
+                            (date) => !isAllowedDate(date),
                         ]}
                         modifiersClassNames={{
                             selected: "bg-electric-teal text-white",
-                            today: "border border-electric-teal",
-                            disabled: "text-gray-300",
                         }}
-
-                        classNames={{
-                            root: "text-gray-900 mx-auto", // center calendar
-                            months: "flex justify-center",
-                            month: "space-y-6", // space between header & grid
-                            caption: "flex justify-between items-center px-4 text-lg font-medium text-black",
-                            caption_label: "text-lg",
-                            nav: "flex items-center gap-4",
-                            table: "border-separate border-spacing-y-4", // vertical spacing between weeks
-                            head_row: "text-gray-500",
-                            head_cell: "text-sm font-medium",
-                            row: "gap-y-4",
-                            cell: "h-16 w-16 text-center", // ⬅️ BIGGER CELLS
-                            day: `
-    text-black rounded-2xl 
-    hover:bg-electric-teal/10 
-    transition
-  `,
-                            day_selected: "bg-electric-teal text-white",
-                            day_today: "border border-electric-teal",
-                            day_outside: "text-gray-300",
-                        }}
-
                     />
-
-                    {/* Legend */}
-                    <div className="mt-4 flex items-center gap-6 text-sm text-gray-500">
-                        <div className="flex items-center gap-2">
-                            <span className="h-3 w-3 rounded-full bg-electric-teal" />
-                            Available Wednesdays
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="h-3 w-3 rounded-full bg-gray-300" />
-                            Unavailable
-                        </div>
-                    </div>
                 </div>
             )}
 
             {/* Slots */}
             {selectedDate && (
-                <div className="rounded-2xl border border-gray-300 bg-white p-6 shadow-sm space-y-4">
+                <div className="rounded-2xl border bg-white p-6 shadow-sm space-y-4">
                     <p className="text-sm font-medium text-gray-700">
                         Choose your time slot
                     </p>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {slots.map((slot) => {
                             const selected =
                                 bookingDraft.timeSlotId === slot.id;
@@ -235,14 +221,19 @@ export default function ScheduleStep({
                                         }))
                                     }
                                     className={[
-                                        "flex items-center justify-center gap-2 rounded-xl border p-4 text-sm",
+                                        "rounded-xl border p-4 text-left text-sm",
                                         selected
                                             ? "border-electric-teal bg-electric-teal/10"
                                             : "border-gray-300 hover:border-gray-500",
                                     ].join(" ")}
                                 >
-                                    <ClockIcon className="h-4 w-4" />
-                                    {slot.time}
+                                    <div className="flex items-center gap-2">
+                                        <ClockIcon className="h-4 w-4" />
+                                        {slot.timeFrom} – {slot.timeTo}
+                                    </div>
+                                    <p className="mt-1 text-xs text-gray-500">
+                                        Operator: {slot.operator.name}
+                                    </p>
                                 </button>
                             );
                         })}
@@ -254,7 +245,7 @@ export default function ScheduleStep({
             <div className="flex justify-between pt-6">
                 <button
                     onClick={onBack}
-                    className="rounded-full border border-gray-300 bg-white px-6 py-2 text-sm"
+                    className="rounded-full border px-6 py-2 text-sm"
                 >
                     ← Previous
                 </button>
