@@ -9,10 +9,12 @@ export default function Protected({ children }: { children: React.ReactNode }) {
     const router = useRouter();
 
     useEffect(() => {
-        if (bootstrapped && !isAuthenticated) {
+        if(!bootstrapped) return;
+
+        if (!isAuthenticated) {
             router.replace("/login");
         }
-    }, [bootstrapped, isAuthenticated]);
+    }, [bootstrapped, isAuthenticated, router]);
 
     if (!bootstrapped) return null;
 
