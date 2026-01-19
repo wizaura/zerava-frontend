@@ -3,7 +3,7 @@
 import { X } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { createOperator } from "@/lib/admin/operators.api";
+import { createOperator } from "@/app/lib/admin/operators.api";
 
 export default function CreateOperatorModal({
     open,

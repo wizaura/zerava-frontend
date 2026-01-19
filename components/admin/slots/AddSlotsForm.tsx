@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { Operator, Status } from "@/lib/admin/slots.api";
+import { Operator, Status } from "@/app/lib/admin/slots.api";
 
 export default function AddSlotForm({
     operators,

@@ -3,9 +3,10 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { isAdminAuthenticated } from "@/lib/adminAuth";
-import { AdminUIProvider } from "@/context/AdminUIContext";
+import { isAdminAuthenticated } from "@/app/lib/adminAuth";
+import { AdminUIProvider } from "@/app/context/AdminUIContext";
 import LayoutInner from "@/components/admin/layout/Header";
+import Protected from "@/components/auth/Protected";
 
 const tabs = [
     { label: "Overview", href: "/admin" },
@@ -24,8 +25,10 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     return (
-        <AdminUIProvider>
-            <LayoutInner>{children}</LayoutInner>
-        </AdminUIProvider>
+        // <Protected>
+            <AdminUIProvider>
+                <LayoutInner>{children}</LayoutInner>
+            </AdminUIProvider>
+        // </Protected>
     )
 }

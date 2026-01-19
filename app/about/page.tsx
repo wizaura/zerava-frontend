@@ -1,8 +1,8 @@
-import FutureVisionSection from "@/components/about/FutureVision";
-import JourneySection from "@/components/about/Journey";
-import OurStorySection from "@/components/about/Main";
-import MissionVisionSection from "@/components/about/MissionVision";
-import { ValuesSection } from "@/components/about/Values";
+import FutureVisionSection from "@/components/user/about/FutureVision";
+import JourneySection from "@/components/user/about/Journey";
+import OurStorySection from "@/components/user/about/Main";
+import MissionVisionSection from "@/components/user/about/MissionVision";
+import { ValuesSection } from "@/components/user/about/Values";
 import FinalCTA from "@/components/common/FinalCTA";
 import PageHero from "@/components/common/PageHero";
 

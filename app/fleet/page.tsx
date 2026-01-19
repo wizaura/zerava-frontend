@@ -1,9 +1,9 @@
 import FinalCTA from "@/components/common/FinalCTA";
 import PageHero from "@/components/common/PageHero";
-import EmployeeBenefitsSection from "@/components/fleet/Benefits";
-import FleetStatsSection from "@/components/fleet/Stats";
-import WhoWeServeSection from "@/components/fleet/WhoWeServe";
-import WhyZeravaSection from "@/components/fleet/Why";
+import EmployeeBenefitsSection from "@/components/user/fleet/Benefits";
+import FleetStatsSection from "@/components/user/fleet/Stats";
+import WhoWeServeSection from "@/components/user/fleet/WhoWeServe";
+import WhyZeravaSection from "@/components/user/fleet/Why";
 
 export default function Fleet() {
     return (

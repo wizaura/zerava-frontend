@@ -1,4 +1,4 @@
-import BookingPage from "@/components/booking/Main";
+import BookingPage from "@/components/user/booking/Main";
 
 async function getPrices() {
     const res = await fetch(

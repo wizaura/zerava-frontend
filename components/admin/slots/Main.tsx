@@ -8,8 +8,8 @@ import {
     getSlots,
     ServiceSlot,
     Status,
-} from "@/lib/admin/slots.api";
-import { getOperators, Operator } from "@/lib/admin/operators.api";
+} from "@/app/lib/admin/slots.api";
+import { getOperators, Operator } from "@/app/lib/admin/operators.api";
 import AddSlotForm from "./AddSlotsForm";
 import SlotsList from "./SlotsList";
 import CreateOperatorModal from "./CreateOperatorModal";

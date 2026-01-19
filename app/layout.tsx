@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
+import Navbar from "@/components/user/layout/Navbar";
+import Footer from "@/components/user/layout/Footer";
 import { Toaster } from "react-hot-toast";
 import AOSProvider from "@/components/ui/AOSProvider";
 
 import { Cormorant_Garamond } from "next/font/google";
+import Providers from "./providers";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -30,11 +30,13 @@ export default function RootLayout({
       <body
         className={`bg-eco-black text-text-primary ${cormorant.variable} antialiased`}
       >
-        <AOSProvider />
-        <Navbar />
-        {children}
-        <Footer />
-        <Toaster position="top-right" />
+        <Providers>
+          <AOSProvider />
+          <Navbar />
+          {children}
+          <Footer />
+          <Toaster position="top-right" />
+        </Providers>
       </body>
     </html>
   );

@@ -1,13 +1,13 @@
 "use client";
 
 import { LucideDelete, X } from "lucide-react";
-import { useAdminUI } from "@/context/AdminUIContext";
+import { useAdminUI } from "@/app/context/AdminUIContext";
 import { useEffect, useState } from "react";
 import {
     createZone,
     deleteZone,
     getZones,
-} from "@/lib/admin/zones.api";
+} from "@/app/lib/admin/zones.api";
 
 const DAYS = [
     { label: "Monday", value: 1 },

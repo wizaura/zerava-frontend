@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { adminRequestOtp, adminVerifyOtp } from "@/app/lib/adminApi";
 
 export default function AdminLoginPage() {
     const router = useRouter();
@@ -17,21 +18,9 @@ export default function AdminLoginPage() {
         e.preventDefault();
         setLoading(true);
 
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/auth/request-otp`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email }),
-            }
-        );
+        const res = await adminRequestOtp(email);
 
         setLoading(false);
-
-        if (!res.ok) {
-            alert("Failed to send OTP");
-            return;
-        }
 
         setStep(2);
     }
@@ -42,26 +31,9 @@ export default function AdminLoginPage() {
         e.preventDefault();
         setLoading(true);
 
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/auth/verify-otp`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, otp }),
-            }
-        );
+        const res = await adminVerifyOtp(email, otp);
 
         setLoading(false);
-
-        if (!res.ok) {
-            alert("Invalid OTP");
-            return;
-        }
-
-        const data = await res.json();
-
-        // Store token (temporary approach)
-        localStorage.setItem("admin_token", data.accessToken);
 
         router.push("/admin");
     }

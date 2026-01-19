@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react";
-import { ServiceSlot } from "@/lib/admin/slots.api";
+import { ServiceSlot } from "@/app/lib/admin/slots.api";
 
 export default function SlotsList({
     grouped,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import api from "@/lib/axios";
+import api from "@/app/lib/axios";
 
 const VEHICLE_SIZES = ["SMALL", "MEDIUM", "LARGE"];
 const SERVICE_TYPES = ["EXTERIOR", "INTERIOR", "VALET"];
