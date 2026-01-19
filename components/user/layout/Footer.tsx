@@ -117,6 +117,9 @@ export default function Footer() {
                         <Link href="/cookies" className="hover:text-text-primary transition">
                             Cookie Policy
                         </Link>
+                        <Link href="/privacy" className="hover:text-text-primary transition">
+                            Privacy Policy
+                        </Link>
                     </div>
                 </div>
             </div>

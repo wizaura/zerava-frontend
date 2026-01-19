@@ -1,4 +1,4 @@
-import api from "@/app/lib/axios";
+import adminApi from "./axios";
 
 export type Operator = {
     id: string;
@@ -9,7 +9,7 @@ export type Operator = {
 /* -------- GET OPERATORS -------- */
 
 export async function getOperators(): Promise<Operator[]> {
-    const res = await api.get("/admin/operators");
+    const res = await adminApi.get("/admin/operators");
     return res.data;
 }
 
@@ -18,6 +18,6 @@ export async function getOperators(): Promise<Operator[]> {
 export async function createOperator(data: {
     name: string;
 }): Promise<Operator> {
-    const res = await api.post("/admin/operators", data);
+    const res = await adminApi.post("/admin/operators", data);
     return res.data;
 }

@@ -5,11 +5,21 @@ const adminApi = axios.create({
     withCredentials: true,
 });
 
-// Optional refresh later, but usually not needed
+// Attach credentials & metadata
+adminApi.interceptors.request.use(
+    (config) => {
+        config.headers["X-Admin-Client"] = "true";
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+// Handle auth expiry
 adminApi.interceptors.response.use(
-    res => res,
-    async error => {
+    (res) => res,
+    async (error) => {
         if (error.response?.status === 401) {
+            console.warn("Admin session expired");
             window.location.href = "/admin/login";
         }
         return Promise.reject(error);

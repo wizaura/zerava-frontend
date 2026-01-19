@@ -59,7 +59,7 @@ export default function FleetPreview() {
 
                         {/* Image card */}
                         <div className="group relative max-w-full overflow-hidden rounded-2xl bg-white shadow-md transition-all
-              hover:-translate-y-2 hover:shadow-xl sm:row-span-2">
+              hover:-translate-y-2 hover:shadow-xl sm:row-span-1">
                             <Image
                                 src="/images/fleet-preview.jpg"
                                 alt="Fleet and corporate vehicle cleaning"

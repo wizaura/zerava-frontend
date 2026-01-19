@@ -1,4 +1,4 @@
-import api from "@/app/lib/axios";
+import adminApi from "./axios";
 
 export type Operator = {
     id: string;
@@ -22,7 +22,7 @@ export type ServiceSlot = {
 };
 
 export async function getSlots(): Promise<ServiceSlot[]> {
-    const res = await api.get("/admin/service-slots");
+    const res = await adminApi.get("/admin/service-slots");
     return res.data;
 }
 
@@ -35,10 +35,10 @@ export async function createSlot(data: {
     maxBookings: number;
     zonePrefix?: string;
 }) {
-    const res = await api.post("/admin/service-slots", data);
+    const res = await adminApi.post("/admin/service-slots", data);
     return res.data;
 }
 
 export async function deleteSlot(id: string) {
-    await api.delete(`/admin/service-slots/${id}`);
+    await adminApi.delete(`/admin/service-slots/${id}`);
 }

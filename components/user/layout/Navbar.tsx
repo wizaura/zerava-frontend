@@ -4,21 +4,25 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X, User } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useSelector } from "react-redux";
 
 const navItems = [
     { label: "Home", href: "/" },
     { label: "Services", href: "/services" },
     { label: "Pricing", href: "/services#pricing" },
-    { label: "Our Works", href: "#" },
+    { label: "Our Works", href: "/gallery" },
     { label: "Fleet", href: "/fleet" },
     { label: "About", href: "/about" },
-    { label: "Contact", href: "#" },
+    { label: "FAQs", href: "/FAQs" },
+    { label: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const { isAuthenticated } = useSelector((s: any) => s.auth);
     const pathname = usePathname();
+    const isHome = pathname === "/";
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 20);
@@ -36,9 +40,11 @@ export default function Navbar() {
     return (
         <header
             className={`fixed top-0 z-50 w-full transition-all duration-300
-        ${scrolled
-                    ? "bg-white text-eco-black border-b border-black/10"
-                    : "bg-transparent text-gray-300"
+                ${isHome
+                    ? scrolled
+                        ? "bg-white text-eco-black border-b border-black/10"
+                        : "bg-transparent text-gray-300"
+                    : "bg-white text-eco-black border-b border-black/10"
                 }`}
         >
             <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -77,21 +83,23 @@ export default function Navbar() {
                     </Link>
 
                     {/* Account */}
-                    <Link
-                        href="/account"
-                        className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
-    ${scrolled
-                                ? "text-eco-black hover:bg-black/5"
-                                : "text-gray-300 hover:bg-white/10"
-                            }`}
-                    >
-                        <User size={16} />
-
-                        {/* Text hidden on small screens */}
-                        <span className="hidden sm:inline">
-                            Account
-                        </span>
-                    </Link>
+                    {(
+                        <Link
+                            href={isAuthenticated ? "/account" : "/login"}
+                            className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
+      ${isHome ?
+                                    scrolled
+                                        ? "text-eco-black hover:bg-black/5"
+                                        : "text-gray-300 hover:bg-white/10"
+                                    : "text-eco-black hover:bg-black/5"
+                                }`}
+                        >
+                            <User size={16} />
+                            <span className="hidden sm:inline">
+                                {isAuthenticated ? "Account" : "Login"}
+                            </span>
+                        </Link>
+                    )}
 
                     {/* Mobile Menu Toggle */}
                     <button

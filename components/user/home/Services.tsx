@@ -122,7 +122,7 @@ export default function ServiceHighlights() {
                                 <div className="mx-auto w-full p-4">
                                     <div className="mb-2 mx-auto flex items-center justify-center gap-3">
                                         <div className="flex h-8 w-8 items-center justify-center rounded-md 
-                        bg-white/10 text-electric-teal transition
+                        bg-eco-black text-electric-teal transition
                         group-hover:bg-electric-teal group-hover:text-eco-black">
                                             <Icon size={14} />
                                         </div>

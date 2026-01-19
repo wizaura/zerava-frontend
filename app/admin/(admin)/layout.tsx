@@ -5,8 +5,8 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { isAdminAuthenticated } from "@/app/lib/adminAuth";
 import { AdminUIProvider } from "@/app/context/AdminUIContext";
-import LayoutInner from "@/components/admin/layout/Header";
 import Protected from "@/components/auth/Protected";
+import AdminHeader from "@/components/admin/layout/Header";
 
 const tabs = [
     { label: "Overview", href: "/admin" },
@@ -26,9 +26,14 @@ export default function AdminLayout({
 }) {
     return (
         // <Protected>
-            <AdminUIProvider>
-                <LayoutInner>{children}</LayoutInner>
-            </AdminUIProvider>
+        <AdminUIProvider>
+            <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col pt-16">
+                <AdminHeader />
+                <div className="flex-1 overflow-y-auto">
+                    <main className="max-w-7xl mx-auto p-6">{children}</main>
+                </div>
+            </div>
+        </AdminUIProvider>
         // </Protected>
     )
 }

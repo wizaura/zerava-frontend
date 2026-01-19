@@ -39,13 +39,14 @@ export default function AdminLoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-eco-black">
-            <div className="w-full max-w-sm rounded-lg p-6 shadow">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-eco-black to-black px-4">
+            <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+
                 {step === 1 && (
-                    <form onSubmit={sendOtp} className="space-y-4">
-                        <h1 className="text-2xl font-semibold">Admin Login</h1>
+                    <form onSubmit={sendOtp} className="space-y-6">
+                        <h1 className="text-2xl font-semibold text-gray-900">Admin Access</h1>
                         <p className="text-sm text-gray-500">
-                            Enter your admin email to receive an OTP
+                            Enter your administrator email to receive a login code.
                         </p>
 
                         <input
@@ -54,21 +55,21 @@ export default function AdminLoginPage() {
                             placeholder="admin@zerava.co"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full rounded bg-gray-900 border p-2"
+                            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-emerald-500 focus:outline-none"
                         />
 
                         <button
                             disabled={loading}
-                            className="w-full rounded bg-black py-2 text-white disabled:opacity-60"
+                            className="w-full rounded-full bg-eco-black py-3 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-60"
                         >
-                            {loading ? "Sending..." : "Send OTP"}
+                            {loading ? "Sending code..." : "Send OTP"}
                         </button>
                     </form>
                 )}
 
                 {step === 2 && (
-                    <form onSubmit={verifyOtp} className="space-y-4">
-                        <h1 className="text-2xl font-semibold">Verify OTP</h1>
+                    <form onSubmit={verifyOtp} className="space-y-6">
+                        <h1 className="text-2xl font-semibold text-gray-900">Verify Code</h1>
                         <p className="text-sm text-gray-500">
                             OTP sent to <strong>{email}</strong>
                         </p>
@@ -76,23 +77,23 @@ export default function AdminLoginPage() {
                         <input
                             type="text"
                             required
-                            placeholder="Enter 6-digit OTP"
+                            placeholder="6-digit code"
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
-                            className="w-full rounded border p-2 tracking-widest"
+                            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-center tracking-widest text-lg focus:border-emerald-500 focus:outline-none"
                         />
 
                         <button
                             disabled={loading}
-                            className="w-full rounded bg-black py-2 text-white disabled:opacity-60"
+                            className="w-full rounded-full bg-eco-black py-3 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-60"
                         >
-                            {loading ? "Verifying..." : "Verify & Login"}
+                            {loading ? "Verifying..." : "Login"}
                         </button>
 
                         <button
                             type="button"
                             onClick={() => setStep(1)}
-                            className="w-full text-sm text-gray-500 underline"
+                            className="w-full text-center text-sm text-gray-500 hover:underline"
                         >
                             Change email
                         </button>
