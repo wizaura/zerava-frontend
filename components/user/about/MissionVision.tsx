@@ -36,6 +36,13 @@ export default function MissionVisionSection() {
                 {/* Vision */}
                 <div className="grid gap-12 md:grid-cols-[1fr_auto_1fr] md:items-center">
 
+                    {/* Mobile Heading */}
+                    <h2 className="text-3xl text-center font-light leading-tight sm:text-4xl md:hidden">
+                        Our
+                        <br />
+                        <span className="text-electric-teal">Vision</span>
+                    </h2>
+
                     {/* Content (Left) */}
                     <div className="space-y-6 text-sm leading-relaxed text-text-secondary sm:text-lg">
                         <p>
@@ -55,16 +62,14 @@ export default function MissionVisionSection() {
                     {/* Vertical Divider */}
                     <span className="hidden h-40 w-px bg-gradient-to-b from-transparent via-electric-teal/60 to-transparent md:block" />
 
-                    {/* Heading (Right) */}
-                    <h2 className="text-3xl text-center font-light leading-tight sm:text-4xl md:text-5xl">
+                    {/* Desktop Heading */}
+                    <h2 className="hidden text-4xl text-center font-light leading-tight md:block">
                         Our
                         <br />
                         <span className="text-electric-teal">Vision</span>
                     </h2>
 
                 </div>
-
-
             </div>
         </section>
     );
