@@ -10,23 +10,18 @@ import {
     Status,
 } from "@/app/lib/admin/slots.api";
 import { getOperators, Operator } from "@/app/lib/admin/operators.api";
-import AddSlotForm from "./AddSlotsForm";
+import SlotForm from "./AddSlotsForm";
 import SlotsList from "./SlotsList";
-import CreateOperatorModal from "./CreateOperatorModal";
+import { getZones, Zone } from "@/app/lib/admin/zones.api";
+import OperatorManagerModal from "./CreateOperatorModal";
 
 export default function AdminSlotsPage() {
     const [slots, setSlots] = useState<ServiceSlot[]>([]);
     const [operators, setOperators] = useState<Operator[]>([]);
+    const [zones, setZones] = useState<Zone[]>([]);
+    const [editingSlot, setEditingSlot] = useState<ServiceSlot | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [showOperatorModal, setShowOperatorModal] = useState(false);
-
-    const [operatorId, setOperatorId] = useState("");
-    const [date, setDate] = useState("");
-    const [timeFrom, setTimeFrom] = useState("09:00");
-    const [timeTo, setTimeTo] = useState("17:00");
-    const [maxBookings, setMaxBookings] = useState(4);
-    const [zonePrefix, setZonePrefix] = useState("");
-    const [status, setStatus] = useState<Status>("ACTIVE");
 
     useEffect(() => {
         refresh();
@@ -35,21 +30,15 @@ export default function AdminSlotsPage() {
     async function refresh() {
         setSlots(await getSlots());
         setOperators(await getOperators());
+        setZones(await getZones());
     }
 
-    async function handleAdd() {
-        await createSlot({
-            operatorId,
-            date,
-            timeFrom,
-            timeTo,
-            maxBookings,
-            zonePrefix,
-            status,
-        });
-        toast.success("Slot added");
-        await refresh();
+    async function handleSave(data: any) {
+        await createSlot(data);
+        toast.success(editingSlot ? "Slot updated" : "Slot added");
+        setEditingSlot(null);
         setShowForm(false);
+        await refresh();
     }
 
     async function handleDelete(id: string) {
@@ -66,43 +55,65 @@ export default function AdminSlotsPage() {
     }, [slots]);
 
     return (
-        <>
-            <CreateOperatorModal
-                open={showOperatorModal}
-                onClose={() => setShowOperatorModal(false)}
-                onCreated={(id) => setOperatorId(id)}
-            />
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h2 className="text-2xl font-semibold">Operator Availability</h2>
+                    <p className="text-sm text-gray-500">
+                        Manage operator schedules and time slots
+                    </p>
+                </div>
 
-            <button
-                onClick={() => setShowForm((v) => !v)}
-                className="mb-6 rounded-full bg-green-500 px-4 py-2 text-sm font-medium"
-            >
-                {showForm ? "Close" : "Add Slot"}
-            </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setShowOperatorModal(true)}
+                        className="rounded-full border px-5 py-2 text-sm font-medium"
+                    >
+                        + Manage Operators
+                    </button>
 
+                    <button
+                        onClick={() => {
+                            setEditingSlot(null);
+                            setShowForm(true);
+                        }}
+                        className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-medium text-black"
+                    >
+                        + Add Slot
+                    </button>
+                </div>
+            </div>
+
+            {/* Form */}
             {showForm && (
-                <AddSlotForm
+                <SlotForm
                     operators={operators}
-                    operatorId={operatorId}
-                    setOperatorId={setOperatorId}
-                    date={date}
-                    setDate={setDate}
-                    timeFrom={timeFrom}
-                    setTimeFrom={setTimeFrom}
-                    timeTo={timeTo}
-                    setTimeTo={setTimeTo}
-                    maxBookings={maxBookings}
-                    setMaxBookings={setMaxBookings}
-                    zonePrefix={zonePrefix}
-                    setZonePrefix={setZonePrefix}
-                    status={status}
-                    setStatus={setStatus}
-                    onSubmit={handleAdd}
-                    onAddOperator={() => setShowOperatorModal(true)}
+                    slot={editingSlot}
+                    zones={zones}
+                    onCancel={() => {
+                        setEditingSlot(null);
+                        setShowForm(false);
+                    }}
+                    onSubmit={handleSave}
                 />
             )}
 
-            <SlotsList grouped={grouped} onDelete={handleDelete} />
-        </>
+            <OperatorManagerModal
+                open={showOperatorModal}
+                onClose={() => setShowOperatorModal(false)}
+                onChanged={refresh}
+            />
+
+            {/* List */}
+            <SlotsList
+                grouped={grouped}
+                onEdit={(slot) => {
+                    setEditingSlot(slot);
+                    setShowForm(true);
+                }}
+                onDelete={handleDelete}
+            />
+        </div>
     );
 }

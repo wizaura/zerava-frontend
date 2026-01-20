@@ -21,3 +21,17 @@ export async function createOperator(data: {
     const res = await adminApi.post("/admin/operators", data);
     return res.data;
 }
+
+/* -------- UPDATE -------- */
+export async function updateOperator(
+    id: string,
+    data: { name: string }
+): Promise<Operator> {
+    const res = await adminApi.patch(`/admin/operators/${id}`, data);
+    return res.data;
+}
+
+/* -------- DELETE -------- */
+export async function deleteOperator(id: string): Promise<void> {
+    await adminApi.delete(`/admin/operators/${id}`);
+}

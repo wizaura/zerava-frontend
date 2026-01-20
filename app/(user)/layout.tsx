@@ -5,7 +5,7 @@ import Protected from "@/components/auth/Protected";
 import { useAuthBootstrap } from "../lib/useAuthBootstrap";
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
-    useAuthBootstrap();
+    // useAuthBootstrap();
     return (
         <Protected>
             <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">

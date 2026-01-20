@@ -67,7 +67,7 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-8">
                 <div className="text-center mb-6">
-                    <img src="/logo.png" className="h-12 mx-auto mb-3" />
+                    <img src="/logo.png" alt="zerava" className="h-12 mx-auto mb-3" />
                     <h2 className="text-2xl font-semibold">Login</h2>
                     <p className="text-gray-500 text-sm">Secure OTP Authentication</p>
                 </div>

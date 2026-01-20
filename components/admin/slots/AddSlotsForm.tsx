@@ -1,120 +1,156 @@
 "use client";
 
-import { Plus } from "lucide-react";
 import { Operator, Status } from "@/app/lib/admin/slots.api";
+import { Zone } from "@/app/lib/admin/zones.api";
+import { useEffect, useMemo, useState } from "react";
 
-export default function AddSlotForm({
+export default function SlotForm({
     operators,
-    operatorId,
-    setOperatorId,
-    date,
-    setDate,
-    timeFrom,
-    setTimeFrom,
-    timeTo,
-    setTimeTo,
-    maxBookings,
-    setMaxBookings,
-    zonePrefix,
-    setZonePrefix,
-    status,
-    setStatus,
+    slot,
+    zones,
     onSubmit,
-    loading,
-    onAddOperator,
-}: any) {
+    onCancel,
+}: {
+    operators: Operator[];
+    slot?: any;
+    zones?: Zone[];
+    onSubmit: (data: any) => void;
+    onCancel: () => void;
+}) {
+    function toDateInputValue(date: string | Date | undefined) {
+        if (!date) return "";
+        return new Date(date).toISOString().split("T")[0];
+    }
+
+    const [form, setForm] = useState({
+        operatorId: slot?.operator?.id || "",
+        date: toDateInputValue(slot?.date),
+        timeFrom: slot?.timeFrom || "09:00",
+        timeTo: slot?.timeTo || "17:00",
+        maxBookings: slot?.maxBookings || 4,
+        zonePrefix: slot?.zonePrefix || "",
+        status: slot?.status || "ACTIVE",
+    });
+
+    function update(key: string, value: any) {
+        setForm((f) => ({ ...f, [key]: value }));
+    }
+
+    function getServiceDay(date: string): number | null {
+        if (!date) return null;
+
+        const jsDay = new Date(date).getDay();
+        return jsDay === 0 ? 7 : jsDay;
+    }
+
+    const selectedServiceDay = getServiceDay(form.date);
+
+    const filteredZones = useMemo(() => {
+        if (!zones || !selectedServiceDay) return [];
+        return zones.filter(
+            (z) => z.serviceDay === selectedServiceDay
+        );
+    }, [zones, selectedServiceDay]);
+
+    useEffect(() => {
+        setForm((f) => ({ ...f, zonePrefix: "" }));
+    }, [form.date]);
+
     return (
         <div className="rounded-xl border bg-white p-6">
-            <h2 className="mb-6 text-sm font-semibold">Add New Slot</h2>
+            {/* Header */}
+            <h3 className="mb-6 text-lg font-semibold">
+                {slot ? "Edit Slot" : "Add Slot"}
+            </h3>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Form Grid */}
+            <div className="grid grid-cols-2 gap-x-6 gap-y-5">
                 {/* Operator */}
-                <div>
-                    <div className="flex justify-between mb-1">
-                        <label className="text-xs font-medium text-gray-600">
-                            Operator
-                        </label>
-                        <button
-                            type="button"
-                            onClick={onAddOperator}
-                            className="text-xs text-green-600 hover:underline"
-                        >
-                            + Add operator
-                        </button>
-                    </div>
-
+                <div className="col-span-1">
+                    <label className="mb-1 block text-sm font-medium">
+                        Operator Name
+                    </label>
                     <select
-                        value={operatorId}
-                        onChange={(e) => setOperatorId(e.target.value)}
+                        value={form.operatorId}
+                        onChange={(e) => update("operatorId", e.target.value)}
                         className="w-full rounded-md border px-3 py-2 text-sm"
                     >
                         <option value="">Select operator</option>
-                        {operators.map((op: Operator) => (
-                            <option key={op.id} value={op.id}>
-                                {op.name}
+                        {operators.map((o) => (
+                            <option key={o.id} value={o.id}>
+                                {o.name}
                             </option>
                         ))}
                     </select>
                 </div>
 
                 {/* Date */}
-                <div>
-                    <label className="mb-1 block text-xs font-medium text-gray-600">
+                <div className="col-span-1">
+                    <label className="mb-1 block text-sm font-medium">
                         Date
                     </label>
                     <input
                         type="date"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
+                        value={form.date}
+                        onChange={(e) => update("date", e.target.value)}
                         className="w-full rounded-md border px-3 py-2 text-sm"
                     />
                 </div>
 
-                <div>
-                    <label className="mb-1 block text-xs font-medium text-gray-600">
-                        Time From
-                    </label>
-                    <input
-                        type="time"
-                        value={timeFrom}
-                        onChange={(e) => setTimeFrom(e.target.value)}
-                        className="w-full rounded-md border px-3 py-2 text-sm"
-                    />
+                {/* Time + Max Bookings Row */}
+                <div className="col-span-2 grid grid-cols-3 gap-6">
+                    {/* Time From */}
+                    <div>
+                        <label className="mb-1 block text-sm font-medium">
+                            Time From
+                        </label>
+                        <input
+                            type="time"
+                            value={form.timeFrom}
+                            onChange={(e) => update("timeFrom", e.target.value)}
+                            className="w-full rounded-md border px-3 py-2 text-sm"
+                        />
+                    </div>
+
+                    {/* Time To */}
+                    <div>
+                        <label className="mb-1 block text-sm font-medium">
+                            Time To
+                        </label>
+                        <input
+                            type="time"
+                            value={form.timeTo}
+                            onChange={(e) => update("timeTo", e.target.value)}
+                            className="w-full rounded-md border px-3 py-2 text-sm"
+                        />
+                    </div>
+
+                    {/* Max Bookings */}
+                    <div>
+                        <label className="mb-1 block text-sm font-medium">
+                            Max Bookings
+                        </label>
+                        <input
+                            type="number"
+                            min={1}
+                            value={form.maxBookings}
+                            onChange={(e) =>
+                                update("maxBookings", Number(e.target.value))
+                            }
+                            className="w-full rounded-md border px-3 py-2 text-sm"
+                        />
+                    </div>
                 </div>
 
-                <div>
-                    <label className="mb-1 block text-xs font-medium text-gray-600">
-                        Time To
-                    </label>
-                    <input
-                        type="time"
-                        value={timeTo}
-                        onChange={(e) => setTimeTo(e.target.value)}
-                        className="w-full rounded-md border px-3 py-2 text-sm"
-                    />
-                </div>
-
-                <div>
-                    <label className="mb-1 block text-xs font-medium text-gray-600">
-                        Max Bookings
-                    </label>
-                    <input
-                        type="number"
-                        min={1}
-                        value={maxBookings}
-                        onChange={(e) => setMaxBookings(+e.target.value)}
-                        className="w-full rounded-md border px-3 py-2 text-sm"
-                    />
-                </div>
-
-                <div>
-                    <label className="mb-1 block text-xs font-medium text-gray-600">
+                {/* Status */}
+                <div className="col-span-1">
+                    <label className="mb-1 block text-sm font-medium">
                         Status
                     </label>
                     <select
-                        value={status}
+                        value={form.status}
                         onChange={(e) =>
-                            setStatus(e.target.value as Status)
+                            update("status", e.target.value as Status)
                         }
                         className="w-full rounded-md border px-3 py-2 text-sm"
                     >
@@ -123,25 +159,51 @@ export default function AddSlotForm({
                     </select>
                 </div>
 
-                <div className="col-span-2">
-                    <label className="mb-1 block text-xs font-medium text-gray-600">
-                        Zone / Postcode (optional)
+                {/* Zone */}
+                {/* Zone */}
+                <div className="col-span-1">
+                    <label className="mb-1 block text-sm font-medium">
+                        Zone / Postcode
                     </label>
-                    <input
-                        value={zonePrefix}
-                        onChange={(e) => setZonePrefix(e.target.value)}
-                        className="w-full rounded-md border px-3 py-2 text-sm"
-                    />
+
+                    <select
+                        disabled={!form.date}
+                        value={form.zonePrefix}
+                        onChange={(e) => update("zonePrefix", e.target.value)}
+                        className="w-full rounded-md border px-3 py-2 text-sm disabled:bg-gray-100"
+                    >
+                        <option value="">
+                            {!form.date
+                                ? "Select date first"
+                                : filteredZones.length === 0
+                                    ? "No zones available"
+                                    : "Select zone"}
+                        </option>
+
+                        {filteredZones.map((z) => (
+                            <option key={z.id} value={z.postcodePrefix}>
+                                {z.postcodePrefix} ({z.zoneCode})
+                            </option>
+                        ))}
+                    </select>
                 </div>
+
             </div>
 
-            <div className="mt-6">
+            {/* Actions */}
+            <div className="mt-6 flex gap-3">
                 <button
-                    onClick={onSubmit}
-                    disabled={loading}
-                    className="rounded-md bg-green-500 px-5 py-2 text-sm font-medium text-black disabled:opacity-50"
+                    onClick={() => onSubmit(form)}
+                    className="rounded-md bg-emerald-500 px-6 py-2 text-sm font-medium text-black"
                 >
-                    Add Slot
+                    {slot ? "Update Slot" : "Add Slot"}
+                </button>
+
+                <button
+                    onClick={onCancel}
+                    className="rounded-md border px-6 py-2 text-sm"
+                >
+                    Cancel
                 </button>
             </div>
         </div>

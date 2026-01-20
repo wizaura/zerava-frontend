@@ -1,25 +1,39 @@
 "use client";
 
-import { X } from "lucide-react";
-import { useState } from "react";
+import { X, Pencil, Trash2, Check } from "lucide-react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { createOperator } from "@/app/lib/admin/operators.api";
+import {
+    getOperators,
+    createOperator,
+    updateOperator,
+    deleteOperator,
+    Operator,
+} from "@/app/lib/admin/operators.api";
 
-export default function CreateOperatorModal({
+export default function OperatorManagerModal({
     open,
     onClose,
-    onCreated,
+    onChanged,
 }: {
     open: boolean;
     onClose: () => void;
-    onCreated: (id: string) => void;
+    onChanged: () => void;
 }) {
+    const [operators, setOperators] = useState<Operator[]>([]);
     const [name, setName] = useState("");
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    if (!open) return null;
+    useEffect(() => {
+        if (open) load();
+    }, [open]);
 
-    async function handleCreate() {
+    async function load() {
+        setOperators(await getOperators());
+    }
+
+    async function handleAdd() {
         if (!name.trim()) {
             toast.error("Operator name required");
             return;
@@ -27,56 +41,137 @@ export default function CreateOperatorModal({
 
         try {
             setLoading(true);
-            const op = await createOperator({ name });
-            toast.success("Operator created");
-            onCreated(op.id);
+            await createOperator({ name });
+            toast.success("Operator added");
             setName("");
-            onClose();
+            await load();
+            onChanged();
         } catch {
-            toast.error("Failed to create operator");
+            toast.error("Failed to add operator");
         } finally {
             setLoading(false);
         }
     }
 
+    async function handleUpdate(id: string, newName: string) {
+        if (!newName.trim()) return;
+
+        try {
+            await updateOperator(id, { name: newName });
+            toast.success("Operator updated");
+            setEditingId(null);
+            await load();
+            onChanged();
+        } catch {
+            toast.error("Failed to update operator");
+        }
+    }
+
+    async function handleDelete(id: string) {
+        if (!confirm("Delete this operator?")) return;
+
+        try {
+            await deleteOperator(id);
+            toast.success("Operator deleted");
+            await load();
+            onChanged();
+        } catch {
+            toast.error("Cannot delete operator with slots");
+        }
+    }
+
+    if (!open) return null;
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="w-full max-w-md rounded-xl bg-white shadow-xl">
+            <div className="w-full max-w-lg rounded-xl bg-white shadow-xl">
+                {/* Header */}
                 <div className="flex items-center justify-between border-b px-6 py-4">
-                    <h2 className="text-sm font-semibold">Add Operator</h2>
+                    <h2 className="text-sm font-semibold">
+                        Manage Operators
+                    </h2>
                     <button onClick={onClose}>
                         <X size={18} />
                     </button>
                 </div>
 
-                <div className="p-6 space-y-4">
-                    <div>
-                        <label className="mb-1 block text-xs font-medium text-gray-600">
-                            Operator Name
-                        </label>
+                {/* Body */}
+                <div className="p-6 space-y-5">
+                    {/* Add operator */}
+                    <div className="flex gap-3">
                         <input
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="w-full rounded-md border px-3 py-2 text-sm"
+                            placeholder="New operator name"
+                            className="flex-1 rounded-md border px-3 py-2 text-sm"
                         />
-                    </div>
-
-                    <div className="flex gap-3">
                         <button
-                            onClick={handleCreate}
+                            onClick={handleAdd}
                             disabled={loading}
-                            className="rounded-md bg-green-500 px-4 py-2 text-sm font-medium text-black disabled:opacity-50"
+                            className="rounded-md bg-emerald-500 px-4 py-2 text-sm font-medium text-black disabled:opacity-50"
                         >
-                            Add Operator
-                        </button>
-
-                        <button
-                            onClick={onClose}
-                            className="rounded-md border px-4 py-2 text-sm"
-                        >
-                            Cancel
+                            Add
                         </button>
                     </div>
+
+                    {/* Operator list */}
+                    <div className="space-y-2 max-h-64 overflow-auto">
+                        {operators.map((op) => (
+                            <div
+                                key={op.id}
+                                className="flex items-center justify-between rounded-md border px-3 py-2 text-sm"
+                            >
+                                {editingId === op.id ? (
+                                    <input
+                                        defaultValue={op.name}
+                                        autoFocus
+                                        onBlur={(e) =>
+                                            handleUpdate(
+                                                op.id,
+                                                e.target.value
+                                            )
+                                        }
+                                        className="flex-1 rounded-md border px-2 py-1 text-sm"
+                                    />
+                                ) : (
+                                    <span>{op.name}</span>
+                                )}
+
+                                <div className="flex gap-3">
+                                    {editingId === op.id ? (
+                                        <Check size={16} />
+                                    ) : (
+                                        <button
+                                            onClick={() =>
+                                                setEditingId(op.id)
+                                            }
+                                        >
+                                            <Pencil size={16} />
+                                        </button>
+                                    )}
+
+                                    <button
+                                        onClick={() =>
+                                            handleDelete(op.id)
+                                        }
+                                        className="text-red-500"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className="border-t px-6 py-3 flex justify-end">
+                    <button
+                        onClick={onClose}
+                        className="rounded-md border px-4 py-2 text-sm"
+                    >
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
