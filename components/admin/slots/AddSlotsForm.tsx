@@ -43,6 +43,10 @@ export default function SlotForm({
         return jsDay === 0 ? 7 : jsDay;
     }
 
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const minDate = tomorrow.toISOString().split("T")[0];
+
     const selectedServiceDay = getServiceDay(form.date);
 
     const filteredZones = useMemo(() => {
@@ -91,6 +95,7 @@ export default function SlotForm({
                     </label>
                     <input
                         type="date"
+                        min={minDate}
                         value={form.date}
                         onChange={(e) => update("date", e.target.value)}
                         className="w-full rounded-md border px-3 py-2 text-sm"

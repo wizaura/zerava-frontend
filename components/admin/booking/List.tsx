@@ -5,28 +5,15 @@ import {
     Search,
     Filter,
     MoreVertical,
-    X,
-    User,
-    Mail,
-    Phone,
-    MapPin,
 } from "lucide-react";
 import BookingDetailsModal from "./DetailsModal";
+import { AdminBooking } from "@/app/lib/admin/booking.api";
 
-export type Booking = {
-    reference: string;
-    customerName: string;
-    customerEmail: string;
-    service: string;
-    date: string;
-    status: "confirmed" | "pending" | "cancelled";
-    price: string;
-};
-
-const STATUS_STYLES: Record<Booking["status"], string> = {
-    confirmed: "bg-emerald-100 text-emerald-700",
-    pending: "bg-yellow-100 text-yellow-700",
-    cancelled: "bg-red-100 text-red-700",
+const STATUS_STYLES: Record<AdminBooking["status"], string> = {
+    CONFIRMED: "bg-emerald-100 text-emerald-700",
+    PENDING_PAYMENT: "bg-yellow-100 text-yellow-700",
+    COMPLETED: "bg-blue-100 text-blue-700",
+    CANCELLED: "bg-red-100 text-red-700",
 };
 
 export default function BookingsTable({
@@ -34,17 +21,17 @@ export default function BookingsTable({
     loading,
     onSearch,
 }: {
-    bookings: Booking[];
+    bookings: AdminBooking[];
     loading?: boolean;
     onSearch?: (value: string) => void;
 }) {
     const [statusFilter, setStatusFilter] = useState<
-        "all" | Booking["status"]
+        "all" | AdminBooking["status"]
     >("all");
+
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
-    const [selectedBooking, setSelectedBooking] = useState<Booking | null>(
-        null
-    );
+    const [selectedBooking, setSelectedBooking] =
+        useState<AdminBooking | null>(null);
 
     const filteredBookings =
         statusFilter === "all"
@@ -54,7 +41,7 @@ export default function BookingsTable({
     return (
         <>
             <div className="rounded-xl border bg-white">
-                {/* Search + Filter */}
+                {/* SEARCH + FILTER */}
                 <div className="flex items-center justify-between gap-4 border-b p-4">
                     <div className="relative w-full max-w-md">
                         <Search
@@ -62,7 +49,7 @@ export default function BookingsTable({
                             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                         />
                         <input
-                            placeholder="Search by name, reference, or postcode..."
+                            placeholder="Search by name, reference, or email..."
                             className="w-full rounded-md border pl-9 pr-3 py-2 text-sm"
                             onChange={(e) => onSearch?.(e.target.value)}
                         />
@@ -73,17 +60,16 @@ export default function BookingsTable({
                             value={statusFilter}
                             onChange={(e) =>
                                 setStatusFilter(
-                                    e.target.value as
-                                    | "all"
-                                    | Booking["status"]
+                                    e.target.value as "all" | AdminBooking["status"]
                                 )
                             }
                             className="rounded-md border px-3 py-2 text-sm"
                         >
                             <option value="all">All statuses</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="pending">Pending</option>
-                            <option value="cancelled">Cancelled</option>
+                            <option value="CONFIRMED">Confirmed</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="COMPLETED">Completed</option>
+                            <option value="CANCELLED">Cancelled</option>
                         </select>
 
                         <button className="flex items-center gap-2 rounded-md border px-4 py-2 text-sm">
@@ -93,6 +79,7 @@ export default function BookingsTable({
                     </div>
                 </div>
 
+                {/* TABLE */}
                 {loading && (
                     <div className="p-6 text-sm text-gray-500">
                         Loading bookings…
@@ -104,55 +91,39 @@ export default function BookingsTable({
                         <table className="w-full text-sm">
                             <thead className="border-b bg-gray-50 text-gray-500">
                                 <tr>
-                                    <th className="px-6 py-3 text-left">
-                                        Reference
-                                    </th>
-                                    <th className="px-6 py-3 text-left">
-                                        Customer
-                                    </th>
-                                    <th className="px-6 py-3 text-left">
-                                        Service
-                                    </th>
-                                    <th className="px-6 py-3 text-left">
-                                        Date
-                                    </th>
-                                    <th className="px-6 py-3 text-left">
-                                        Status
-                                    </th>
-                                    <th className="px-6 py-3 text-left">
-                                        Price
-                                    </th>
-                                    <th className="px-6 py-3 text-right">
-                                        Actions
-                                    </th>
+                                    <th className="px-6 py-3 text-left">Reference</th>
+                                    <th className="px-6 py-3 text-left">Customer</th>
+                                    <th className="px-6 py-3 text-left">Service</th>
+                                    <th className="px-6 py-3 text-left">Date</th>
+                                    <th className="px-6 py-3 text-left">Status</th>
+                                    <th className="px-6 py-3 text-left">Price</th>
+                                    <th className="px-6 py-3 text-right">Actions</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 {filteredBookings.map((b) => (
                                     <tr
-                                        key={b.reference}
+                                        key={b.id}
                                         className="border-b last:border-b-0"
                                     >
                                         <td className="px-6 py-4 font-medium">
-                                            {b.reference}
+                                            {b.referenceCode}
                                         </td>
 
                                         <td className="px-6 py-4">
-                                            <div className="font-medium">
-                                                {b.customerName}
-                                            </div>
+                                            <div className="font-medium">{b.name}</div>
                                             <div className="text-xs text-gray-500">
-                                                {b.customerEmail}
+                                                {b.email}
                                             </div>
                                         </td>
 
                                         <td className="px-6 py-4">
-                                            {b.service}
+                                            {b.serviceType}
                                         </td>
 
                                         <td className="px-6 py-4">
-                                            {b.date}
+                                            {b?.serviceSlot?.date}
                                         </td>
 
                                         <td className="px-6 py-4">
@@ -164,17 +135,14 @@ export default function BookingsTable({
                                         </td>
 
                                         <td className="px-6 py-4 font-medium">
-                                            {b.price}
+                                            £{(b.price / 100).toFixed(2)}
                                         </td>
 
                                         <td className="relative px-6 py-4 text-right">
                                             <button
                                                 onClick={() =>
                                                     setActiveMenu(
-                                                        activeMenu ===
-                                                            b.reference
-                                                            ? null
-                                                            : b.reference
+                                                        activeMenu === b.id ? null : b.id
                                                     )
                                                 }
                                                 className="rounded-md p-2 hover:bg-gray-100"
@@ -182,13 +150,11 @@ export default function BookingsTable({
                                                 <MoreVertical size={16} />
                                             </button>
 
-                                            {activeMenu === b.reference && (
+                                            {activeMenu === b.id && (
                                                 <div className="absolute right-6 top-10 z-50 w-40 rounded-md border bg-white shadow-md">
                                                     <button
                                                         onClick={() => {
-                                                            setSelectedBooking(
-                                                                b
-                                                            );
+                                                            setSelectedBooking(b);
                                                             setActiveMenu(null);
                                                         }}
                                                         className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
@@ -219,6 +185,10 @@ export default function BookingsTable({
                 <BookingDetailsModal
                     booking={selectedBooking}
                     onClose={() => setSelectedBooking(null)}
+                    onSave={(updates) => {
+                        // PATCH /admin/bookings/:id
+                        setSelectedBooking(null);
+                    }}
                 />
             )}
         </>

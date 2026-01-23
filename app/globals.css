@@ -14,3 +14,41 @@
     --text-muted: theme(colors.text-muted);
   }
 }
+
+/* FullCalendar polish */
+.fc {
+  font-family: inherit;
+}
+
+.fc-toolbar-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.fc-button {
+  border-radius: 0.5rem !important;
+  padding: 0.35rem 0.6rem !important;
+  font-size: 0.75rem !important;
+}
+
+.fc-daygrid-day-number {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.fc-daygrid-day {
+  padding: 6px;
+}
+
+.fc-event {
+  border: none !important;
+}
+
+.fc-event-title {
+  white-space: pre-line;
+}
+
+.fc-daygrid-event {
+  margin-top: 4px;
+}
+
