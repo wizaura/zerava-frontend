@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@/app/store/slices/authSlice";
+import api from "@/app/lib/axios";
+import { clearAuth } from "@/app/store/slices/authSlice";
 
 const tabs = [
     { label: "Dashboard", href: "/account" },
@@ -16,8 +17,18 @@ const tabs = [
 
 export default function UserHeader() {
     const pathname = usePathname();
+    const router = useRouter();
     const dispatch = useDispatch();
     const user = useSelector((state: any) => state.auth.user);
+
+    const handleLogout = async () => {
+        try {
+            await api.post("/auth/logout"); // 🔑 clears cookies
+        } finally {
+            dispatch(clearAuth());
+            router.replace("/login");
+        }
+    };
 
     return (
         <div className="w-full">
@@ -36,40 +47,35 @@ export default function UserHeader() {
                     </div>
 
                     <button
-                        onClick={() => dispatch(logout())}
-                        className="flex items-center gap-2 text-sm bg-gray-300 px-4 py-1 rounded-full font-medium hover:bg-eco-black hover:border hover:border-red-600 text-black hover:text-red-500"
+                        onClick={handleLogout}
+                        className="flex items-center gap-2 text-sm bg-gray-300 px-4 py-1 rounded-full font-medium hover:bg-black hover:border hover:border-red-600 text-black hover:text-red-500"
                     >
                         <LogOut size={16} /> Logout
                     </button>
                 </div>
             </div>
 
-            {/* Tabs Wrapper (NOT sticky) */}
-            <div>
-                {/* This is the sticky element */}
-                <div className="sticky top-16 z-40">
-                    <div className="max-w-4xl mx-auto px-6 py-3 flex justify-center">
-                        <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 p-1 shadow-sm">
-
-                            {tabs.map(t => (
-                                <Link
-                                    key={t.href}
-                                    href={t.href}
-                                    className={`px-5 py-2 rounded-full text-sm font-medium transition-all
-                    ${pathname === t.href
-                                            ? "bg-white text-emerald-600 shadow"
-                                            : "text-gray-500 hover:text-gray-800"
-                                        }`}
-                                >
-                                    {t.label}
-                                </Link>
-                            ))}
-
-                        </div>
+            {/* Tabs */}
+            <div className="sticky top-16 z-40">
+                <div className="max-w-4xl mx-auto px-6 py-3 flex justify-center">
+                    <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 p-1 shadow-sm">
+                        {tabs.map(t => (
+                            <Link
+                                key={t.href}
+                                href={t.href}
+                                className={`px-5 py-2 rounded-full text-sm font-medium transition-all
+                                ${pathname === t.href
+                                        ? "bg-white text-emerald-600 shadow"
+                                        : "text-gray-500 hover:text-gray-800"
+                                    }`}
+                            >
+                                {t.label}
+                            </Link>
+                        ))}
                     </div>
                 </div>
-
             </div>
+
         </div>
     );
 }

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import api from "@/app/lib/axios";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "@/app/store/slices/authSlice";
+import { setUser } from "@/app/store/slices/authSlice";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -40,8 +40,15 @@ export default function LoginPage() {
 
         try {
             setLoading(true);
-            const res = await api.post("/auth/verify-otp", { email, otp: code });
-            dispatch(setCredentials(res.data));
+
+            // 1. Verify OTP (sets cookies)
+            await api.post("/auth/verify-otp", { email, otp: code });
+
+            // 2. Fetch user using cookies
+            const me = await api.get("/auth/me");
+
+            dispatch(setUser(me.data.user));
+
             toast.success("Login successful");
             router.replace(redirect);
         } catch {
@@ -50,6 +57,7 @@ export default function LoginPage() {
             setLoading(false);
         }
     };
+
 
     const handleChange = (i: number, v: string) => {
         if (!/^\d?$/.test(v)) return;
