@@ -6,7 +6,6 @@ import {
     clearAuth,
     setBootstrapped,
 } from "@/app/store/slices/authSlice";
-import { fetchMeGracefully } from "./fetchGrace";
 
 export const useAuthBootstrap = () => {
     const dispatch = useDispatch();
@@ -14,9 +13,10 @@ export const useAuthBootstrap = () => {
     useEffect(() => {
         const initAuth = async () => {
             try {
-                const res = await fetchMeGracefully();
+                const res = await api.get("/auth/me");
                 dispatch(setUser(res.data.user));
             } catch {
+                // not logged in is OK
                 dispatch(setBootstrapped());
             }
         };

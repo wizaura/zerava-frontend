@@ -9,6 +9,7 @@ async function getPrices() {
 
 export default async function Booking() {
     const prices = await getPrices();
+    console.log(prices,'jj');
     return (
         <div>
             <BookingPage prices={prices} />
