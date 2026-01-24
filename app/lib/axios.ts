@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -6,43 +6,65 @@ const api = axios.create({
     timeout: 15000,
 });
 
+// ---- Refresh control ----
 let isRefreshing = false;
-let queue: (() => void)[] = [];
+let refreshQueue: Array<(error?: AxiosError) => void> = [];
+
+// Resolve / reject all queued requests
+const processQueue = (error?: AxiosError) => {
+    refreshQueue.forEach(cb => cb(error));
+    refreshQueue = [];
+};
 
 api.interceptors.response.use(
-    (res) => res,
-    async (error) => {
-        const original = error.config;
+    (response) => response,
+    async (error: AxiosError) => {
+        const original = error.config as InternalAxiosRequestConfig & {
+            _retry?: boolean;
+        };
 
-        // No response or already retried
-        if (!error.response || original._retry) {
+        // If no response (network error)
+        if (!error.response) {
             return Promise.reject(error);
         }
 
-        if (error.response.status === 401) {
-            original._retry = true;
+        const status = error.response.status;
+        const url = original.url || "";
 
-            if (isRefreshing) {
-                await new Promise<void>((resolve) => queue.push(resolve));
-                return api(original);
-            }
-
-            isRefreshing = true;
-
-            try {
-                await api.post("/auth/refresh");
-                queue.forEach((cb) => cb());
-                queue = [];
-                return api(original);
-            } catch (e) {
-                queue = [];
-                return Promise.reject(e);
-            } finally {
-                isRefreshing = false;
-            }
+        // 🚫 Do NOT try to refresh on auth endpoints
+        if (url.includes("/auth/")) {
+            return Promise.reject(error);
         }
 
-        return Promise.reject(error);
+        // Only handle 401 once per request
+        if (status !== 401 || original._retry) {
+            return Promise.reject(error);
+        }
+
+        original._retry = true;
+
+        // If refresh already in progress → queue
+        if (isRefreshing) {
+            return new Promise((resolve, reject) => {
+                refreshQueue.push((err) => {
+                    if (err) return reject(err);
+                    resolve(api(original));
+                });
+            });
+        }
+
+        isRefreshing = true;
+
+        try {
+            await api.post("/auth/refresh");
+            processQueue();
+            return api(original);
+        } catch (refreshError: any) {
+            processQueue(refreshError);
+            return Promise.reject(refreshError);
+        } finally {
+            isRefreshing = false;
+        }
     }
 );
 
