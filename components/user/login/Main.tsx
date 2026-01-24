@@ -41,15 +41,11 @@ export default function LoginPage() {
         try {
             setLoading(true);
 
-            // 1. Verify OTP (sets cookies)
             await api.post("/auth/verify-otp", { email, otp: code });
 
-            // 2. Fetch user using cookies
-            const me = await api.get("/auth/me");
-
-            dispatch(setUser(me.data.user));
-
             toast.success("Login successful");
+
+            // 🚀 Just redirect
             router.replace(redirect);
         } catch {
             toast.error("Invalid OTP");
@@ -57,6 +53,7 @@ export default function LoginPage() {
             setLoading(false);
         }
     };
+
 
 
     const handleChange = (i: number, v: string) => {
