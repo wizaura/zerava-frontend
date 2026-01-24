@@ -11,40 +11,46 @@ import {
 
 const features = [
     {
-        title: "Zero Water Waste",
-        description: "Traditional car washes use 150+ litres. We use none.",
+        title: "Responsible Water Use",
+        description:
+            "Traditional car washes can use over 150 litres of water. Zerava delivers vehicle care without hoses, runoff, or on-site water infrastructure.",
         icon: Droplets,
     },
     {
-        title: "99.78% Biodegradable",
-        description: "Plant-based formulas that are safe for your car and the planet.",
+        title: "Biodegradable Formulations",
+        description:
+            "Our 99.78% biodegradable formulations break down naturally and are safe for your vehicle and the planet.",
         icon: Leaf,
     },
     {
-        title: "Time-Saving",
-        description: "We come to you — no queues, no waiting, no hassle.",
+        title: "Convenience",
+        description:
+            "Vehicle care delivered where your car is parked — no queues, no waiting, no hassle.",
         icon: Clock,
     },
     {
         title: "Paint Protection",
-        description: "Advanced polymers that clean and protect every surface.",
+        description:
+            "Advanced polymer technology designed to clean and protect vehicle surfaces.",
         icon: Shield,
     },
     {
         title: "Any Location",
-        description: "Home, office, gym, airport — wherever you park.",
+        description:
+            "Home, office, gym, airport — wherever you park.",
         icon: MapPin,
     },
     {
-        title: "Eco Certified",
-        description: "Verified sustainable practices and products.",
+        title: "UN Sustainable Development Goals",
+        description:
+            "Zerava aligns its operations with selected UN Sustainable Development Goals through practical service design.",
         icon: BadgeCheck,
     },
 ];
 
 export default function WhyZerava() {
     return (
-        <section className="relative bg-eco-black py-20">
+        <section className="relative bg-eco-black py-24">
             <div className="mx-auto max-w-7xl px-6 text-center">
 
                 {/* Label */}
@@ -71,13 +77,13 @@ export default function WhyZerava() {
                     data-aos="fade-up"
                     data-aos-delay="200"
                     data-aos-duration="900"
-                    className="mx-auto mt-4 max-w-2xl text-md text-text-secondary sm:text-base"
+                    className="mx-auto mt-5 max-w-2xl text-base text-text-secondary"
                 >
-                    Every detail crafted with sustainability, convenience,
-                    and premium quality in mind.
+                    Every detail is crafted with sustainability, convenience,
+                    and premium vehicle care in mind.
                 </p>
 
-                {/* Cards */}
+                {/* Feature Cards */}
                 <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {features.map((item, i) => {
                         const Icon = item.icon;
@@ -90,25 +96,31 @@ export default function WhyZerava() {
                                 data-aos-duration="900"
                                 data-aos-easing="ease-out-cubic"
                                 className="
-                  group rounded-2xl border border-white/10
-                  bg-white/5 backdrop-blur-md
-                  px-8 py-4 text-left transition-all duration-300 ease-out
-                  hover:-translate-y-2 hover:scale-[1.05]
-                  hover:border-electric-teal/40
-                  hover:shadow-[0_12px_20px_-12px_rgba(56,214,196,0.35)]
-                "
+                                    group rounded-3xl border border-white/10
+                                    bg-white/5 backdrop-blur-md
+                                    px-6 py-4 text-left
+                                    transition-all duration-300 ease-out
+                                    hover:-translate-y-2 hover:scale-[1.03]
+                                    hover:border-electric-teal/40
+                                    hover:shadow-[0_20px_40px_-20px_rgba(56,214,196,0.35)]
+                                "
                             >
-                                <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-md 
-                                bg-white/10 text-electric-teal transition
-                                group-hover:bg-electric-teal group-hover:text-eco-black">
+                                {/* Icon */}
+                                <div
+                                    className="mb-6 flex h-11 w-11 items-center justify-center rounded-xl
+                                    bg-white/10 text-electric-teal transition
+                                    group-hover:bg-electric-teal group-hover:text-eco-black"
+                                >
                                     <Icon size={18} />
                                 </div>
 
-                                <h3 className="text-base font-semibold text-gray-200">
+                                {/* Title */}
+                                <h3 className="text-lg font-semibold text-gray-200">
                                     {item.title}
                                 </h3>
 
-                                <p className="mt-2 text-sm text-text-secondary">
+                                {/* Description */}
+                                <p className="mt-3 text-sm leading-relaxed text-text-secondary">
                                     {item.description}
                                 </p>
                             </div>
