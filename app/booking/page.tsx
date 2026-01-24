@@ -1,21 +1,9 @@
-import BookingPage from "@/components/user/booking/Main";
-import api from "../lib/axios";
-import { Suspense } from "react";
-
-async function getPrices() {
-    const res = await api.get("/services/prices");
-
-    return res.data;
-}
+import BookingPage from "@/components/user/booking/Call";
 
 export default async function Booking() {
-    const prices = await getPrices();
-    console.log(prices, 'jj');
     return (
         <div>
-            <Suspense fallback={null}>
-                <BookingPage prices={prices} />
-            </Suspense>
+                <BookingPage />
         </div>
     )
 }
