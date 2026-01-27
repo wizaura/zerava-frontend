@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getGallery, GalleryItem } from "@/app/lib/gallery.api";
+import { getGallery, GalleryItem } from "@/lib/user/gallery.api";
 import { Sparkles } from "lucide-react";
 import BeforeAfterCard from "@/components/ui/BeforeAterCard";
 

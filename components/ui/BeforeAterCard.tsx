@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { GalleryItem } from "@/app/lib/gallery.api";
+import { GalleryItem } from "@/lib/user/gallery.api";
 import { Star } from "lucide-react";
 
 type Props = {

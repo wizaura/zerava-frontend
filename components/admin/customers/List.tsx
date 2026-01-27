@@ -1,6 +1,6 @@
 "use client";
 
-import { AdminCustomer } from "@/app/lib/admin/customers.api";
+import { AdminCustomer } from "@/lib/admin/customers.api";
 
 export default function CustomerList({
     customers,

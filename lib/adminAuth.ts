@@ -1,4 +1,4 @@
-import { adminMe } from "./adminApi";
+import { adminMe } from "./admin/admin.api";
 
 export async function isAdminAuthenticated() {
     try {

@@ -2,6 +2,7 @@ import FinalCTA from "@/components/common/FinalCTA";
 import PageHero from "@/components/common/PageHero";
 import EmployeeBenefitsSection from "@/components/user/fleet/Benefits";
 import FleetStatsSection from "@/components/user/fleet/Stats";
+import { TrustStrip } from "@/components/user/fleet/Trust";
 import WhoWeServeSection from "@/components/user/fleet/WhoWeServe";
 import WhyZeravaSection from "@/components/user/fleet/Why";
 
@@ -10,9 +11,9 @@ export default function Fleet() {
         <div>
             <PageHero
                 badge="Fleet & Corporate"
-                title="Sustainable fleet"
-                highlight="care at scale"
-                description="Keep your fleet spotless while achieving sustainability goals. Our on-site waterless cleaning services are designed for NHS trusts, councils, corporate campuses, and logistics companies."
+                title="Sustainable fleet care"
+                highlight="designed for scale"
+                description="Keep your fleet consistently clean while supporting sustainability goals - built for organisations managing vehicles at scale."
                 buttons={[
                     {
                         label: "Get a Quote",
@@ -46,6 +47,7 @@ export default function Fleet() {
                     },
                 ]}
             />
+            <TrustStrip />
         </div>
     )
 }

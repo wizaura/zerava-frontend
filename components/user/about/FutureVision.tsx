@@ -7,7 +7,11 @@ export default function FutureVisionSection() {
 
             <div className="relative mx-auto max-w-6xl px-4">
                 {/* Header */}
-                <div className="mb-16 text-center">
+                <div
+                    data-aos="fade-up"
+                    data-aos-delay="100"
+                    className="mb-16 text-center"
+                >
                     <p className="mb-3 text-xs font-semibold tracking-widest text-electric-teal">
                         THE FUTURE
                     </p>
@@ -25,25 +29,38 @@ export default function FutureVisionSection() {
                 {/* Cards */}
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <FeatureCard
+                        delay={200}
                         title="Mobility Lounges"
                         description="Premium spaces where you can work, relax, and recharge while your vehicle is cared for."
                     />
 
                     <FeatureCard
+                        delay={300}
                         title="EV Support Services"
                         description="Integrated charging assistance, range optimisation, and EV-specific care packages."
                     />
 
                     <FeatureCard
+                        delay={400}
                         title="Traveller Solutions"
                         description="Airport and station services for travellers who want a clean car waiting for them."
                     />
 
                     <FeatureCard
+                        delay={500}
                         title="Smart Subscriptions"
                         description="AI-powered scheduling that knows when your car needs attention before you do."
                     />
                 </div>
+
+                {/* Member line */}
+                <p
+                    data-aos="fade-up"
+                    data-aos-delay="650"
+                    className="mt-12 text-center text-xs uppercase tracking-wider text-gray-500"
+                >
+                    Designed for Zerava members
+                </p>
             </div>
         </section>
     );
@@ -54,12 +71,18 @@ export default function FutureVisionSection() {
 function FeatureCard({
     title,
     description,
+    delay = 0,
 }: {
     title: string;
     description: string;
+    delay?: number;
 }) {
     return (
-        <div className="group rounded-2xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur transition hover:-translate-y-1 hover:border-electric-teal/40 hover:bg-white/[0.06]">
+        <div
+            data-aos="fade-up"
+            data-aos-delay={delay}
+            className="group rounded-2xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-electric-teal/40 hover:bg-white/[0.06]"
+        >
             <h3 className="mb-3 text-lg font-medium text-white">
                 {title}
             </h3>

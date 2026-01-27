@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import {
     getAdminCustomers,
     AdminCustomer,
-} from "@/app/lib/admin/customers.api";
+} from "@/lib/admin/customers.api";
 import CustomerList from "./List";
 
 export default function AdminCustomersPage() {

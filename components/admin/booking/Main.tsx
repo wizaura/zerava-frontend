@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import {
     getAdminBookings,
     AdminBooking,
-} from "@/app/lib/admin/booking.api";
+} from "@/lib/admin/booking.api";
 import BookingsTable from "./List";
 
 export default function AdminBookingsPage() {

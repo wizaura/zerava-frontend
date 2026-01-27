@@ -8,11 +8,11 @@ import {
     getSlots,
     ServiceSlot,
     Status,
-} from "@/app/lib/admin/slots.api";
-import { getOperators, Operator } from "@/app/lib/admin/operators.api";
+} from "@/lib/admin/slots.api";
+import { getOperators, Operator } from "@/lib/admin/operators.api";
 import SlotForm from "./AddSlotsForm";
 import SlotsList from "./SlotsList";
-import { getZones, Zone } from "@/app/lib/admin/zones.api";
+import { getZones, Zone } from "@/lib/admin/zones.api";
 import OperatorManagerModal from "./CreateOperatorModal";
 
 export default function AdminSlotsPage() {

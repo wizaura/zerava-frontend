@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createGalleryItem, GalleryItem } from "@/app/lib/admin/gallery.api";
+import { createGalleryItem, GalleryItem } from "@/lib/admin/gallery.api";
 import UploadBox from "@/components/ui/UploadBox";
 import TextInput from "@/components/ui/TextInput";
 import TextArea from "@/components/ui/TextArea";

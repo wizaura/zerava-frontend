@@ -13,7 +13,7 @@ export default function About() {
                 badge="About Zerava"
                 title="Reimagining"
                 highlight="mobility care"
-                description="We're not just a car wash company. We're building the future of vehicle care — one that's sustainable, convenient, and designed for modern mobility."
+                description="More than a car wash. Zerava is building the future of vehicle care - sustainable, convenient, and designed for modern mobility."
             />
             <OurStorySection />
             <MissionVisionSection />

@@ -1,4 +1,4 @@
-import adminApi from "./admin/axios";
+import adminApi from "./axios";
 
 /* ---------- AUTH ---------- */
 

@@ -7,7 +7,7 @@ import {
     MoreVertical,
 } from "lucide-react";
 import BookingDetailsModal from "./DetailsModal";
-import { AdminBooking } from "@/app/lib/admin/booking.api";
+import { AdminBooking } from "@/lib/admin/booking.api";
 
 const STATUS_STYLES: Record<AdminBooking["status"], string> = {
     CONFIRMED: "bg-emerald-100 text-emerald-700",

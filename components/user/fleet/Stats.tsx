@@ -3,11 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 
 function CountUp({ value }: { value: string }) {
-    const [display, setDisplay] = useState("0");
+    const [display, setDisplay] = useState(value);
     const [started, setStarted] = useState(false);
     const ref = useRef<HTMLSpanElement | null>(null);
 
+    // Extract number safely
+    const numericPart = value.match(/\d+/);
+    const numeric = numericPart ? parseInt(numericPart[0], 10) : null;
+    const suffix = numeric !== null ? value.replace(/\d+/g, "") : "";
+
     useEffect(() => {
+        if (numeric === null) return;
+
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting && !started) {
@@ -19,13 +26,11 @@ function CountUp({ value }: { value: string }) {
 
         if (ref.current) observer.observe(ref.current);
         return () => observer.disconnect();
-    }, [started]);
+    }, [started, numeric]);
 
     useEffect(() => {
-        if (!started) return;
+        if (!started || numeric === null) return;
 
-        const numeric = parseInt(value.replace(/\D/g, ""));
-        const suffix = value.replace(/\d/g, "");
         const duration = 1200;
         const steps = 40;
         const increment = numeric / steps;
@@ -42,18 +47,17 @@ function CountUp({ value }: { value: string }) {
         }, duration / steps);
 
         return () => clearInterval(interval);
-    }, [started, value]);
+    }, [started, numeric, suffix, value]);
 
     return <span ref={ref}>{display}</span>;
 }
 
-
 export default function FleetStatsSection() {
     const stats = [
-        { value: "50+", label: "Fleet partners" },
-        { value: "2000+", label: "Vehicles monthly" },
-        { value: "300K", label: "Litres saved" },
-        { value: "98%", label: "Satisfaction rate" },
+        { value: "3+", label: "Minimum fleet size" },
+        { value: "150L", label: "Water saved per clean" },
+        { value: "0L", label: "Water used" },
+        { value: "On-site", label: "Service delivery" },
     ];
 
     return (

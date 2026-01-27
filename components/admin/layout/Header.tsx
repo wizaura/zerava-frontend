@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ZonesModal from "../zones/ZonesModal";
-import { isAdminAuthenticated } from "@/app/lib/adminAuth";
-import { useAdminUI } from "@/app/context/AdminUIContext";
+import { isAdminAuthenticated } from "@/lib/adminAuth";
+import { useAdminUI } from "@/lib/AdminUIContext";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 

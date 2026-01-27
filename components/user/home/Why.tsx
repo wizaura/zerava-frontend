@@ -97,12 +97,12 @@ export default function WhyZerava() {
                                 data-aos-easing="ease-out-cubic"
                                 className="
                                     group rounded-3xl border border-white/10
-                                    bg-white/5 backdrop-blur-md
+                                    bg-black backdrop-blur-md
                                     px-6 py-4 text-left
                                     transition-all duration-300 ease-out
                                     hover:-translate-y-2 hover:scale-[1.03]
                                     hover:border-electric-teal/40
-                                    hover:shadow-[0_20px_40px_-20px_rgba(56,214,196,0.35)]
+                                    hover:shadow-mobility-green
                                 "
                             >
                                 {/* Icon */}

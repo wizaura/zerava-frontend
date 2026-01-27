@@ -3,8 +3,8 @@
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { isAdminAuthenticated } from "@/app/lib/adminAuth";
-import { AdminUIProvider } from "@/app/context/AdminUIContext";
+import { isAdminAuthenticated } from "@/lib/adminAuth";
+import { AdminUIProvider } from "@/lib/AdminUIContext";
 import Protected from "@/components/auth/Protected";
 import AdminHeader from "@/components/admin/layout/Header";
 

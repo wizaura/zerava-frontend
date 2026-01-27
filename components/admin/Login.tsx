@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { adminRequestOtp, adminVerifyOtp } from "@/app/lib/adminApi";
+import { adminRequestOtp, adminVerifyOtp } from "@/lib/admin/admin.api";
 
 export default function AdminLoginPage() {
     const router = useRouter();

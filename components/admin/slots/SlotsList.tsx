@@ -6,7 +6,7 @@ import {
     MapPin,
     User,
 } from "lucide-react";
-import { ServiceSlot } from "@/app/lib/admin/slots.api";
+import { ServiceSlot } from "@/lib/admin/slots.api";
 
 function formatDate(date: string) {
     return new Date(date).toLocaleDateString("en-US", {

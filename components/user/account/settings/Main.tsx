@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { userApi } from "@/app/lib/user.api";
+import { userApi } from "@/lib/user/user.api";
 import { toast } from "react-hot-toast";
 
 export default function UserSettings() {

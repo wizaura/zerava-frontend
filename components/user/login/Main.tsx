@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
-import api from "@/app/lib/axios";
+import api from "@/lib/user/axios";
 import { useDispatch } from "react-redux";
-import { setUser } from "@/app/store/slices/authSlice";
+import { setUser } from "@/store/slices/authSlice";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -80,6 +80,7 @@ export default function LoginPage() {
                 {step === "email" ? (
                     <>
                         <input
+                            type="email"
                             className="w-full border rounded-lg p-3 mb-4"
                             placeholder="Enter email"
                             value={email}

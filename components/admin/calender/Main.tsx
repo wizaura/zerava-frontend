@@ -9,7 +9,7 @@ import {
     getAdminBookings,
     AdminBooking,
     BookingStatus,
-} from "@/app/lib/admin/booking.api";
+} from "@/lib/admin/booking.api";
 
 import BookingDetailsModal from "../booking/DetailsModal";
 

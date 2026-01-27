@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 
 import UserHeader from "@/components/user/account/layout/Header";
 import Protected from "@/components/auth/Protected";
-import api from "@/app/lib/axios";
-import { setUser, clearAuth } from "@/app/store/slices/authSlice";
+import api from "@/lib/user/axios";
+import { setUser, clearAuth } from "@/store/slices/authSlice";
 
 export default function UserLayout({
     children,

@@ -1,4 +1,4 @@
-import axios from "@/app/lib/axios";
+import axios from "@/lib/user/axios";
 
 export const userApi = {
     getProfile: () => axios.get("/user/me"),

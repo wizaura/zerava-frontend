@@ -2,7 +2,7 @@
 
 import { Mail, User, Phone, MapPin, X } from "lucide-react";
 import { useState } from "react";
-import { AdminBooking, BookingStatus } from "@/app/lib/admin/booking.api";
+import { AdminBooking, BookingStatus } from "@/lib/admin/booking.api";
 import TextInput from "@/components/ui/TextInput";
 import TextArea from "@/components/ui/TextArea";
 

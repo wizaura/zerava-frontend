@@ -9,7 +9,7 @@ import {
     updateOperator,
     deleteOperator,
     Operator,
-} from "@/app/lib/admin/operators.api";
+} from "@/lib/admin/operators.api";
 
 export default function OperatorManagerModal({
     open,

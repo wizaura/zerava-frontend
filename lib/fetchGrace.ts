@@ -1,4 +1,4 @@
-import api from "./axios";
+import api from "./user/axios";
 
 export const fetchMeGracefully = async () => {
     const user = await api.get("/user/me");

@@ -5,7 +5,7 @@ import { ShieldCheck, MapPin } from "lucide-react";
 import {
     getUserBookings,
     UserBooking,
-} from "@/app/lib/booking.api";
+} from "@/lib/user/booking.api";
 
 type UIBooking = {
     id: string;

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import GalleryList from "./List";
 import GalleryAdd from "./Add";
-import { getGallery, GalleryItem } from "@/app/lib/admin/gallery.api";
+import { getGallery, GalleryItem } from "@/lib/admin/gallery.api";
 import { Upload } from "lucide-react";
 
 export default function GalleryMain() {

@@ -4,7 +4,7 @@ import {
     setUser,
     clearAuth,
     setBootstrapped,
-} from "@/app/store/slices/authSlice";
+} from "@/store/slices/authSlice";
 import { fetchMeGracefully } from "./fetchGrace";
 import { usePathname } from "next/navigation";
 

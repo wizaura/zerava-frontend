@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import api from "@/app/lib/axios";
+import api from "@/lib/user/axios";
 import { CheckCircleIcon, ClockIcon } from "@heroicons/react/20/solid";
 import { BookingDraft } from "./Main";
 

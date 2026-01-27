@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import api from "@/app/lib/axios";
+import api from "@/lib/user/axios";
 import BookingClient from "./Main";
 
 export default function BookingPage() {

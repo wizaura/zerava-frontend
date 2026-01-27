@@ -1,7 +1,7 @@
 "use client";
 
-import { Operator, Status } from "@/app/lib/admin/slots.api";
-import { Zone } from "@/app/lib/admin/zones.api";
+import { Operator, Status } from "@/lib/admin/slots.api";
+import { Zone } from "@/lib/admin/zones.api";
 import { useEffect, useMemo, useState } from "react";
 
 export default function SlotForm({

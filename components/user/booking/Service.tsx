@@ -37,7 +37,7 @@ const services = [
         icon: Wind,
     },
     {
-        key: "VALET",
+        key: "FULL_VALET",
         title: "Full Valet",
         desc: "Complete inside & out treatment",
         duration: "90 min",

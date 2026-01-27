@@ -4,8 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import api from "@/app/lib/axios";
-import { clearAuth } from "@/app/store/slices/authSlice";
+import api from "@/lib/user/axios";
+import { clearAuth } from "@/store/slices/authSlice";
 
 const tabs = [
     { label: "Dashboard", href: "/account" },

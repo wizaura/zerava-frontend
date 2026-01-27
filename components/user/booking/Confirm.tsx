@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import api from "@/app/lib/axios";
+import api from "@/lib/user/axios";
 import { BookingDraft } from "./Main";
 
 type Props = {
