@@ -73,12 +73,12 @@ export default function FleetPreview() {
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 
                         {/* Image card */}
-                        <div className="group relative overflow-hidden rounded-3xl bg-white shadow-md
+                        <div className="group relative overflow-hidden rounded-xl bg-white shadow-md
                             transition-all hover:-translate-y-2 hover:shadow-xl sm:col-span-1">
                             <Image
-                                src="/images/fleet-preview.jpg"
+                                src="/home-fleet.png"
                                 alt="Fleet and corporate vehicle cleaning"
-                                width={800}
+                                width={800} 
                                 height={500}
                                 className="h-full w-full object-cover transition-transform
                                 duration-700 group-hover:scale-105"

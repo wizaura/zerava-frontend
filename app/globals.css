@@ -52,3 +52,21 @@
   margin-top: 4px;
 }
 
+@keyframes mouseScroll {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    70% {
+        transform: translateY(8px);
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.animate-mouse {
+    animation: mouseScroll 1.8s infinite ease-in-out;
+}
+

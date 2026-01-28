@@ -41,7 +41,7 @@ const features = [
         icon: MapPin,
     },
     {
-        title: "UN Sustainable Development Goals",
+        title: "UN SDGs",
         description:
             "Zerava aligns its operations with selected UN Sustainable Development Goals through practical service design.",
         icon: BadgeCheck,

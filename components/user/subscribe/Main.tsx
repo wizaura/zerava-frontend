@@ -4,14 +4,16 @@ import { useState } from "react";
 import SubscribeHero from "./Hero";
 import SubscribeSteps from "./Steps";
 import PlanServiceStep from "./PlanService";
-// import ScheduleStep from "./Schedule";
-// import PaymentStep from "./Payment";
 import { SubscriptionDraft } from "./types";
 import ScheduleStep from "./Schedule";
 import PaymentStep from "./Payment";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
 
 export default function SubscribeClient() {
     const [currentStep, setCurrentStep] = useState(0);
+    const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
     const [draft, setDraft] = useState<SubscriptionDraft>({
         plan: null,
@@ -51,11 +53,13 @@ export default function SubscribeClient() {
                     />
                 )}
                 {currentStep === 2 && (
-                    <PaymentStep
-                        draft={draft}
-                        onBack={() => setCurrentStep(1)}
-                        onSubscribe={handleSubscribe}
-                    />
+                    <Elements stripe={stripePromise}>
+                        <PaymentStep
+                            draft={draft}
+                            onBack={() => setCurrentStep(1)}
+                            onSubscribe={handleSubscribe}
+                        />
+                    </Elements>
                 )}
 
             </main>

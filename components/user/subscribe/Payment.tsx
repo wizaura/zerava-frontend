@@ -2,6 +2,10 @@
 
 import { Lock } from "lucide-react";
 import { SubscriptionDraft } from "./types";
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { useState } from "react";
+import { SubscriptionsAPI } from "@/lib/user/subscriptions.api";
+import toast from "react-hot-toast";
 
 type Props = {
     draft: SubscriptionDraft;
@@ -10,26 +14,79 @@ type Props = {
 };
 
 export default function PaymentStep({ draft, onBack, onSubscribe }: Props) {
+
+    const stripe = useStripe();
+    const elements = useElements();
+    const [loading, setLoading] = useState(false);
+
+    const handleSubscribe = async () => {
+        if (!stripe || !elements) return;
+
+        try {
+            setLoading(true);
+
+            // 1️⃣ Get SetupIntent
+            const { clientSecret } =
+                await SubscriptionsAPI.createSetupIntent();
+
+            // 2️⃣ Confirm card
+            const card = elements.getElement(CardElement);
+            if (!card) throw new Error("Card element not found");
+
+            const { setupIntent, error } =
+                await stripe.confirmCardSetup(clientSecret, {
+                    payment_method: {
+                        card,
+                    },
+                });
+
+            if (error || !setupIntent?.payment_method) {
+                throw new Error(error?.message || "Card setup failed");
+            }
+
+            // 3️⃣ Create subscription
+            await SubscriptionsAPI.createSubscription({
+                paymentMethodId: setupIntent.payment_method as string,
+                draft,
+            });
+
+            toast.success("Subscription activated 🎉");
+            onSubscribe();
+        } catch (err: any) {
+            toast.error(err.message || "Payment failed");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="max-w-3xl mx-auto space-y-10">
 
             {/* CARD */}
             <div className="rounded-2xl border p-6 bg-white">
-                <p className="mb-4 font-medium">Card Details</p>
-
-                <div className="rounded-xl border px-4 py-3 text-sm text-gray-400">
-                    Card number &nbsp;&nbsp; MM / YY &nbsp; CVC
-                </div>
-
-                <p className="mt-3 flex items-center gap-2 text-xs text-gray-500">
-                    <Lock size={14} />
-                    Secured by Stripe • Your payment info is encrypted
-                </p>
+                <CardElement
+                    options={{
+                        hidePostalCode: true,
+                        style: {
+                            base: {
+                                fontSize: "16px",
+                                color: "#111",
+                                "::placeholder": { color: "#9CA3AF" },
+                            },
+                        },
+                    }}
+                />
             </div>
 
             {/* SUBSCRIBE CTA */}
-            <button onClick={onSubscribe} className="w-full rounded-2xl bg-black py-4 text-white font-medium">
-                Subscribe • £{draft.pricePerClean}/month
+            <button
+                disabled={loading}
+                onClick={handleSubscribe}
+                className="w-full rounded-2xl bg-black py-4 text-white font-medium disabled:opacity-60"
+            >
+                {loading
+                    ? "Processing…"
+                    : `Subscribe • £${draft.pricePerClean}/month`}
             </button>
 
             {/* SUMMARY */}

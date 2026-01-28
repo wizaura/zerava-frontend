@@ -93,10 +93,10 @@ export default function ServiceHighlights() {
                                 data-aos-delay={200 + i * 120}
                                 className="
                                     group overflow-hidden rounded-3xl
-                                    border border-white/10 bg-mobility-green
+                                    border border-white/10 bg-black
                                     transition-all duration-300
                                     hover:-translate-y-2 hover:border-electric-teal/40
-                                    hover:shadow-[0_25px_50px_-25px_rgba(56,214,196,0.35)]
+                                    hover:shadow-md
                                 "
                             >
                                 {/* Before / After */}
@@ -146,7 +146,7 @@ export default function ServiceHighlights() {
                                     )}
 
                                     {service.addons && (
-                                        <ul className="mt-4 space-y-2 text-md text-gray-300 pb-2">
+                                        <ul className="mt-4 space-y-2 text-sm text-gray-300 pb-2">
                                             {service.addons.map((addon) => (
                                                 <li key={addon} className="flex gap-2">
                                                     <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-electric-teal" />
