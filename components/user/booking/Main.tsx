@@ -7,6 +7,7 @@ import ServiceStep from "./Service";
 import ScheduleStep from "./Schedule";
 import AddressStep from "./Address";
 import ConfirmStep from "./Confirm";
+import ProcessingStep from "./Processing";
 
 type ServicePrice = {
     vehicleSize: string;
@@ -20,7 +21,7 @@ export type BookingDraft = {
     price: number | null;
     postcode: string | null;
     date: string | null;
-    timeSlotId: string | null;
+    serviceSlotId: string | null;
     timeFrom: string | null;
     timeTo: string | null;
     address: string | null;
@@ -46,7 +47,7 @@ export default function BookingClient({
         // next slides
         postcode: null,
         date: null,
-        timeSlotId: null,
+        serviceSlotId: null,
         timeFrom: null,
         timeTo: null,
         address: null,
@@ -94,6 +95,7 @@ export default function BookingClient({
                         onSuccess={() => setCurrentStep(4)}
                     />
                 )}
+                {currentStep === 4 && <ProcessingStep />}
             </main>
         </>
     );

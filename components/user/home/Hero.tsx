@@ -9,7 +9,7 @@ import "aos/dist/aos.css";
 
 const slides = [
     {
-        image: "/hero-1.png",
+        image: "/home-hero-1.png",
         pill: "New Era of Mobility Care",
         title: "Journey",
         highlight: "That Matters",
@@ -145,8 +145,8 @@ export default function HeroSlideshow() {
                 {/* SCROLL INDICATOR */}
                 <div
                     data-aos="fade-up"
-                    data-aos-delay="600"
-                    className="absolute bottom-10 flex flex-col items-center gap-2 text-gray-400"
+                    data-aos-delay="200"
+                    className="absolute bottom-12 flex flex-col items-center gap-2 text-gray-400"
                 >
                     <MouseIcon />
                 </div>
@@ -178,7 +178,7 @@ function MouseIcon() {
             viewBox="0 0 22 36"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="animate-mouse"
+            className="animate-mouse text-electric-teal"
         >
             <rect
                 x="1"

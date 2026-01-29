@@ -90,17 +90,17 @@ export default function ServiceHighlights() {
                             <div
                                 key={service.title}
                                 data-aos="fade-up"
-                                data-aos-delay={200 + i * 120}
+                                data-aos-delay={200 + i * 60}
                                 className="
-                                    group overflow-hidden rounded-3xl
-                                    border border-white/10 bg-black
+                                    group rounded-3xl
+                                    border border-white/10 bg-white
                                     transition-all duration-300
                                     hover:-translate-y-2 hover:border-electric-teal/40
-                                    hover:shadow-md
+                                    hover:shadow-2xl
                                 "
                             >
                                 {/* Before / After */}
-                                <div className="relative">
+                                {/* <div className="relative">
                                     <BeforeAfterSlider
                                         before={service.images.before}
                                         after={service.images.after}
@@ -115,7 +115,7 @@ export default function ServiceHighlights() {
                                         bg-electric-teal px-2 py-1 text-[10px] font-semibold text-eco-black">
                                         After
                                     </span>
-                                </div>
+                                </div> */}
 
                                 {/* Content */}
                                 <div className="p-4">
@@ -126,7 +126,7 @@ export default function ServiceHighlights() {
                                             <Icon size={18} />
                                         </div>
 
-                                        <h3 className="text-xl font-semibold text-gray-100">
+                                        <h3 className="text-xl font-semibold text-gray-900">
                                             {service.title}
                                         </h3>
                                     </div>
@@ -135,18 +135,18 @@ export default function ServiceHighlights() {
                                         {service.tagline}
                                     </p>
 
-                                    <p className="mt-4 text-md leading-relaxed text-gray-300">
+                                    <p className="mt-4 text-md leading-relaxed text-gray-700">
                                         {service.description}
                                     </p>
 
                                     {service.note && (
-                                        <p className="mt-4 text-sm italic text-gray-400">
+                                        <p className="mt-4 text-sm italic text-gray-600">
                                             {service.note}
                                         </p>
                                     )}
 
                                     {service.addons && (
-                                        <ul className="mt-4 space-y-2 text-sm text-gray-300 pb-2">
+                                        <ul className="mt-4 space-y-2 text-sm text-gray-700 pb-2">
                                             {service.addons.map((addon) => (
                                                 <li key={addon} className="flex gap-2">
                                                     <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-electric-teal" />

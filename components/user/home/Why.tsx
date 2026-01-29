@@ -92,7 +92,7 @@ export default function WhyZerava() {
                             <div
                                 key={item.title}
                                 data-aos="fade-up"
-                                data-aos-delay={300 + i * 120}
+                                data-aos-delay={300 + i * 60}
                                 data-aos-duration="900"
                                 data-aos-easing="ease-out-cubic"
                                 className="

@@ -6,16 +6,19 @@ import "react-day-picker/dist/style.css";
 import api from "@/lib/user/axios";
 import { CheckCircleIcon, ClockIcon } from "@heroicons/react/20/solid";
 import { BookingDraft } from "./Main";
+import { Clock10Icon, Clock1Icon } from "lucide-react";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/;
+const UK_POSTCODE_REGEX = /^SO\d{2}$/;
 
 type Slot = {
-    id: string;
     timeFrom: string;
     timeTo: string;
-    operator: string;
+    serviceSlotId: string;
+    active: boolean;
+    reason: "BLOCKED" | "BOOKED" | null;
 };
+
 
 type Props = {
     bookingDraft: BookingDraft;
@@ -56,6 +59,8 @@ export default function ScheduleStep({
                 if (!res.data.available) {
                     setError("Service not available in this postcode");
                     setServiceDays(null);
+                    setSelectedDate(null);
+                    setSlots([]);
                     return;
                 }
 
@@ -65,8 +70,13 @@ export default function ScheduleStep({
                     ...d,
                     postcode: postcode.toUpperCase(),
                     date: null,
-                    timeSlotId: null,
+                    serviceSlotId: null,
+                    timeFrom: null,
+                    timeTo: null,
                 }));
+
+                setSelectedDate(null);
+                setSlots([]);
             } catch {
                 setError("Failed to check postcode");
             } finally {
@@ -75,27 +85,52 @@ export default function ScheduleStep({
         }, 600);
 
         return () => clearTimeout(timeout);
-    }, [postcode, setBookingDraft]);
+    }, [postcode]);
 
 
     /* ---------------- DATE ---------------- */
 
-    async function selectDate(date: string) {
+    async function fetchAvailability(date: string, postcode: string) {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const res = await api.post("/availability/check", {
+                date,
+                postcode,
+            });
+
+            console.log(res, 'res');
+
+            setSlots(res.data.slots || []);
+        } catch {
+            setError("Failed to load time slots");
+            setSlots([]);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    function selectDate(date: string) {
         setSelectedDate(date);
+
         setBookingDraft((d) => ({
             ...d,
             date,
-            timeSlotId: null,
+            serviceSlotId: null,
+            timeFrom: null,
+            timeTo: null,
         }));
-
-        const res = await api.post("/availability/check", {
-            date,
-            postcode,
-        });
-
-        setSlots(res.data.slots || []);
-        console.log(slots, 'slots')
     }
+
+    useEffect(() => {
+        if (!selectedDate) return;
+        if (!UK_POSTCODE_REGEX.test(postcode)) return;
+
+        fetchAvailability(selectedDate, postcode);
+    }, [selectedDate, postcode]);
+
+
 
     function isAllowedDate(date: Date) {
         if (!serviceDays) return false;
@@ -105,6 +140,22 @@ export default function ScheduleStep({
 
         return serviceDays.includes(dbDay);
     }
+
+    function formatTime12h(time: string) {
+        const [h, m] = time.split(":").map(Number);
+        const date = new Date();
+        date.setHours(h, m);
+
+        return date.
+            toLocaleTimeString("en-GB", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+            })
+            .replace("am", "AM")
+            .replace("pm", "PM");
+    }
+
 
 
     /* ---------------- UI ---------------- */
@@ -154,13 +205,12 @@ export default function ScheduleStep({
                             Great! We serve your area
                         </p>
                         <p>
-                            Zerava cleans on{" "}
+                            Zerava cleans in{" "}
+                            <span className="font-medium">{postcode}</span>{" "}
+                            on{" "}
                             <span className="font-medium text-electric-teal">
-                                {serviceDays
-                                    ?.map((d) => WEEKDAYS[d % 7])
-                                    .join(", ")}
+                                {serviceDays?.map((d) => WEEKDAYS[d % 7]).join(", ")}
                             </span>
-
                         </p>
                     </div>
                 </div>
@@ -168,16 +218,13 @@ export default function ScheduleStep({
 
             {/* Calendar */}
             {serviceDays && (
-                <div className="rounded-2xl border bg-white p-6 shadow-sm">
+                <div className="rounded-2xl max-w-2xl border bg-white p-10 shadow-sm flex justify-center items-center mx-auto">
                     <DayPicker
                         mode="single"
-                        selected={
-                            selectedDate
-                                ? new Date(selectedDate)
-                                : undefined
-                        }
+                        selected={selectedDate ? new Date(selectedDate) : undefined}
                         onSelect={(date) => {
                             if (!date) return;
+
                             const localDate = [
                                 date.getFullYear(),
                                 String(date.getMonth() + 1).padStart(2, "0"),
@@ -190,8 +237,44 @@ export default function ScheduleStep({
                             { before: new Date() },
                             (date) => !isAllowedDate(date),
                         ]}
+                        modifiers={{
+                            active: (date) => isAllowedDate(date),
+                        }}
                         modifiersClassNames={{
-                            selected: "bg-electric-teal text-white",
+                            selected: "bg-electric-teal text-white font-bold mx-auto",
+                            active: "active-day text-electric-teal font-bold",
+                            today: "text-mobility-green bg-electric-teal/30 font-bold",
+                        }}
+                        styles={{
+                            caption: {
+                                fontSize: "1.5rem",
+                                fontWeight: 600,
+                                marginBottom: "1.5rem",
+                                textAlign: "center",
+                            },
+                            nav_button: {
+                                color: "#38D6C4",
+                            },
+                            head_cell: {
+                                fontSize: "0.9rem",
+                                fontWeight: 500,
+                                color: "#9CA3AF",
+                                paddingBottom: "0.75rem",
+                            },
+                            table: {
+                                width: "100%",
+                                margin: "0 auto",
+                            },
+                            cell: {
+                                padding: "0.75rem",
+                            },
+                            day: {
+                                width: "4.75rem",
+                                height: "4.75rem",
+                                fontSize: "1.25rem",
+                                borderRadius: "1rem",
+                                margin: "0 auto",
+                            },
                         }}
                     />
                 </div>
@@ -205,38 +288,80 @@ export default function ScheduleStep({
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {slots.map((slot) => {
+                        {slots.map((slot, idx) => {
                             const selected =
-                                bookingDraft.timeSlotId === slot.id;
+                                bookingDraft.timeFrom === slot.timeFrom &&
+                                bookingDraft.timeTo === slot.timeTo;
 
                             return (
                                 <button
-                                    key={slot.id}
+                                    key={idx}
+                                    disabled={!slot.active}
                                     onClick={() =>
                                         setBookingDraft((d) => ({
                                             ...d,
-                                            timeSlotId: slot.id,
+                                            serviceSlotId: slot.serviceSlotId,
                                             timeFrom: slot.timeFrom,
-                                            timeTo: slot.timeTo
+                                            timeTo: slot.timeTo,
                                         }))
                                     }
                                     className={[
-                                        "rounded-xl border p-4 text-left text-sm",
-                                        selected
-                                            ? "border-electric-teal bg-electric-teal/10"
-                                            : "border-gray-300 hover:border-gray-500",
+                                        "rounded-xl border p-4 text-left text-sm transition",
+                                        slot.active
+                                            ? selected
+                                                ? "border-electric-teal bg-electric-teal/10"
+                                                : "border-gray-300 hover:border-gray-500"
+                                            : "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed",
                                     ].join(" ")}
                                 >
-                                    <div className="flex items-center gap-2">
-                                        <ClockIcon className="h-4 w-4" />
-                                        {slot.timeFrom} – {slot.timeTo}
+                                    <div className="flex items-center gap-2 text-base font-semibold">
+                                        <Clock10Icon className="h-4 w-4 text-gray-400" />
+                                        {formatTime12h(slot.timeFrom)} – {formatTime12h(slot.timeTo)}
                                     </div>
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        Operator: {slot.operator}
-                                    </p>
+
+                                    {!slot.active && (
+                                        <p className="mt-1 text-xs">
+                                            {slot.reason === "BLOCKED"
+                                                ? "Blocked"
+                                                : "Not yet open"}
+                                        </p>
+                                    )}
                                 </button>
                             );
                         })}
+                    </div>
+                </div>
+            )}
+
+            {bookingDraft.date && bookingDraft.timeFrom && bookingDraft.timeTo && (
+                <div className="mb-4 flex justify-center">
+                    <div className="flex items-center gap-3 rounded-2xl bg-gray-900 px-6 py-4 text-white shadow-md">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full font-semibold text-emerald-500">
+                            ✓
+                        </span>
+
+                        <p className="text-lg font-light text-center flex flex-wrap items-center justify-center gap-3">
+                            <span>
+                                {new Date(bookingDraft.date).toLocaleDateString("en-GB", {
+                                    weekday: "long",
+                                })}
+                            </span>
+
+                            <span className="text-2xl leading-none">•</span>
+
+                            <span>
+                                {new Date(bookingDraft.date).toLocaleDateString("en-GB", {
+                                    month: "long",
+                                    day: "numeric",
+                                })}
+                            </span>
+
+                            <span className="text-2xl leading-none">•</span>
+
+                            <span>
+                                {formatTime12h(bookingDraft.timeFrom)} – {formatTime12h(bookingDraft.timeTo)}
+                            </span>
+                        </p>
                     </div>
                 </div>
             )}
@@ -251,11 +376,11 @@ export default function ScheduleStep({
                 </button>
 
                 <button
-                    disabled={!bookingDraft.timeSlotId}
+                    disabled={!bookingDraft.serviceSlotId}
                     onClick={onContinue}
                     className={[
                         "rounded-full px-8 py-2 text-sm text-white",
-                        bookingDraft.timeSlotId
+                        bookingDraft.serviceSlotId
                             ? "bg-black hover:bg-gray-800"
                             : "bg-gray-300 cursor-not-allowed",
                     ].join(" ")}

@@ -39,6 +39,26 @@ export async function createSlot(data: {
     return res.data;
 }
 
+export async function updateSlot(
+    id: string,
+    data: {
+        operatorId: string;
+        date: string;
+        timeFrom: string;
+        timeTo: string;
+        status: Status;
+        maxBookings: number;
+        zonePrefix?: string;
+    },
+) {
+    const res = await adminApi.patch(
+        `/admin/service-slots/${id}`,
+        data,
+    );
+    return res.data;
+}
+
+
 export async function deleteSlot(id: string) {
     await adminApi.delete(`/admin/service-slots/${id}`);
 }

@@ -4,17 +4,31 @@ import { isAdminAuthenticated } from "@/lib/adminAuth";
 import { useAdminUI } from "@/lib/AdminUIContext";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
+import {
+    LayoutGrid,
+    BarChart3,
+    CalendarDays,
+    ClipboardList,
+    CreditCard,
+    Image,
+    Users,
+    Ban,
+    UserCog,
+} from "lucide-react";
+
 
 const tabs = [
-    { label: "Overview", href: "/admin" },
-    { label: "Analytics", href: "/admin/analytics" },
-    { label: "Calendar", href: "/admin/calendar" },
-    { label: "Bookings", href: "/admin/bookings" },
-    { label: "Subscriptions", href: "/admin/subscriptions" },
-    { label: "Gallery", href: "/admin/gallery" },
-    { label: "Customers", href: "/admin/customers" },
-    { label: "Operator Slots", href: "/admin/slots" },
+    { label: "Overview", href: "/admin", icon: LayoutGrid },
+    { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+    { label: "Calendar", href: "/admin/calendar", icon: CalendarDays },
+    { label: "Bookings", href: "/admin/bookings", icon: ClipboardList },
+    { label: "Subscriptions", href: "/admin/subscriptions", icon: CreditCard },
+    { label: "Gallery", href: "/admin/gallery", icon: Image },
+    { label: "Customers", href: "/admin/customers", icon: Users },
+    { label: "Block Slots", href: "/admin/block-slots", icon: Ban },
+    { label: "Operator Slots", href: "/admin/slots", icon: UserCog },
 ];
+
 
 export default function AdminHeader() {
     const router = useRouter();
@@ -64,23 +78,28 @@ export default function AdminHeader() {
                 </div>
 
                 {/* ===== TAB BAR ===== */}
-                <div className="">
-                    <div className="mx-auto max-w-4xl px-6 py-3">
+                <div className="text-center">
+                    <div className="mx-auto inline-flex max-w-7xl px-6 py-3">
                         <div className="flex flex-wrap items-center gap-2 rounded-full border border-gray-200 bg-white p-1 shadow-sm">
                             {tabs.map((tab) => {
                                 const active =
-                                    pathname === tab.href || pathname.startsWith(tab.href);
+                                    tab.href === "/admin"
+                                        ? pathname === "/admin"
+                                        : pathname === tab.href || pathname.startsWith(`${tab.href}/`);
+
+                                const Icon = tab.icon;
 
                                 return (
                                     <Link
                                         key={tab.href}
                                         href={tab.href}
                                         className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all
-                      ${active
-                                                ? "bg-emerald-500 text-black shadow"
+            ${active
+                                                ? "bg-emerald-500 text-black shadow-sm"
                                                 : "text-gray-600 hover:bg-gray-100"
                                             }`}
                                     >
+                                        <Icon size={16} />
                                         {tab.label}
                                     </Link>
                                 );

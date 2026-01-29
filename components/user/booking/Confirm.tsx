@@ -33,7 +33,7 @@ export default function ConfirmStep({
 
         try {
             const booking = await api.post("/bookings", {
-                serviceSlotId: bookingDraft.timeSlotId,
+                serviceSlotId: bookingDraft.serviceSlotId,
                 serviceType: bookingDraft.serviceType,
                 vehicleSize: bookingDraft.vehicleSize,
                 price: bookingDraft.price,
@@ -146,10 +146,9 @@ export default function ConfirmStep({
                     />
                     <SummaryRow
                         label="Date & Time"
-                        value={`${formatDate(bookingDraft.date)} · ${formatTimeRange(
-                            bookingDraft.timeFrom,
-                            bookingDraft.timeTo
-                        )}`}
+                        value={`${formatDate(bookingDraft.date)} · ${formatTime12h(
+                            bookingDraft.timeFrom as string
+                        )} - ${formatTime12h(bookingDraft.timeTo as string)}`}
                     />
                     <SummaryRow
                         label="Location"
@@ -207,6 +206,21 @@ function formatDate(dateStr?: string | null) {
         month: "short",
         year: "numeric",
     });
+}
+
+function formatTime12h(time: string) {
+    const [h, m] = time.split(":").map(Number);
+    const date = new Date();
+    date.setHours(h, m);
+
+    return date.
+        toLocaleTimeString("en-GB", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        })
+        .replace("am", "AM")
+        .replace("pm", "PM");
 }
 
 function formatTimeRange(

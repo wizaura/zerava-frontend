@@ -4,7 +4,7 @@ type BookingStepsProps = {
     currentStep: number;
 };
 
-const steps = ["Service", "Schedule", "Address", "Details"];
+const steps = ["Service", "Schedule", "Address", "Details", "Payment"];
 
 export default function BookingSteps({ currentStep }: BookingStepsProps) {
     return (

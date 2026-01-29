@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import {
     createSlot,
@@ -8,6 +8,7 @@ import {
     getSlots,
     ServiceSlot,
     Status,
+    updateSlot,
 } from "@/lib/admin/slots.api";
 import { getOperators, Operator } from "@/lib/admin/operators.api";
 import SlotForm from "./AddSlotsForm";
@@ -22,10 +23,21 @@ export default function AdminSlotsPage() {
     const [editingSlot, setEditingSlot] = useState<ServiceSlot | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [showOperatorModal, setShowOperatorModal] = useState(false);
+    const formRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         refresh();
     }, []);
+
+    useEffect(() => {
+        if (showForm) {
+            formRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        }
+    }, [showForm]);
+
 
     async function refresh() {
         setSlots(await getSlots());
@@ -34,12 +46,21 @@ export default function AdminSlotsPage() {
     }
 
     async function handleSave(data: any) {
-        await createSlot(data);
-        toast.success(editingSlot ? "Slot updated" : "Slot added");
+        if (editingSlot) {
+            // EDIT
+            await updateSlot(editingSlot.id, data);
+            toast.success("Slot updated");
+        } else {
+            // CREATE
+            await createSlot(data);
+            toast.success("Slot added");
+        }
+
         setEditingSlot(null);
         setShowForm(false);
         await refresh();
     }
+
 
     async function handleDelete(id: string) {
         await deleteSlot(id);
@@ -87,16 +108,19 @@ export default function AdminSlotsPage() {
 
             {/* Form */}
             {showForm && (
-                <SlotForm
-                    operators={operators}
-                    slot={editingSlot}
-                    zones={zones}
-                    onCancel={() => {
-                        setEditingSlot(null);
-                        setShowForm(false);
-                    }}
-                    onSubmit={handleSave}
-                />
+                <div ref={formRef}>
+                    <SlotForm
+                        key={editingSlot?.id || "new"}
+                        operators={operators}
+                        slot={editingSlot}
+                        zones={zones}
+                        onCancel={() => {
+                            setEditingSlot(null);
+                            setShowForm(false);
+                        }}
+                        onSubmit={handleSave}
+                    />
+                </div>
             )}
 
             <OperatorManagerModal

@@ -19,18 +19,53 @@ export default function SlotForm({
 }) {
     function toDateInputValue(date: string | Date | undefined) {
         if (!date) return "";
-        return new Date(date).toISOString().split("T")[0];
+
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
     }
 
+
     const [form, setForm] = useState({
+        id: slot?.id,
         operatorId: slot?.operator?.id || "",
         date: toDateInputValue(slot?.date),
-        timeFrom: slot?.timeFrom || "09:00",
-        timeTo: slot?.timeTo || "17:00",
+        timeFrom: slot?.timeFrom || "08:00",
+        timeTo: slot?.timeTo || "18:00",
         maxBookings: slot?.maxBookings || 4,
         zonePrefix: slot?.zonePrefix || "",
         status: slot?.status || "ACTIVE",
     });
+
+    useEffect(() => {
+        if (!slot) {
+            setForm({
+                id: undefined,
+                operatorId: "",
+                date: "",
+                timeFrom: "08:00",
+                timeTo: "18:00",
+                maxBookings: 4,
+                zonePrefix: "",
+                status: "ACTIVE",
+            });
+            return;
+        }
+
+        setForm({
+            id: slot.id,
+            operatorId: slot.operator.id,
+            date: toDateInputValue(slot.date),
+            timeFrom: slot.timeFrom,
+            timeTo: slot.timeTo,
+            maxBookings: slot.maxBookings,
+            zonePrefix: slot.zonePrefix || "",
+            status: slot.status,
+        });
+    }, [slot]);
 
     function update(key: string, value: any) {
         setForm((f) => ({ ...f, [key]: value }));
