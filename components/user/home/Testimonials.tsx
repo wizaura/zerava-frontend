@@ -49,7 +49,7 @@ export default function TestimonialsSection() {
                         className="mb-6 text-3xl font-light text-eco-black sm:text-5xl"
                     >
                         Chosen by customers who value
-                        <br className="hidden sm:block" />
+                        <br />
                         convenience and care
                     </h2>
 

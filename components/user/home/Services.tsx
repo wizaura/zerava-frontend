@@ -6,7 +6,7 @@ import { Droplets, Sparkles, Plus } from "lucide-react";
 
 const services = [
     {
-        title: "Exterior Care",
+        title: "Zerava Care",
         tagline: "Clean. Protected. Refined.",
         icon: Droplets,
         description:
@@ -18,7 +18,7 @@ const services = [
         },
     },
     {
-        title: "Exterior + Interior Care",
+        title: "Zerava Care +",
         tagline: "Complete care, inside and out.",
         icon: Sparkles,
         description:
@@ -131,7 +131,7 @@ export default function ServiceHighlights() {
                                         </h3>
                                     </div>
 
-                                    <p className="text-sm uppercase tracking-wide text-electric-teal">
+                                    <p className="text-sm tracking-wide text-electric-teal">
                                         {service.tagline}
                                     </p>
 

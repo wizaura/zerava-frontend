@@ -82,7 +82,7 @@ export default function HowItWorks() {
                                 data-aos-delay={300 + i * 150}
                                 data-aos-duration="900"
                                 data-aos-easing="ease-out-cubic"
-                                className="group relative rounded-xl bg-gray-50 p-8 text-left
+                                className="group relative rounded-xl bg-gray-50 p-4 md:p-8 text-left
                                     transition-all duration-400 ease-out
                                     hover:scale-[1.06] hover:-translate-y-1.5 hover:shadow-xl hover:bg-gray-100"
                             >
@@ -104,9 +104,19 @@ export default function HowItWorks() {
                                 {/* Point-based description */}
                                 <ul className="mt-3 space-y-2 text-md text-gray-600">
                                     {step.points.map((point, idx) => (
-                                        <li key={idx} className="flex gap-2">
-                                            <span className="mt-1 h-1.5 w-1.5 rounded-full bg-electric-teal" />
-                                            <span>{point}</span>
+                                        <li
+                                            key={idx}
+                                            className="flex items-start gap-3"
+                                        >
+                                            {/* Dot */}
+                                            <span
+                                                className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-electric-teal"
+                                            />
+
+                                            {/* Text */}
+                                            <span className="leading-relaxed">
+                                                {point}
+                                            </span>
                                         </li>
                                     ))}
                                 </ul>
