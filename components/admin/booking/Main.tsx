@@ -31,6 +31,7 @@ export default function AdminBookingsPage() {
         <BookingsTable
             bookings={bookings}
             loading={loading}
+            onRefresh={() => load()}
             onSearch={(value) => load(value)}
         />
     );

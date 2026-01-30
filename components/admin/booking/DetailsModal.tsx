@@ -59,7 +59,16 @@ export default function BookingDetailsModal({
                         {/* SUMMARY */}
                         <div className="grid grid-cols-2 gap-4 rounded-lg bg-gray-50 p-4 text-sm">
                             <Info label="Reference" value={booking.referenceCode} />
-                            <Info label="Created" value={booking.createdAt} />
+                            <Info
+                                label="Created"
+                                value={new Date(booking.createdAt).toLocaleString("en-GB", {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                })}
+                            />
                             <Info label="Service" value={booking.serviceType} />
                             <Info label="Vehicle Size" value={booking.vehicleSize} />
                         </div>
@@ -69,7 +78,7 @@ export default function BookingDetailsModal({
                             <Detail icon={<User size={14} />} value={booking.name} />
                             <Detail icon={<Mail size={14} />} value={booking.email} />
                             <Detail icon={<Phone size={14} />} value={booking.phone} />
-                            <Detail icon={<MapPin size={14} />} value={booking.address} />
+                            <Detail icon={<MapPin size={14} />} value={`${booking.postcode} , ${booking.address}`} />
                         </div>
 
                         {/* FORM */}

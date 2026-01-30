@@ -7,12 +7,13 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/user/axios";
 
 const STATUS_STYLE: Record<
-    "confirmed" | "pending" | "cancelled",
+    "confirmed" | "pending" | "cancelled" | "completed",
     string
 > = {
     confirmed: "bg-blue-100 text-blue-700",
     pending: "bg-yellow-100 text-yellow-700",
     cancelled: "bg-red-100 text-red-700",
+    completed: "bg-blue-100 text-blue-700",
 };
 
 
@@ -21,7 +22,7 @@ type UIBooking = {
     service: string;
     date: string; // ISO string
     location: string;
-    status: "confirmed" | "pending" | "cancelled";
+    status: "confirmed" | "pending" | "cancelled" | "completed";
     price: string;
 };
 
@@ -44,13 +45,15 @@ export default function UserBookingsSection() {
     }
 
     function mapStatus(
-        status: "CONFIRMED" | "PENDING_PAYMENT" | "CANCELLED"
-    ): "confirmed" | "pending" | "cancelled" {
+        status: "CONFIRMED" | "PENDING_PAYMENT" | "CANCELLED" | "COMPLETED"
+    ): "confirmed" | "pending" | "cancelled" | "completed" {
         switch (status) {
             case "CONFIRMED":
                 return "confirmed";
             case "CANCELLED":
                 return "cancelled";
+            case "COMPLETED":
+                return "completed";
             default:
                 return "pending";
         }

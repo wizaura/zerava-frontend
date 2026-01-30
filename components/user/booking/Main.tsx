@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BookingHero from "./Hero";
 import BookingSteps from "./Steps";
 import ServiceStep from "./Service";
@@ -8,6 +8,7 @@ import ScheduleStep from "./Schedule";
 import AddressStep from "./Address";
 import ConfirmStep from "./Confirm";
 import ProcessingStep from "./Processing";
+import { useSelector } from "react-redux";
 
 type ServicePrice = {
     vehicleSize: string;
@@ -39,6 +40,8 @@ export default function BookingClient({
 }) {
     const [currentStep, setCurrentStep] = useState(0);
 
+    const user = useSelector((state: any) => state.auth.user);
+
     const [bookingDraft, setBookingDraft] = useState<BookingDraft>({
         vehicleSize: null,
         serviceType: null,
@@ -56,6 +59,22 @@ export default function BookingClient({
         email: null,
         phone: null,
     });
+
+    useEffect(() => {
+        if (!user) return;
+
+        setBookingDraft((d) => ({
+            ...d,
+
+            name: d.name ?? user.fullName ?? "",
+            email: d.email ?? user.email ?? "",
+            phone: d.phone ?? user.phone ?? "",
+            address: d.address ?? user.address ?? "",
+            postcode: d.postcode ?? user.postcode ?? "",
+            vehicleSize: d.vehicleSize ?? user.vehicleSize ?? null,
+        }));
+    }, [user]);
+
 
     return (
         <>

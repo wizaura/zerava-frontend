@@ -100,7 +100,6 @@ export default function WhyZeravaSection() {
                                     <li
                                         key={item}
                                         data-aos="fade-up"
-                                        data-aos-delay={700 + i * 80}
                                         className="flex items-center gap-3 text-sm text-gray-700"
                                     >
                                         <span className="flex h-6 w-6 items-center justify-center rounded-full bg-electric-teal">

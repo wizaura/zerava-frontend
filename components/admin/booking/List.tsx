@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import BookingDetailsModal from "./DetailsModal";
 import { AdminBooking } from "@/lib/admin/booking.api";
+import adminApi from "@/lib/admin/axios";
+import toast from "react-hot-toast";
 
 const STATUS_STYLES: Record<AdminBooking["status"], string> = {
     CONFIRMED: "bg-emerald-100 text-emerald-700",
@@ -19,10 +21,12 @@ const STATUS_STYLES: Record<AdminBooking["status"], string> = {
 export default function BookingsTable({
     bookings,
     loading,
+    onRefresh,
     onSearch,
 }: {
     bookings: AdminBooking[];
     loading?: boolean;
+    onRefresh: () => void;
     onSearch?: (value: string) => void;
 }) {
     const [statusFilter, setStatusFilter] = useState<
@@ -37,6 +41,32 @@ export default function BookingsTable({
         statusFilter === "all"
             ? bookings
             : bookings.filter((b) => b.status === statusFilter);
+
+    async function confirmBooking(id: string) {
+        if (!confirmAction("Confirm this booking?")) return;
+        await adminApi.post(`/admin/bookings/${id}/confirm`);
+        toast.success("Booking confirmed");
+        onRefresh(); // reload list
+    }
+
+    async function cancelBooking(id: string) {
+        if (!confirmAction("Cancel this booking? This cannot be undone.")) return;
+        await adminApi.post(`/admin/bookings/${id}/cancel`);
+        toast.success("Booking cancelled");
+        onRefresh();
+    }
+
+    async function completeBooking(id: string) {
+        if (!confirmAction("Mark this booking as completed?")) return;
+        await adminApi.post(`/admin/bookings/${id}/complete`);
+        toast.success("Booking completed");
+        onRefresh();
+    }
+
+    function confirmAction(message: string) {
+        return window.confirm(message);
+    }
+
 
     return (
         <>
@@ -135,7 +165,7 @@ export default function BookingsTable({
                                         </td>
 
                                         <td className="px-6 py-4 font-medium">
-                                            £{(b.price / 100).toFixed(2)}
+                                            £{b.price.toFixed(2)}
                                         </td>
 
                                         <td className="relative px-6 py-4 text-right">
@@ -152,6 +182,7 @@ export default function BookingsTable({
 
                                             {activeMenu === b.id && (
                                                 <div className="absolute right-6 top-10 z-50 w-40 rounded-md border bg-white shadow-md">
+                                                    {/* View */}
                                                     <button
                                                         onClick={() => {
                                                             setSelectedBooking(b);
@@ -162,13 +193,45 @@ export default function BookingsTable({
                                                         View details
                                                     </button>
 
-                                                    <button className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100">
-                                                        Confirm
-                                                    </button>
+                                                    {/* Confirm (only if pending) */}
+                                                    {b.status === "PENDING_PAYMENT" && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setActiveMenu(null);
+                                                                confirmBooking(b.id);
+                                                            }}
+                                                            className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                                                        >
+                                                            Confirm
+                                                        </button>
+                                                    )}
 
-                                                    <button className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100">
-                                                        Cancel
-                                                    </button>
+                                                    {/* Complete (only if confirmed) */}
+                                                    {b.status === "CONFIRMED" && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setActiveMenu(null);
+                                                                completeBooking(b.id);
+                                                            }}
+                                                            className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                                                        >
+                                                            Complete
+                                                        </button>
+                                                    )}
+
+                                                    {/* Cancel (confirmed or pending) */}
+                                                    {(b.status === "CONFIRMED" ||
+                                                        b.status === "PENDING_PAYMENT") && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    setActiveMenu(null);
+                                                                    cancelBooking(b.id);
+                                                                }}
+                                                                className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                        )}
                                                 </div>
                                             )}
                                         </td>

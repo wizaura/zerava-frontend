@@ -11,7 +11,7 @@ const tabs = [
     { label: "Dashboard", href: "/account" },
     { label: "Bookings", href: "/account/bookings" },
     { label: "Referrals", href: "/account/referrals" },
-    { label: "Eco Certificate", href: "/account/certificate" },
+    { label: "Eco Certificate", href: "/account/eco-certificate" },
     { label: "Settings", href: "/account/settings" },
 ];
 
@@ -24,12 +24,10 @@ export default function UserHeader() {
 
     const handleLogout = async () => {
         try {
-            // Fire-and-forget: backend clears cookies
             await api.post("/auth/logout");
         } catch {
-            // ignore network errors
+
         } finally {
-            // Frontend state is source of truth for UX
             dispatch(clearAuth());
             router.replace("/login");
         }

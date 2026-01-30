@@ -111,7 +111,7 @@ export default function WhoWeServeSection() {
                     >
                         <div className="relative h-[420px] w-[300px] overflow-hidden rounded-3xl">
                             <Image
-                                src="/about-1.jpg"
+                                src="/fleet-1.png"
                                 alt="On-site fleet vehicle care in a modern urban setting"
                                 fill
                                 className="object-cover transition-transform duration-700 ease-out hover:scale-[1.10]"

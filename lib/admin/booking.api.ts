@@ -11,6 +11,7 @@ export type AdminBooking = {
     serviceType: string;
     vehicleSize: string;
     price: number;
+    postcode: string;
     timeFrom: string;
     timeTo: string;
     status: BookingStatus;
@@ -29,6 +30,6 @@ export async function getAdminBookings(params?: {
     search?: string;
     status?: BookingStatus;
 }) {
-    const res = await adminApi.get("/bookings/admin", { params });
+    const res = await adminApi.get("/admin/bookings", { params });
     return res.data as AdminBooking[];
 }
