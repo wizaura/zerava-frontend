@@ -29,9 +29,9 @@ const includes = [
     "Volume-based pricing",
     "Monthly sustainability reports",
     "Custom service packages",
-    "Delivered by trained, insured service professionals",
     "Priority booking slots",
     "Quality guarantee",
+    "Delivered by trained, insured service professionals",
 ];
 
 export default function WhyZeravaSection() {
@@ -90,7 +90,7 @@ export default function WhyZeravaSection() {
                         data-aos-delay="600"
                         className="flex items-center"
                     >
-                        <div className="w-full rounded-xl bg-gray-50 px-16 py-10 shadow-xl transition-transform duration-300 hover:scale-[1.01]">
+                        <div className="w-full rounded-xl bg-gray-50 px-6 md:px-16 py-10 shadow-xl transition-transform duration-300 hover:scale-[1.01]">
                             <h3 className="mb-6 text-lg font-medium text-gray-900">
                                 What's included
                             </h3>
@@ -100,7 +100,7 @@ export default function WhyZeravaSection() {
                                     <li
                                         key={item}
                                         data-aos="fade-up"
-                                        className="flex items-center gap-3 text-sm text-gray-700"
+                                        className="flex items-start gap-3 text-sm text-gray-700"
                                     >
                                         <span className="flex h-6 w-6 items-center justify-center rounded-full bg-electric-teal">
                                             <CheckIcon className="h-4 w-4 text-white" />
