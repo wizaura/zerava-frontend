@@ -1,4 +1,4 @@
-import userApi from "./axios";
+import api from "./axios";
 
 export type GalleryItem = {
     id: string;
@@ -16,7 +16,7 @@ export type GalleryItem = {
 export async function getGallery(
     serviceType?: "All" | "Exterior" | "Interior" | "Full"
 ): Promise<GalleryItem[]> {
-    const res = await userApi.get("/gallery", {
+    const res = await api.get("/gallery", {
         params:
             serviceType && serviceType !== "All"
                 ? { serviceType }
