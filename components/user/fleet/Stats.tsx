@@ -61,7 +61,7 @@ export default function FleetStatsSection() {
     ];
 
     return (
-        <section className="bg-mobility-green px-6 py-14">
+        <section className="bg-emerald-600 px-6 py-14">
             <div className="mx-auto max-w-6xl">
 
                 <div className="grid grid-cols-2 gap-y-12 text-center sm:grid-cols-4">

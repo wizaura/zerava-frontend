@@ -17,12 +17,12 @@ export default function Fleet() {
                 buttons={[
                     {
                         label: "Get a Quote",
-                        href: "/contact?type=fleet",
+                        href: "/",
                         variant: "primary",
                     },
                     {
                         label: "Call Us",
-                        href: "tel:+44XXXXXXXXXX",
+                        href: "/",
                         variant: "secondary",
                     },
                 ]}
@@ -37,12 +37,12 @@ export default function Fleet() {
                 buttons={[
                     {
                         label: "Request a Quote",
-                        href: "/contact?type=fleet",
+                        href: "/",
                         variant: "primary",
                     },
                     {
                         label: "Email Us",
-                        href: "mailto:fleet@zerava.co.uk",
+                        href: "/",
                         variant: "secondary",
                     },
                 ]}

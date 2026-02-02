@@ -51,7 +51,7 @@ const services = [
 
 export default function ServiceHighlights() {
     return (
-        <section className="bg-eco-black py-20">
+        <section id="services" className="bg-eco-black py-20">
             <div className="mx-auto max-w-7xl px-6">
 
                 {/* Heading */}
@@ -164,7 +164,7 @@ export default function ServiceHighlights() {
                 {/* CTA */}
                 <div className="mt-10 text-center">
                     <Link
-                        href="/services"
+                        href="#services"
                         className="inline-flex items-center gap-2 rounded-full
                             border border-gray-300 px-8 py-4
                             text-sm font-semibold text-gray-200

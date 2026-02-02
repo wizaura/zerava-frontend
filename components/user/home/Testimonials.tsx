@@ -127,10 +127,10 @@ export default function TestimonialsSection() {
                 {/* Metrics Bar */}
                 <div
                     data-aos="fade-up"
-                    className="mt-12 rounded-full border border-gray-200
+                    className="mt-6 rounded-full border border-gray-200
                     bg-gray-50 px-8 py-4 text-center"
                 >
-                    <p className="text-sm font-medium text-gray-600">
+                    <p className="text-sm font-medium text-emerald-600">
                         Growing with customers across Southampton
                     </p>
                 </div>

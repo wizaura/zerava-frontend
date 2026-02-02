@@ -109,13 +109,14 @@ export default function WhoWeServeSection() {
                         data-aos-delay="300"
                         className="flex justify-center"
                     >
-                        <div className="relative h-[420px] w-[300px] overflow-hidden rounded-3xl">
-                            <Image
-                                src="/fleet-1.png"
-                                alt="On-site fleet vehicle care in a modern urban setting"
-                                fill
-                                className="object-cover transition-transform duration-700 ease-out hover:scale-[1.10]"
-                            />
+                        <div className="flex items-center justify-center">
+                            <div className="relative h-[420px] w-[280px] overflow-hidden rounded-3xl shadow-lg">
+                                <img
+                                    src="/fleet-main.png"
+                                    alt="Fleet vehicle"
+                                    className="h-full w-full object-cover"
+                                />
+                            </div>
                         </div>
                     </div>
 

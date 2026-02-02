@@ -31,8 +31,7 @@ const includes = [
     "Custom service packages",
     "Priority booking slots",
     "Quality guarantee",
-    "Delivered by trained",
-    "Insured service professionals"
+    "Delivered by trained, Insured service professionals",
 ];
 
 export default function WhyZeravaSection() {
@@ -97,16 +96,19 @@ export default function WhyZeravaSection() {
                             </h3>
 
                             <ul className="space-y-4">
-                                {includes.map((item, i) => (
+                                {includes.map((item) => (
                                     <li
                                         key={item}
                                         data-aos="fade-up"
-                                        className="flex items-start gap-3 text-sm text-gray-700"
+                                        className="flex items-start gap-4 text-sm text-gray-700"
                                     >
-                                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-electric-teal">
+                                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-electric-teal">
                                             <CheckIcon className="h-4 w-4 text-white" />
                                         </span>
-                                        {item}
+
+                                        <span className="leading-relaxed">
+                                            {item}
+                                        </span>
                                     </li>
                                 ))}
                             </ul>

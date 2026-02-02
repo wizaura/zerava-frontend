@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Leaf } from "lucide-react";
+import { Instagram, Leaf, Mail } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 
 export default function Footer() {
     return (
@@ -15,7 +16,7 @@ export default function Footer() {
                             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-electric-teal">
                                 <Leaf size={16} className="text-eco-black" />
                             </div>
-                            <span className="text-lg font-semibold text-text-primary">
+                            <span className="text-lg font-semibold text-text-secondary">
                                 Zerava
                             </span>
                         </div>
@@ -31,18 +32,18 @@ export default function Footer() {
                             Services
                         </h4>
                         <ul className="space-y-3 text-sm text-text-secondary">
-                            <li>
-                                <Link href="/services" className="hover:text-text-primary transition">
+                            {/* <li>
+                                <Link href="/services" className="transition hover:text-emerald-600">
                                     Waterless Wash
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/services#pricing" className="hover:text-text-primary transition">
+                                <Link href="/services#pricing" className="transition hover:text-emerald-600">
                                     Pricing
                                 </Link>
-                            </li>
+                            </li> */}
                             <li>
-                                <Link href="/fleet" className="hover:text-text-primary transition">
+                                <Link href="/fleet" className="transition hover:text-emerald-600">
                                     Fleet
                                 </Link>
                             </li>
@@ -56,25 +57,25 @@ export default function Footer() {
                         </h4>
                         <ul className="space-y-3 text-sm text-text-secondary">
                             <li>
-                                <Link href="/about" className="hover:text-text-primary transition">
+                                <Link href="/about" className="transition hover:text-emerald-600">
                                     About
                                 </Link>
                             </li>
-                            <li>
-                                <Link href="/eco-method" className="hover:text-text-primary transition">
+                            {/* <li>
+                                <Link href="/eco-method" className="transition hover:text-emerald-600">
                                     Eco Method
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/blog" className="hover:text-text-primary transition">
+                                <Link href="/blog" className="transition hover:text-emerald-600">
                                     Blog
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/contact" className="hover:text-text-primary transition">
+                                <Link href="/contact" className="transition hover:text-emerald-600">
                                     Contact
                                 </Link>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
 
@@ -83,24 +84,44 @@ export default function Footer() {
                         <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-muted">
                             Connect
                         </h4>
-                        <ul className="space-y-3 text-sm text-text-secondary">
+
+                        <ul className="flex items-center gap-4 text-text-secondary">
                             <li>
-                                <a href="#" className="hover:text-text-primary transition">
-                                    WhatsApp
+                                <a
+                                    href="/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="transition hover:text-emerald-600"
+                                    aria-label="WhatsApp"
+                                >
+                                    <FaWhatsapp size={18} />
                                 </a>
                             </li>
+
                             <li>
-                                <a href="mailto:hello@zerava.co" className="hover:text-text-primary transition">
-                                    Email
+                                <a
+                                    href="/"
+                                    className="transition hover:text-emerald-600"
+                                    aria-label="Email"
+                                >
+                                    <Mail size={18} />
                                 </a>
                             </li>
+
                             <li>
-                                <a href="#" className="hover:text-text-primary transition">
-                                    Instagram
+                                <a
+                                    href="/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="transition hover:text-emerald-600"
+                                    aria-label="Instagram"
+                                >
+                                    <Instagram size={18} />
                                 </a>
                             </li>
                         </ul>
                     </div>
+
                 </div>
 
                 {/* Divider */}
@@ -111,13 +132,13 @@ export default function Footer() {
                     <p>© {new Date().getFullYear()} Zerava. All rights reserved.</p>
 
                     <div className="flex items-center gap-6">
-                        <Link href="/terms" className="hover:text-text-primary transition">
+                        <Link href="/terms" className="transition hover:text-emerald-600">
                             Terms & Conditions
                         </Link>
-                        <Link href="/cookies" className="hover:text-text-primary transition">
+                        <Link href="/cookies" className="transition hover:text-emerald-600">
                             Cookie Policy
                         </Link>
-                        <Link href="/privacy" className="hover:text-text-primary transition">
+                        <Link href="/privacy" className="transition hover:text-emerald-600">
                             Privacy Policy
                         </Link>
                     </div>

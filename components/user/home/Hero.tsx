@@ -16,7 +16,7 @@ const slides = [
         desc: "Clean vehicles for life's important moments",
     },
     {
-        image: "/hero-2.png",
+        image: "/hero-20.png",
         pill: "New Era of Mobility Care",
         title: "A New Standard of Vehicle Care",
         highlight: "for Modern Mobility",
@@ -76,7 +76,7 @@ export default function HeroSlideshow() {
                                 }`}
                             priority={i === 0}
                         />
-                        <div className="absolute inset-0 bg-black/45" />
+                        <div className="absolute inset-0 bg-black/70" />
                     </div>
                 ))}
             </div>
@@ -127,7 +127,7 @@ export default function HeroSlideshow() {
                     className="mt-8 flex flex-col items-center gap-4 sm:flex-row"
                 >
                     <Link
-                        href="/booking"
+                        href="/"
                         className="flex items-center gap-2 rounded-full bg-electric-teal px-6 py-3 text-sm font-semibold text-eco-black transition hover:brightness-110"
                     >
                         Book Your Clean
@@ -135,7 +135,7 @@ export default function HeroSlideshow() {
                     </Link>
 
                     <Link
-                        href="/services"
+                        href="#services"
                         className="rounded-full border border-white/70 px-8 py-3 text-sm font-semibold text-gray-200 transition hover:border-electric-teal hover:text-electric-teal"
                     >
                         View Services

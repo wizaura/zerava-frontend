@@ -55,9 +55,7 @@ export default function FutureVisionSection() {
 
                 {/* Member line */}
                 <p
-                    data-aos="fade-up"
-                    data-aos-delay="650"
-                    className="mt-12 text-center text-xs uppercase tracking-wider text-gray-500"
+                    className="mt-12 text-center text-xs uppercase tracking-wider font-medium text-emerald-500"
                 >
                     Designed for Zerava members
                 </p>
