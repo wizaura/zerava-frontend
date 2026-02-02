@@ -16,14 +16,14 @@ const slides = [
         desc: "Clean vehicles for life's important moments",
     },
     {
-        image: "/hero-20.png",
+        image: "/hero-21.png",
         pill: "New Era of Mobility Care",
         title: "A New Standard of Vehicle Care",
         highlight: "for Modern Mobility",
         desc: "Premium, on-site waterless vehicle care that comes to you. Sustainable by design. Built for modern life.",
     },
     {
-        image: "/home-2.jpg",
+        image: "/hero-3.png",
         pill: "New Era of Mobility Care",
         title: "Zero Water.",
         highlight: "Maximum Quality",
