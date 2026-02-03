@@ -9,21 +9,21 @@ import "aos/dist/aos.css";
 
 const slides = [
     {
-        image: "/home-hero-1.png",
+        image: "/hero-1.jpeg",
         pill: "New Era of Mobility Care",
         title: "Journey",
         highlight: "That Matters",
         desc: "Clean vehicles for life's important moments",
     },
     {
-        image: "/hero-21.png",
+        image: "/hero-2.jpeg",
         pill: "New Era of Mobility Care",
         title: "A New Standard of Vehicle Care",
         highlight: "for Modern Mobility",
         desc: "Premium, on-site waterless vehicle care that comes to you. Sustainable by design. Built for modern life.",
     },
     {
-        image: "/hero-3.png",
+        image: "/hero-3.jpeg",
         pill: "New Era of Mobility Care",
         title: "Zero Water.",
         highlight: "Maximum Quality",

@@ -112,7 +112,7 @@ export default function WhoWeServeSection() {
                         <div className="flex items-center justify-center">
                             <div className="relative h-[420px] w-[280px] overflow-hidden rounded-3xl shadow-lg">
                                 <img
-                                    src="/fleet-main.png"
+                                    src="/fleet-main.jpeg"
                                     alt="Fleet vehicle"
                                     className="h-full w-full object-cover"
                                 />
