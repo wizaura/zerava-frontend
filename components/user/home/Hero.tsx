@@ -9,7 +9,7 @@ import "aos/dist/aos.css";
 
 const slides = [
     {
-        image: "/hero-1.jpeg",
+        image: "/hero-1.png",
         pill: "New Era of Mobility Care",
         title: "Journey",
         highlight: "That Matters",
@@ -23,7 +23,7 @@ const slides = [
         desc: "Premium, on-site waterless vehicle care that comes to you. Sustainable by design. Built for modern life.",
     },
     {
-        image: "/hero-3.jpeg",
+        image: "/hero-3.png",
         pill: "New Era of Mobility Care",
         title: "Zero Water.",
         highlight: "Maximum Quality",
