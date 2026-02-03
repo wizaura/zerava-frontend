@@ -76,7 +76,7 @@ export default function HeroSlideshow() {
                                 }`}
                             priority={i === 0}
                         />
-                        <div className="absolute inset-0 bg-black/70" />
+                        <div className="absolute inset-0 bg-black/10" />
                     </div>
                 ))}
             </div>
@@ -85,40 +85,79 @@ export default function HeroSlideshow() {
             <div className="relative z-10 m-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-6 text-center">
 
                 {/* Pill */}
-                <div
-                    data-aos="fade-down"
-                    className="mb-4 inline-flex items-center gap-2 rounded-full border bg-white/10 border-electric-teal/30 px-4 py-2 text-xs font-medium text-gray-200"
-                >
-                    <Leaf size={14} className="text-electric-teal" />
-                    {slides[active].pill}
+                <div className="relative mb-4 inline-flex">
+                    {/* BLUR GLOW */}
+                    <div className="absolute inset-0 -z-10 rounded-full bg-black/40 blur-md" />
+
+                    {/* PILL */}
+                    <div
+                        data-aos="fade-down"
+                        className="inline-flex items-center gap-2 rounded-full
+               border border-electric-teal/30
+               bg-white/10 px-4 py-2
+               text-xs font-medium text-gray-200
+               backdrop-blur-sm"
+                    >
+                        <Leaf size={14} className="text-electric-teal" />
+                        {slides[active].pill}
+                    </div>
                 </div>
 
+
                 {/* Heading */}
-                <h1 className="leading-[1.2]">
-                    <span
-                        data-aos="fade-up"
-                        data-aos-delay="100"
-                        className="block pb-2 text-4xl font-light text-gray-200 sm:text-6xl md:text-7xl"
-                    >
-                        {slides[active].title}
-                    </span>
-                    <span
-                        data-aos="fade-up"
-                        data-aos-delay="200"
-                        className="block text-4xl font-light text-electric-teal sm:text-6xl md:text-7xl"
-                    >
-                        {slides[active].highlight}
-                    </span>
-                </h1>
+                <div className="relative inline-block">
+                    {/* BLURRED SCRIM */}
+                    <div
+                        className="pointer-events-none absolute inset-0 -z-10
+               rounded-2xl
+               bg-gradient-to-b from-black/50 via-black/30 to-transparent
+               blur-2xl"
+                    />
+
+                    <h1 className="leading-[1.2] relative z-10">
+                        <span
+                            data-aos="fade-up"
+                            data-aos-delay="100"
+                            className="block pb-2 text-4xl font-light
+                 text-gray-200 sm:text-6xl md:text-7xl
+                 drop-shadow-lg"
+                        >
+                            {slides[active].title}
+                        </span>
+
+                        <span
+                            data-aos="fade-up"
+                            data-aos-delay="200"
+                            className="block text-4xl font-light
+                 text-emerald-600 sm:text-6xl md:text-7xl
+                 drop-shadow-lg"
+                        >
+                            {slides[active].highlight}
+                        </span>
+                    </h1>
+                </div>
 
                 {/* Description */}
-                <p
-                    data-aos="fade-up"
-                    data-aos-delay="300"
-                    className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-text-secondary sm:text-base"
-                >
-                    {slides[active].desc}
-                </p>
+                <div className="relative mt-6 max-w-2xl mx-auto">
+                    {/* SOFT BLUR STRIP */}
+                    <div
+                        className="pointer-events-none absolute inset-x-0 -inset-y-2
+               -z-10
+               rounded-xl
+               bg-black/30
+               blur-xl"
+                    />
+
+                    <p
+                        data-aos="fade-up"
+                        data-aos-delay="300"
+                        className="text-sm sm:text-base leading-relaxed
+               text-gray-300
+               drop-shadow-md"
+                    >
+                        {slides[active].desc}
+                    </p>
+                </div>
 
                 {/* CTAs */}
                 <div
@@ -134,12 +173,26 @@ export default function HeroSlideshow() {
                         <ArrowRight size={15} />
                     </Link>
 
-                    <Link
-                        href="#services"
-                        className="rounded-full border border-white/70 px-8 py-3 text-sm font-semibold text-gray-200 transition hover:border-electric-teal hover:text-electric-teal"
-                    >
-                        View Services
-                    </Link>
+                    <div className="relative inline-flex">
+                        {/* BLUR GLOW BEHIND */}
+                        <div
+                            className="absolute inset-0 -z-10 rounded-full
+               bg-black/40 blur-lg"
+                        />
+
+                        <Link
+                            href="#services"
+                            className="relative z-10 rounded-full
+               border border-white/70
+               px-8 py-3 text-sm font-semibold
+               text-gray-200 backdrop-blur-sm
+               transition
+               hover:border-electric-teal hover:text-electric-teal"
+                        >
+                            View Services
+                        </Link>
+                    </div>
+
                 </div>
 
                 {/* SCROLL INDICATOR */}
@@ -158,8 +211,8 @@ export default function HeroSlideshow() {
                             key={i}
                             onClick={() => setActive(i)}
                             className={`h-2 w-2 rounded-full transition-all duration-300 ${active === i
-                                    ? "w-6 bg-electric-teal"
-                                    : "bg-white/30"
+                                ? "w-6 bg-electric-teal"
+                                : "bg-white/30"
                                 }`}
                         />
                     ))}
