@@ -26,9 +26,9 @@ export default function ContactMethods() {
                         <Mail size={22} />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900">Email</h3>
-                    <p className="mt-1 text-sm text-gray-600">hello@zerava.co.uk</p>
+                    <p className="mt-1 text-sm text-gray-600">info@zerava.uk</p>
                     <a
-                        href="mailto:hello@zerava.co.uk"
+                        href="mailto:info@zerava.uk"
                         className="mt-3 text-sm font-semibold text-electric-teal hover:underline"
                     >
                         Send email →

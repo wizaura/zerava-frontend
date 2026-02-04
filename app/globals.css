@@ -53,20 +53,72 @@
 }
 
 @keyframes mouseScroll {
-    0% {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    70% {
-        transform: translateY(8px);
-        opacity: 0;
-    }
-    100% {
-        opacity: 0;
-    }
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  70% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 .animate-mouse {
-    animation: mouseScroll 1.8s infinite ease-in-out;
+  animation: mouseScroll 1.8s infinite ease-in-out;
 }
 
+
+/* 🌊 Premium breeze-style gradient */
+.gradient-breeze {
+  background:
+    radial-gradient(1200px at 20% 20%, rgba(56, 214, 196, 0.18), transparent 60%),
+    radial-gradient(1000px at 80% 30%, rgba(11, 46, 40, 0.55), transparent 65%),
+    radial-gradient(900px at 50% 80%, rgba(56, 214, 196, 0.12), transparent 70%),
+    linear-gradient(180deg, #0A0A0A 0%, #0B2E28 60%, #0A0A0A 100%);
+
+  background-size:
+    200% 200%,
+    220% 220%,
+    240% 240%,
+    100% 100%;
+
+  background-position:
+    0% 50%,
+    100% 30%,
+    50% 80%,
+    0% 0%;
+
+  animation: gradient-breeze 28s ease-in-out infinite;
+}
+
+/* 🌬️ Natural breeze motion */
+@keyframes gradient-breeze {
+  0% {
+    background-position:
+      0% 50%,
+      100% 30%,
+      50% 80%,
+      0% 0%;
+  }
+
+  50% {
+    background-position:
+      40% 60%,
+      60% 40%,
+      55% 70%,
+      0% 0%;
+  }
+
+  100% {
+    background-position:
+      0% 50%,
+      100% 30%,
+      50% 80%,
+      0% 0%;
+  }
+}

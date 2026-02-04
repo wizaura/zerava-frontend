@@ -100,7 +100,6 @@ export default function WhyZerava() {
                                     px-6 py-4 text-left
                                     transition-all duration-300 ease-out
                                     hover:-translate-y-2 hover:scale-[1.03]
-                                    hover:border-electric-teal/40
                                     hover:shadow-mobility-green
                                 "
                             >

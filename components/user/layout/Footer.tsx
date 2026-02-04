@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Instagram, Leaf, Mail } from "lucide-react";
+import { Instagram, Leaf, Linkedin, Mail } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
 export default function Footer() {
@@ -100,7 +100,7 @@ export default function Footer() {
 
                             <li>
                                 <a
-                                    href="/"
+                                    href="mailto:info@zerava.uk"
                                     className="transition hover:text-emerald-600"
                                     aria-label="Email"
                                 >
@@ -110,13 +110,24 @@ export default function Footer() {
 
                             <li>
                                 <a
-                                    href="/"
+                                    href="https://www.instagram.com/zerava.uk"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="transition hover:text-emerald-600"
                                     aria-label="Instagram"
                                 >
                                     <Instagram size={18} />
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="https://www.linkedin.com/company/zerava/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="transition hover:text-emerald-600"
+                                    aria-label="LinkedIn"
+                                >
+                                    <Linkedin size={18} />
                                 </a>
                             </li>
                         </ul>
