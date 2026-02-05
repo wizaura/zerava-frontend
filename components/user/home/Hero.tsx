@@ -57,25 +57,25 @@ export default function HeroSlideshow() {
 
             {/* 🔥 PREMIUM GRADIENT BACKGROUND */}
             <div className="absolute inset-0 z-0 overflow-hidden">
-                {/* Base */}
+                {/* Base – ECO BLACK */}
                 <div className="absolute inset-0 bg-eco-black" />
 
-                {/* Animated Gradient */}
-                <div className="absolute inset-0 gradient-breeze" />
+                {/* Mobility Green Glow (circles, not flat fill) */}
+                <div className="absolute inset-0 mobility-green-circles" />
 
-
-                {/* Vignette */}
-                <div className="absolute inset-0 bg-black/40" />
+                {/* Edge Vignette */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
 
                 {/* Grain */}
                 <div
-                    className="absolute inset-0 opacity-[0.06] mix-blend-overlay"
+                    className="absolute inset-0 opacity-[0.05] mix-blend-overlay"
                     style={{
                         backgroundImage:
                             "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"n\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.9\" numOctaves=\"4\"/%3E%3C/filter%3E%3Crect width=\"100%\" height=\"100%\" filter=\"url(%23n)\"/%3E%3C/svg%3E')",
                     }}
                 />
             </div>
+
 
             {/* CONTENT */}
             <div className="relative z-10 m-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-6 text-center">

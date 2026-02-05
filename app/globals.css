@@ -122,3 +122,17 @@
       0% 0%;
   }
 }
+
+.mobility-green-circles {
+  background:
+    radial-gradient(
+      420px 420px at 10% 20%,
+      rgba(56, 214, 196, 0.35),
+      transparent 65%
+    ),
+    radial-gradient(
+      520px 520px at 90% 70%,
+      rgba(11, 46, 40, 0.45),
+      transparent 70%
+    );
+}
