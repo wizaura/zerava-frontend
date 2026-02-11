@@ -20,11 +20,14 @@ const STATUS_STYLE: Record<
 type UIBooking = {
     id: string;
     service: string;
-    date: string; // ISO string
+    date: string;        // YYYY-MM-DD
+    timeFrom: string;    // "10:00"
+    timeTo: string;      // "10:50"
     location: string;
     status: "confirmed" | "pending" | "cancelled" | "completed";
     price: string;
 };
+
 
 
 export default function UserBookingsSection() {
@@ -36,13 +39,15 @@ export default function UserBookingsSection() {
         load();
     }, []);
 
-    function canReschedule(date: string) {
-        const slotTime = new Date(date).getTime();
-        const now = Date.now();
+    function canReschedule(date: string, timeFrom: string) {
+        const [h, m] = timeFrom.split(":").map(Number);
+        const d = new Date(date);
+        d.setHours(h, m, 0, 0);
 
-        const diffHours = (slotTime - now) / (1000 * 60 * 60);
+        const diffHours = (d.getTime() - Date.now()) / (1000 * 60 * 60);
         return diffHours >= 24;
     }
+
 
     function mapStatus(
         status: "CONFIRMED" | "PENDING_PAYMENT" | "CANCELLED" | "COMPLETED"
@@ -78,13 +83,16 @@ export default function UserBookingsSection() {
             setBookings(
                 data.map((b) => ({
                     id: b.id,
-                    service: "Full Valet",
-                    date: b.serviceSlot.date,
-                    location: b.serviceSlot.operator.name,
+                    service: b.service.name,
+                    date: b.date,
+                    timeFrom: b.timeFrom,
+                    timeTo: b.timeTo,
+                    location: `${b.address}, ${b.postcode}`,
                     status: mapStatus(b.status),
                     price: `£${b.price}`,
                 }))
             );
+
         } finally {
             setLoading(false);
         }
@@ -109,7 +117,7 @@ export default function UserBookingsSection() {
                             <div>
                                 <p className="font-medium">{b.service}</p>
                                 <p className="text-sm text-gray-500">
-                                    {new Date(b.date).toLocaleString()}
+                                    {formatDateTime(b.date, b.timeFrom, b.timeTo)}
                                 </p>
                                 <p className="flex items-center gap-1 text-sm text-gray-500">
                                     <MapPin size={14} />
@@ -138,7 +146,7 @@ export default function UserBookingsSection() {
                                 </button>
                             )}
 
-                            {b.status === "confirmed" && canReschedule(b.date) && (
+                            {b.status === "confirmed" && canReschedule(b.date, b.timeFrom) && (
                                 <button
                                     onClick={() =>
                                         router.push(`/account/bookings/${b.id}/reschedule`)
@@ -150,7 +158,7 @@ export default function UserBookingsSection() {
                                 </button>
                             )}
 
-                            {b.status === "confirmed" && !canReschedule(b.date) && (
+                            {b.status === "confirmed" && !canReschedule(b.date, b.timeFrom) && (
                                 <p className="text-xs text-gray-400">
                                     Reschedule locked (within 24h)
                                 </p>
@@ -162,4 +170,33 @@ export default function UserBookingsSection() {
         </div>
     );
 }
+
+function formatDateTime(date: string, from: string, to: string) {
+    const d = new Date(date);
+
+    const datePart = d.toLocaleDateString("en-GB", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+    });
+
+    return `${datePart} · ${formatTime(from)} – ${formatTime(to)}`;
+}
+
+function formatTime(time: string) {
+    const [h, m] = time.split(":").map(Number);
+    const d = new Date();
+    d.setHours(h, m);
+
+    return d
+        .toLocaleTimeString("en-GB", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        })
+        .replace("am", "AM")
+        .replace("pm", "PM");
+}
+
 

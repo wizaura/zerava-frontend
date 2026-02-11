@@ -21,9 +21,23 @@ export default function ConfirmStep({
     const [error, setError] = useState<string | null>(null);
 
     const canSubmit =
+        Boolean(bookingDraft.servicePriceId) &&
+        Boolean(bookingDraft.serviceSlotId) &&
+        Boolean(bookingDraft.timeFrom) &&
+        Boolean(bookingDraft.timeTo) &&
         Boolean(bookingDraft.name?.trim()) &&
         Boolean(bookingDraft.email?.trim()) &&
-        Boolean(bookingDraft.phone?.trim());
+        Boolean(bookingDraft.phone?.trim()) &&
+        Boolean(bookingDraft.address?.trim()) &&
+        Boolean(bookingDraft.postcode?.trim());
+
+    const addOnsTotal = bookingDraft.addOns.reduce(
+        (sum, a) => sum + a.price,
+        0,
+    );
+
+    const total =
+        (bookingDraft.basePrice ?? 0) + addOnsTotal;
 
     async function submitBooking() {
         if (!canSubmit) return;
@@ -32,34 +46,36 @@ export default function ConfirmStep({
         setError(null);
 
         try {
-            const booking = await api.post("/bookings", {
+            const bookingRes = await api.post("/bookings", {
+                servicePriceId: bookingDraft.servicePriceId,
                 serviceSlotId: bookingDraft.serviceSlotId,
-                serviceType: bookingDraft.serviceType,
-                vehicleSize: bookingDraft.vehicleSize,
-                price: bookingDraft.price,
                 timeFrom: bookingDraft.timeFrom,
                 timeTo: bookingDraft.timeTo,
+
+                address: bookingDraft.address,
+                postcode: bookingDraft.postcode,
+                notes: bookingDraft.notes,
 
                 name: bookingDraft.name,
                 email: bookingDraft.email,
                 phone: bookingDraft.phone,
 
-                address: bookingDraft.address,
-                postcode: bookingDraft.postcode,
-                notes: bookingDraft.notes,
+                addOnIds: bookingDraft.addOns.map(a => a.id),
             });
 
-            const session = await api.post("/payments/create-session", {
-                bookingId: booking.data.id,
-            });
+            const session = await api.post(
+                "/payments/create-session",
+                {
+                    bookingId: bookingRes.data.id,
+                },
+            );
 
             window.location.href = session.data.url;
-
             onSuccess();
         } catch (err: any) {
             setError(
                 err?.response?.data?.message ||
-                "Failed to create booking"
+                "Failed to create booking",
             );
         } finally {
             setLoading(false);
@@ -73,64 +89,47 @@ export default function ConfirmStep({
             </h2>
 
             {/* Contact Details */}
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-6">
+            <div className="rounded-2xl border bg-white p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label className="mb-1 block text-xs font-medium text-gray-600">
-                            Full name
-                        </label>
-                        <input
-                            value={bookingDraft.name || ""}
-                            onChange={(e) =>
-                                setBookingDraft((d) => ({
-                                    ...d,
-                                    name: e.target.value,
-                                }))
-                            }
-                            placeholder="John Smith"
-                            className="w-full rounded-xl border px-4 py-3 text-sm focus:border-electric-teal focus:outline-none"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="mb-1 block text-xs font-medium text-gray-600">
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            value={bookingDraft.email || ""}
-                            onChange={(e) =>
-                                setBookingDraft((d) => ({
-                                    ...d,
-                                    email: e.target.value,
-                                }))
-                            }
-                            placeholder="john@email.com"
-                            className="w-full rounded-xl border px-4 py-3 text-sm focus:border-electric-teal focus:outline-none"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="mb-1 block text-xs font-medium text-gray-600">
-                            Phone
-                        </label>
-                        <input
-                            value={bookingDraft.phone || ""}
-                            onChange={(e) =>
-                                setBookingDraft((d) => ({
-                                    ...d,
-                                    phone: e.target.value,
-                                }))
-                            }
-                            placeholder="07xxx xxxxxx"
-                            className="w-full rounded-xl border px-4 py-3 text-sm focus:border-electric-teal focus:outline-none"
-                        />
-                    </div>
+                    <Input
+                        label="Full name"
+                        value={bookingDraft.name}
+                        onChange={(v) =>
+                            setBookingDraft(d => ({
+                                ...d,
+                                name: v,
+                            }))
+                        }
+                        placeholder="John Smith"
+                    />
+                    <Input
+                        label="Email"
+                        type="email"
+                        value={bookingDraft.email}
+                        onChange={(v) =>
+                            setBookingDraft(d => ({
+                                ...d,
+                                email: v,
+                            }))
+                        }
+                        placeholder="john@email.com"
+                    />
+                    <Input
+                        label="Phone"
+                        value={bookingDraft.phone}
+                        onChange={(v) =>
+                            setBookingDraft(d => ({
+                                ...d,
+                                phone: v,
+                            }))
+                        }
+                        placeholder="07xxx xxxxxx"
+                    />
                 </div>
             </div>
 
             {/* Booking Summary */}
-            <div className="rounded-2xl bg-gradient-to-br from-[#0A0A0A] to-[#111] p-6 text-white shadow-lg space-y-4">
+            <div className="rounded-2xl bg-gradient-to-br from-[#0A0A0A] to-[#111] p-6 text-white space-y-4">
                 <h3 className="text-lg font-medium">
                     Booking Summary
                 </h3>
@@ -138,30 +137,47 @@ export default function ConfirmStep({
                 <div className="space-y-3 text-sm">
                     <SummaryRow
                         label="Service"
-                        value={bookingDraft.serviceType}
+                        value={bookingDraft.serviceName}
                     />
                     <SummaryRow
                         label="Vehicle"
-                        value={bookingDraft.vehicleSize}
+                        value={bookingDraft.vehicleCategory}
                     />
                     <SummaryRow
                         label="Date & Time"
-                        value={`${formatDate(bookingDraft.date)} · ${formatTime12h(
-                            bookingDraft.timeFrom as string
-                        )} - ${formatTime12h(bookingDraft.timeTo as string)}`}
+                        value={`${formatDate(
+                            bookingDraft.date,
+                        )} · ${formatTimeRange(
+                            bookingDraft.timeFrom,
+                            bookingDraft.timeTo,
+                        )}`}
                     />
                     <SummaryRow
                         label="Location"
                         value={bookingDraft.postcode}
                     />
                 </div>
+                <SummaryRow
+                    label="Price"
+                    value={`£${bookingDraft.basePrice as number / 100}`}
+                />
 
-                <div className="mt-4 border-t border-white/20 pt-4 flex items-center justify-between">
-                    <p className="text-sm text-gray-300">
-                        Total
-                    </p>
+                {bookingDraft.addOns.length > 0 && (
+                    <div className="mt-4 space-y-2 border-t border-white/20 pt-4">
+                        {bookingDraft.addOns.map(a => (
+                            <SummaryRow
+                                key={a.id}
+                                label={a.name}
+                                value={`+£${a.price / 100}`}
+                            />
+                        ))}
+                    </div>
+                )}
+
+                <div className="mt-4 border-t border-white/20 pt-4 flex justify-between">
+                    <p className="text-gray-300">Total</p>
                     <p className="text-xl font-semibold">
-                        £{(bookingDraft.price ?? 0) / 100}
+                        £{total / 100}
                     </p>
                 </div>
             </div>
@@ -174,7 +190,7 @@ export default function ConfirmStep({
             <div className="flex justify-between pt-4">
                 <button
                     onClick={onBack}
-                    className="rounded-full border border-gray-300 bg-white px-6 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    className="rounded-full border px-6 py-2 text-sm"
                 >
                     ← Back
                 </button>
@@ -183,62 +199,45 @@ export default function ConfirmStep({
                     disabled={!canSubmit || loading}
                     onClick={submitBooking}
                     className={[
-                        "rounded-full px-8 py-2 text-sm text-white transition",
+                        "rounded-full px-8 py-2 text-sm text-white",
                         canSubmit
                             ? "bg-black hover:bg-gray-800"
                             : "bg-gray-300 cursor-not-allowed",
                     ].join(" ")}
                 >
-                    {loading ? "Booking…" : "Confirm Booking"}
+                    {loading
+                        ? "Booking…"
+                        : "Confirm Booking"}
                 </button>
             </div>
         </div>
     );
 }
 
-/* ---------------- Helper ---------------- */
+/* ---------- Helpers ---------- */
 
-function formatDate(dateStr?: string | null) {
-    if (!dateStr) return "—";
-
-    return new Date(dateStr).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-    });
+function Input({
+    label,
+    value,
+    onChange,
+    placeholder,
+    type = "text",
+}: any) {
+    return (
+        <div>
+            <label className="mb-1 block text-xs font-medium text-gray-600">
+                {label}
+            </label>
+            <input
+                type={type}
+                value={value || ""}
+                onChange={e => onChange(e.target.value)}
+                placeholder={placeholder}
+                className="w-full rounded-xl border px-4 py-3 text-sm"
+            />
+        </div>
+    );
 }
-
-function formatTime12h(time: string) {
-    const [h, m] = time.split(":").map(Number);
-    const date = new Date();
-    date.setHours(h, m);
-
-    return date.
-        toLocaleTimeString("en-GB", {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-        })
-        .replace("am", "AM")
-        .replace("pm", "PM");
-}
-
-function formatTimeRange(
-    from?: string | null,
-    to?: string | null
-) {
-    if (!from || !to) return "—";
-
-    const format = (t: string) =>
-        new Date(`1970-01-01T${t}`).toLocaleTimeString("en-GB", {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-        });
-
-    return `${format(from)} – ${format(to)}`;
-}
-
 
 function SummaryRow({
     label,
@@ -248,11 +247,41 @@ function SummaryRow({
     value?: string | null;
 }) {
     return (
-        <div className="flex items-center justify-between">
+        <div className="flex justify-between">
             <p className="text-gray-400">{label}</p>
-            <p className="font-medium text-white">
+            <p className="font-medium">
                 {value || "—"}
             </p>
         </div>
     );
+}
+
+function formatDate(dateStr?: string | null) {
+    if (!dateStr) return "—";
+    return new Date(dateStr).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+    });
+}
+
+function formatTimeRange(
+    from?: string | null,
+    to?: string | null,
+) {
+    if (!from || !to) return "—";
+    const f = new Date(`1970-01-01T${from}`);
+    const t = new Date(`1970-01-01T${to}`);
+
+    const fmt = (d: Date) =>
+        d
+            .toLocaleTimeString("en-GB", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+            })
+            .replace("am", "AM")
+            .replace("pm", "PM");
+
+    return `${fmt(f)} – ${fmt(t)}`;
 }

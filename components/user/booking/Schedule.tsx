@@ -12,12 +12,11 @@ const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const UK_POSTCODE_REGEX = /^SO\d{2}$/;
 
 type Slot = {
-    timeFrom: string;
-    timeTo: string;
+    startTime: string;
+    endTime: string;
     serviceSlotId: string;
-    active: boolean;
-    reason: "BLOCKED" | "BOOKED" | null;
 };
+
 
 
 type Props = {
@@ -98,6 +97,8 @@ export default function ScheduleStep({
             const res = await api.post("/availability/check", {
                 date,
                 postcode,
+                serviceDuration: bookingDraft.serviceDurationMin,
+                addonDuration: bookingDraft.addOnDurationMin ?? 0,
             });
 
             console.log(res, 'res');
@@ -111,17 +112,30 @@ export default function ScheduleStep({
         }
     }
 
-    function selectDate(date: string) {
-        setSelectedDate(date);
+    function selectDate(localDate: string) {
+        setSelectedDate(localDate);
 
         setBookingDraft((d) => ({
             ...d,
-            date,
+            date: localDate,
             serviceSlotId: null,
             timeFrom: null,
             timeTo: null,
         }));
     }
+
+
+    function selectSlot(slot: Slot) {
+        setBookingDraft((d) => ({
+            ...d,
+            serviceSlotId: slot.serviceSlotId,
+            timeFrom: slot.startTime,
+            timeTo: slot.endTime,
+        }));
+
+    }
+
+
 
     useEffect(() => {
         if (!selectedDate) return;
@@ -287,49 +301,54 @@ export default function ScheduleStep({
                         Choose your time slot
                     </p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {slots.map((slot, idx) => {
-                            const selected =
-                                bookingDraft.timeFrom === slot.timeFrom &&
-                                bookingDraft.timeTo === slot.timeTo;
+                    {slots.length === 0 ? (
+                        /* ---------- NO SLOTS STATE ---------- */
+                        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+                            <ClockIcon className="h-8 w-8 text-gray-400 mb-3" />
 
-                            return (
-                                <button
-                                    key={idx}
-                                    disabled={!slot.active}
-                                    onClick={() =>
-                                        setBookingDraft((d) => ({
-                                            ...d,
-                                            serviceSlotId: slot.serviceSlotId,
-                                            timeFrom: slot.timeFrom,
-                                            timeTo: slot.timeTo,
-                                        }))
-                                    }
-                                    className={[
-                                        "rounded-xl border p-4 text-left text-sm transition",
-                                        slot.active
-                                            ? selected
+                            <p className="text-sm font-medium text-gray-700">
+                                No slots available
+                            </p>
+
+                            <p className="mt-1 text-xs text-gray-500 max-w-xs">
+                                All operators are fully booked for this day.
+                                Try selecting a different date.
+                            </p>
+                        </div>
+                    ) : (
+                        /* ---------- SLOTS GRID ---------- */
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {slots.map((slot) => {
+                                const isSelected =
+                                    bookingDraft.serviceSlotId === slot.serviceSlotId &&
+                                    bookingDraft.timeFrom === slot.startTime;
+
+                                return (
+                                    <button
+                                        key={`${slot.serviceSlotId}-${slot.startTime}`}
+                                        onClick={() => selectSlot(slot)}
+                                        className={[
+                                            "flex items-center justify-between rounded-xl border px-4 py-3 transition",
+                                            isSelected
                                                 ? "border-electric-teal bg-electric-teal/10"
-                                                : "border-gray-300 hover:border-gray-500"
-                                            : "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed",
-                                    ].join(" ")}
-                                >
-                                    <div className="flex items-center gap-2 text-base font-semibold">
-                                        <Clock10Icon className="h-4 w-4 text-gray-400" />
-                                        {formatTime12h(slot.timeFrom)} – {formatTime12h(slot.timeTo)}
-                                    </div>
+                                                : "hover:border-black",
+                                        ].join(" ")}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <ClockIcon className="h-4 w-4 text-gray-500" />
+                                            <span className="font-medium">
+                                                {formatTime12h(slot.startTime)}
+                                            </span>
+                                        </div>
 
-                                    {!slot.active && (
-                                        <p className="mt-1 text-xs">
-                                            {slot.reason === "BLOCKED"
-                                                ? "Blocked"
-                                                : "Not yet open"}
-                                        </p>
-                                    )}
-                                </button>
-                            );
-                        })}
-                    </div>
+                                        <span className="text-sm text-gray-500">
+                                            till {formatTime12h(slot.endTime)}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
             )}
 

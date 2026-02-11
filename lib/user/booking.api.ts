@@ -2,18 +2,29 @@ import userApi from "./axios";
 
 export type UserBooking = {
     id: string;
-    referenceCode: string;
-    status: "CONFIRMED" | "PENDING_PAYMENT" | "CANCELLED";
-    price: number;
+    referenceCode: string | null;
+
+    status: "CONFIRMED" | "PENDING_PAYMENT" | "CANCELLED" | "COMPLETED";
+
+    price: number;          // already converted to £ in backend
     createdAt: string;
 
-    serviceSlot: {
-        date: string;
-        operator: {
-            name: string;
-        };
+    date: string;           // YYYY-MM-DD
+    timeFrom: string;       // "10:00"
+    timeTo: string;         // "10:50"
+
+    address: string;
+    postcode: string;
+
+    service: {
+        name: string;
+    };
+
+    operator: {
+        name: string;
     };
 };
+
 
 export async function getUserBookings(): Promise<UserBooking[]> {
     const res = await userApi.get("/bookings/me");

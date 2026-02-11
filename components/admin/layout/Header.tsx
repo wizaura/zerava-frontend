@@ -22,6 +22,7 @@ const tabs = [
     { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     { label: "Calendar", href: "/admin/calendar", icon: CalendarDays },
     { label: "Bookings", href: "/admin/bookings", icon: ClipboardList },
+    { label: "Services", href: "/admin/services", icon: ClipboardList },
     { label: "Subscriptions", href: "/admin/subscriptions", icon: CreditCard },
     { label: "Gallery", href: "/admin/gallery", icon: Image },
     { label: "Customers", href: "/admin/customers", icon: Users },

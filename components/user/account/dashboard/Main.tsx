@@ -28,7 +28,8 @@ type DashboardData = {
     };
     recentBookings: {
         id: string;
-        serviceType: string;
+        service: string;
+        vehicleCategory: string;
         date: string;
         timeFrom: string;
         timeTo: string;
@@ -243,40 +244,58 @@ function RecentBookings({
                     {bookings.map((b) => (
                         <div
                             key={b.id}
-                            className="flex items-center justify-between rounded-xl bg-gray-50 p-4"
+                            className="flex items-center justify-between rounded-2xl border bg-white p-4 shadow-sm"
                         >
+                            {/* LEFT */}
                             <div className="flex items-center gap-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-200">
-                                    <ShieldCheck />
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-electric-teal/10 text-electric-teal">
+                                    <ShieldCheck size={18} />
                                 </div>
 
                                 <div>
-                                    <p className="font-medium">
-                                        {formatService(b.serviceType)}
+                                    <p className="font-medium text-gray-900">
+                                        {b.service}
+                                        {b.vehicleCategory && (
+                                            <span className="ml-2 text-xs text-gray-500">
+                                                · {b.vehicleCategory}
+                                            </span>
+                                        )}
                                     </p>
+
                                     <p className="text-sm text-gray-500">
-                                        {formatDate(b.date)} ·{" "}
-                                        {b.timeFrom} – {b.timeTo}
+                                        {formatDate(b.date)} · {formatTime(b.timeFrom)} –{" "}
+                                        {formatTime(b.timeTo)}
                                     </p>
                                 </div>
                             </div>
 
-                            <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
-                                {b.status.toLowerCase()}
-                            </span>
+                            {/* RIGHT */}
+                            <div className="flex items-center gap-4">
+                                {b.totalPrice && (
+                                    <p className="text-sm font-medium text-gray-700">
+                                        £{(b.totalPrice / 100).toFixed(2)}
+                                    </p>
+                                )}
+
+                                <span
+                                    className={[
+                                        "rounded-full px-3 py-1 text-xs font-medium",
+                                        b.status === "COMPLETED"
+                                            ? "bg-emerald-100 text-emerald-700"
+                                            : b.status === "CONFIRMED"
+                                                ? "bg-blue-100 text-blue-700"
+                                                : "bg-gray-100 text-gray-600",
+                                    ].join(" ")}
+                                >
+                                    {b.status.toLowerCase()}
+                                </span>
+                            </div>
                         </div>
                     ))}
                 </div>
             )}
         </div>
     );
-}
-
-function formatService(type: string) {
-    return type
-        .toLowerCase()
-        .replace("_", " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function formatDate(date: string) {
@@ -286,6 +305,21 @@ function formatDate(date: string) {
         year: "numeric",
     });
 }
+
+function formatTime(time: string) {
+    const [h, m] = time.split(":").map(Number);
+    const d = new Date();
+    d.setHours(h, m);
+    return d
+        .toLocaleTimeString("en-GB", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        })
+        .replace("am", "AM")
+        .replace("pm", "PM");
+}
+
 
 function StatMini({
     icon,
