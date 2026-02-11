@@ -34,6 +34,7 @@ type DashboardData = {
         timeFrom: string;
         timeTo: string;
         status: string;
+        price: number;
     }[];
     subscription: {
         active: boolean;
@@ -271,9 +272,9 @@ function RecentBookings({
 
                             {/* RIGHT */}
                             <div className="flex items-center gap-4">
-                                {b.totalPrice && (
+                                {b.price && (
                                     <p className="text-sm font-medium text-gray-700">
-                                        £{(b.totalPrice / 100).toFixed(2)}
+                                        £{(b.price / 100).toFixed(2)}
                                     </p>
                                 )}
 
