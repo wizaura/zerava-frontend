@@ -16,14 +16,30 @@ adminApi.interceptors.request.use(
 
 // Handle auth expiry
 adminApi.interceptors.response.use(
-    (res) => res,
+    (response) => response,
     async (error) => {
-        if (error.response?.status === 401) {
-            console.warn("Admin session expired");
-            window.location.href = "/admin/login";
+        const originalRequest = error.config;
+
+        if (
+            error.response?.status === 401 &&
+            !originalRequest._retry
+        ) {
+            originalRequest._retry = true;
+
+            try {
+                await adminApi.post("/admin/auth/refresh");
+
+                return adminApi(originalRequest);
+            } catch (refreshError) {
+                console.warn("Admin refresh failed");
+                window.location.href = "/admin/login";
+                return Promise.reject(refreshError);
+            }
         }
+
         return Promise.reject(error);
     }
 );
+
 
 export default adminApi;

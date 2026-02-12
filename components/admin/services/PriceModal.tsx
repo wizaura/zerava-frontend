@@ -2,6 +2,9 @@
 
 import adminApi from "@/lib/admin/axios";
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { getApiError } from "@/lib/utils";
+import { upsertServicePrice } from "@/lib/admin/services.api";
 
 const PRICING_MODES = [
     { key: "ONE_OFF", label: "One-off" },
@@ -22,49 +25,77 @@ export default function PriceModal({
     const [form, setForm] = useState({
         vehicleCategoryId: price?.vehicleCategoryId ?? "",
         pricingMode: price?.pricingMode ?? "ONE_OFF",
-        billingCycle: price?.billingCycle ?? "",
+        billingCycle: price?.billingCycle ?? "MONTHLY",
         price: price ? String(price.price / 100) : "",
     });
+
+    const [loading, setLoading] = useState(false);
 
     const isEdit = Boolean(price?.id);
 
     const canSubmit =
         Boolean(form.vehicleCategoryId) &&
         Boolean(form.pricingMode) &&
-        Boolean(form.price);
+        Number(form.price) > 0;
 
     const submit = async () => {
-        if (!canSubmit) return;
+        if (!canSubmit) {
+            toast.error("Please fill all required fields");
+            return;
+        }
 
-        await adminApi.post("/admin/service-pricing/price", {
-            id: price?.id, // 👈 enables edit
-            serviceId: service.id,
-            vehicleCategoryId: form.vehicleCategoryId,
-            pricingMode: form.pricingMode,
-            ...(form.pricingMode === "SUBSCRIPTION" && {
-                billingCycle: form.billingCycle || "MONTHLY",
-            }),
-            price: Math.round(Number(form.price) * 100),
-        });
+        if (Number(form.price) <= 0) {
+            toast.error("Price must be greater than 0");
+            return;
+        }
 
-        onSaved();
-        onClose();
+        setLoading(true);
+
+        try {
+            await upsertServicePrice({
+                id: price?.id,
+                serviceId: service.id,
+                vehicleCategoryId: form.vehicleCategoryId,
+                pricingMode: form.pricingMode,
+                ...(form.pricingMode === "SUBSCRIPTION" && {
+                    billingCycle: form.billingCycle || "MONTHLY",
+                }),
+                price: Math.round(Number(form.price) * 100),
+            });
+
+            toast.success(
+                isEdit ? "Price updated" : "Price created"
+            );
+
+            onSaved();
+            onClose();
+        } catch (err: any) {
+            toast.error(getApiError(err));
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
-            <div className="bg-white rounded-xl p-6 space-y-4 w-full max-w-md">
-                <div className="flex justify-between items-center">
-                    <h3 className="font-medium">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-6">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold">
                         {isEdit ? "Edit Price" : "Add Price"}
                     </h3>
-                    <button onClick={onClose}>✕</button>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-red-500"
+                    >
+                        ✕
+                    </button>
                 </div>
 
                 {/* Vehicle Category */}
                 <div>
-                    <label className="text-xs font-medium text-gray-600">
-                        Vehicle category
+                    <label className="block text-sm font-medium mb-1">
+                        Vehicle Category
                     </label>
                     <select
                         value={form.vehicleCategoryId}
@@ -75,7 +106,9 @@ export default function PriceModal({
                                 vehicleCategoryId: e.target.value,
                             })
                         }
-                        className="mt-1 w-full rounded border px-3 py-2 text-sm disabled:bg-gray-100"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+                                   focus:outline-none focus:ring-2 focus:ring-electric-teal
+                                   disabled:bg-gray-100"
                     >
                         <option value="">Select category</option>
                         {vehicleCategories.map((v: any) => (
@@ -88,8 +121,8 @@ export default function PriceModal({
 
                 {/* Pricing Mode */}
                 <div>
-                    <label className="text-xs font-medium text-gray-600">
-                        Pricing mode
+                    <label className="block text-sm font-medium mb-1">
+                        Pricing Mode
                     </label>
                     <select
                         value={form.pricingMode}
@@ -100,7 +133,9 @@ export default function PriceModal({
                                 pricingMode: e.target.value,
                             })
                         }
-                        className="mt-1 w-full rounded border px-3 py-2 text-sm disabled:bg-gray-100"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+                                   focus:outline-none focus:ring-2 focus:ring-electric-teal
+                                   disabled:bg-gray-100"
                     >
                         {PRICING_MODES.map((m) => (
                             <option key={m.key} value={m.key}>
@@ -110,11 +145,11 @@ export default function PriceModal({
                     </select>
                 </div>
 
-                {/* Billing cycle */}
+                {/* Billing Cycle */}
                 {form.pricingMode === "SUBSCRIPTION" && (
                     <div>
-                        <label className="text-xs font-medium text-gray-600">
-                            Billing cycle
+                        <label className="block text-sm font-medium mb-1">
+                            Billing Cycle
                         </label>
                         <select
                             value={form.billingCycle}
@@ -124,7 +159,8 @@ export default function PriceModal({
                                     billingCycle: e.target.value,
                                 })
                             }
-                            className="mt-1 w-full rounded border px-3 py-2 text-sm"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+                                       focus:outline-none focus:ring-2 focus:ring-electric-teal"
                         >
                             {BILLING_CYCLES.map((c) => (
                                 <option key={c.key} value={c.key}>
@@ -137,7 +173,7 @@ export default function PriceModal({
 
                 {/* Price */}
                 <div>
-                    <label className="text-xs font-medium text-gray-600">
+                    <label className="block text-sm font-medium mb-1">
                         Price (£)
                     </label>
                     <input
@@ -151,30 +187,36 @@ export default function PriceModal({
                                 price: e.target.value,
                             })
                         }
-                        className="mt-1 w-full rounded border px-3 py-2 text-sm"
                         placeholder="33.00"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+                                   focus:outline-none focus:ring-2 focus:ring-electric-teal"
                     />
                 </div>
 
                 {/* Footer */}
-                <div className="flex justify-end gap-3 pt-4">
+                <div className="flex justify-end gap-3 pt-2">
                     <button
                         onClick={onClose}
-                        className="rounded border px-4 py-2 text-sm"
+                        className="rounded-full hover:bg-gray-200 border px-5 py-2 text-sm"
                     >
                         Cancel
                     </button>
+
                     <button
-                        disabled={!canSubmit}
+                        disabled={!canSubmit || loading}
                         onClick={submit}
                         className={[
-                            "rounded px-4 py-2 text-sm text-white",
+                            "rounded-full px-6 py-2 text-sm font-medium text-black",
                             canSubmit
-                                ? "bg-black"
+                                ? "bg-emerald-500 hover:bg-emerald-600"
                                 : "bg-gray-300 cursor-not-allowed",
                         ].join(" ")}
                     >
-                        Save
+                        {loading
+                            ? "Saving..."
+                            : isEdit
+                                ? "Update Price"
+                                : "Save Price"}
                     </button>
                 </div>
             </div>

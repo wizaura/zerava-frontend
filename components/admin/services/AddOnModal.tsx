@@ -5,9 +5,12 @@ import api from "@/lib/admin/axios";
 import { Modal } from "../common/Modal";
 import { Input } from "../common/Input";
 import { Footer } from "../common/Footer";
+import toast from "react-hot-toast";
+import { getApiError } from "@/lib/utils";
+import { createAddOn, updateAddOn } from "@/lib/admin/services.api";
 
 type Props = {
-    addOn?: any; // optional for edit
+    addOn?: any;
     onClose: () => void;
     onSaved: () => void;
 };
@@ -27,29 +30,34 @@ export default function AddOnModal({
     const [loading, setLoading] = useState(false);
 
     const submit = async () => {
-        if (!form.name || !form.price || !form.durationMin) return;
+        if (!form.name || !form.price || !form.durationMin) {
+            toast.error("Please fill all fields");
+            return;
+        }
 
         setLoading(true);
+
         try {
             if (addOn) {
-                await api.patch(
-                    `/admin/service-pricing/add-ons/${addOn.id}`,
-                    {
-                        ...form,
-                        price: Number(form.price),
-                        durationMin: Number(form.durationMin),
-                    },
-                );
+                await updateAddOn(addOn.id, {
+                    ...form,
+                    price: Number(form.price),
+                    durationMin: Number(form.durationMin),
+                });
             } else {
-                await api.post("/admin/service-pricing/add-ons", {
+                await createAddOn({
                     ...form,
                     price: Number(form.price),
                     durationMin: Number(form.durationMin),
                 });
             }
 
+            toast.success(addOn ? "Add-on updated" : "Add-on created");
+
             onSaved();
             onClose();
+        } catch (err: any) {
+            toast.error(getApiError(err));
         } finally {
             setLoading(false);
         }
@@ -98,14 +106,14 @@ export default function AddOnModal({
             <Footer>
                 <button
                     onClick={onClose}
-                    className="rounded px-4 py-2 text-sm border"
+                    className="rounded-full px-4 py-2 text-sm border hover:bg-gray-200"
                 >
                     Cancel
                 </button>
                 <button
                     onClick={submit}
                     disabled={loading}
-                    className="rounded bg-black px-4 py-2 text-sm text-white"
+                    className="rounded-full bg-emerald-500 hover:bg-emerald-600 px-4 py-2 text-sm text-white"
                 >
                     {loading ? "Saving…" : "Save"}
                 </button>

@@ -10,6 +10,7 @@ import {
     deleteOperator,
     Operator,
 } from "@/lib/admin/operators.api";
+import { getApiError } from "@/lib/utils";
 
 export default function OperatorManagerModal({
     open,
@@ -23,60 +24,87 @@ export default function OperatorManagerModal({
     const [operators, setOperators] = useState<Operator[]>([]);
     const [name, setName] = useState("");
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [editingValue, setEditingValue] = useState("");
     const [loading, setLoading] = useState(false);
+    const [rowLoadingId, setRowLoadingId] = useState<string | null>(null);
+    const [deleteId, setDeleteId] = useState<string | null>(null);
 
     useEffect(() => {
         if (open) load();
     }, [open]);
 
     async function load() {
-        setOperators(await getOperators());
+        try {
+            const data = await getOperators();
+            setOperators(data);
+        } catch (err: any) {
+            toast.error(getApiError(err));
+        }
     }
 
+    // ---------------- ADD ----------------
     async function handleAdd() {
-        if (!name.trim()) {
+        const clean = name.trim();
+
+        if (!clean) {
             toast.error("Operator name required");
+            return;
+        }
+
+        if (clean.length < 3) {
+            toast.error("Minimum 3 characters required");
+            return;
+        }
+
+        if (clean.length > 50) {
+            toast.error("Maximum 50 characters allowed");
             return;
         }
 
         try {
             setLoading(true);
-            await createOperator({ name });
+            await createOperator({ name: clean });
             toast.success("Operator added");
             setName("");
             await load();
             onChanged();
-        } catch {
-            toast.error("Failed to add operator");
+        } catch (err: any) {
+            toast.error(getApiError(err));
         } finally {
             setLoading(false);
         }
     }
 
-    async function handleUpdate(id: string, newName: string) {
-        if (!newName.trim()) return;
+    // ---------------- UPDATE ----------------
+    async function handleUpdate(id: string) {
+        const clean = editingValue.trim();
+
+        if (!clean) {
+            toast.error("Operator name required");
+            return;
+        }
+
+        if (clean.length < 3) {
+            toast.error("Minimum 3 characters required");
+            return;
+        }
+
+        if (clean.length > 50) {
+            toast.error("Maximum 50 characters allowed");
+            return;
+        }
 
         try {
-            await updateOperator(id, { name: newName });
+            setRowLoadingId(id);
+            await updateOperator(id, { name: clean });
             toast.success("Operator updated");
             setEditingId(null);
             await load();
             onChanged();
-        } catch {
-            toast.error("Failed to update operator");
-        }
-    }
-
-    async function handleDelete(id: string) {
-        if (!confirm("Delete this operator?")) return;
-
-        try {
-            await deleteOperator(id);
-            toast.success("Operator deleted");
-            await load();
-            onChanged();
-        } catch {
-            toast.error("Cannot delete operator with slots");
+        } catch (err: any) {
+            toast.error(getApiError(err));
+        } finally {
+            setRowLoadingId(null);
         }
     }
 
@@ -110,7 +138,7 @@ export default function OperatorManagerModal({
                             disabled={loading}
                             className="rounded-md bg-emerald-500 px-4 py-2 text-sm font-medium text-black disabled:opacity-50"
                         >
-                            Add
+                            {loading ? "Adding..." : "Add"}
                         </button>
                     </div>
 
@@ -119,42 +147,55 @@ export default function OperatorManagerModal({
                         {operators.map((op) => (
                             <div
                                 key={op.id}
-                                className="flex items-center justify-between rounded-md border px-3 py-2 text-sm"
+                                className="flex gap-2 items-center justify-between rounded-md border px-3 py-2 text-sm"
                             >
                                 {editingId === op.id ? (
                                     <input
-                                        defaultValue={op.name}
+                                        value={editingValue}
                                         autoFocus
-                                        onBlur={(e) =>
-                                            handleUpdate(
-                                                op.id,
-                                                e.target.value
-                                            )
+                                        onChange={(e) =>
+                                            setEditingValue(e.target.value)
                                         }
-                                        className="flex-1 rounded-md border px-2 py-1 text-sm"
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                handleUpdate(op.id);
+                                            }
+                                        }}
+                                        className="flex-1 rounded-md border border-gray-300 px-2 py-1 text-sm 
+           focus:outline-none 
+           focus:ring-2 focus:ring-electric-teal 
+           focus:border-electric-teal"
+
                                     />
                                 ) : (
                                     <span>{op.name}</span>
                                 )}
 
-                                <div className="flex gap-3">
+                                <div className="flex gap-3 items-center">
                                     {editingId === op.id ? (
-                                        <Check size={16} />
+                                        <button
+                                            disabled={rowLoadingId === op.id}
+                                            onClick={() =>
+                                                handleUpdate(op.id)
+                                            }
+                                        >
+                                            <Check size={16} />
+                                        </button>
                                     ) : (
                                         <button
-                                            onClick={() =>
-                                                setEditingId(op.id)
-                                            }
+                                            onClick={() => {
+                                                setEditingId(op.id);
+                                                setEditingValue(op.name);
+                                            }}
                                         >
                                             <Pencil size={16} />
                                         </button>
                                     )}
 
                                     <button
-                                        onClick={() =>
-                                            handleDelete(op.id)
-                                        }
-                                        className="text-red-500"
+                                        onClick={() => setDeleteId(op.id)}
+                                        disabled={rowLoadingId === op.id}
+                                        className="text-red-500 disabled:opacity-40"
                                     >
                                         <Trash2 size={16} />
                                     </button>
@@ -163,6 +204,51 @@ export default function OperatorManagerModal({
                         ))}
                     </div>
                 </div>
+
+                {deleteId && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60">
+                        <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
+                            <h3 className="text-lg font-semibold text-gray-900">
+                                Delete Operator
+                            </h3>
+                            <p className="mt-2 text-sm text-gray-600">
+                                Are you sure you want to delete this operator?
+                                This action cannot be undone.
+                            </p>
+
+                            <div className="mt-6 flex justify-end gap-3">
+                                <button
+                                    onClick={() => setDeleteId(null)}
+                                    className="rounded-md border px-4 py-2 text-sm"
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            setRowLoadingId(deleteId);
+                                            await deleteOperator(deleteId);
+                                            toast.success("Operator deleted");
+                                            setDeleteId(null);
+                                            await load();
+                                            onChanged();
+                                        } catch (err: any) {
+                                            toast.error(getApiError(err));
+                                        } finally {
+                                            setRowLoadingId(null);
+                                        }
+                                    }}
+                                    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white"
+                                >
+                                    {rowLoadingId === deleteId
+                                        ? "Deleting..."
+                                        : "Delete"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Footer */}
                 <div className="border-t px-6 py-3 flex justify-end">

@@ -4,13 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Ban } from "lucide-react";
 import api from "@/lib/admin/axios";
 import toast from "react-hot-toast";
-
-const TIME_WINDOWS = [
-    { label: "08:00 AM – 10:00 PM", from: "08:00", to: "10:00" },
-    { label: "10:00 AM – 12:00 PM", from: "10:00", to: "12:00" },
-    { label: "02:00 PM – 04:00 PM", from: "14:00", to: "16:00" },
-    { label: "04:00 PM – 06:00 PM", from: "16:00", to: "18:00" },
-];
+import { getApiError } from "@/lib/utils";
 
 type Zone = {
     id: string;
@@ -28,11 +22,13 @@ export default function AddBlockedSlot({
     onCancel,
 }: AddBlockedSlotProps) {
     const [date, setDate] = useState("");
-    const [timeWindow, setTimeWindow] = useState("");
+    const [timeFrom, setTimeFrom] = useState("08:00");
+    const [timeTo, setTimeTo] = useState("10:00");
     const [zonePrefix, setZonePrefix] = useState("");
     const [reason, setReason] = useState("");
 
     const [zones, setZones] = useState<Zone[]>([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         api.get("/admin/service-zones").then(res => setZones(res.data));
@@ -55,92 +51,146 @@ export default function AddBlockedSlot({
         setZonePrefix("");
     }, [date]);
 
+    const minDate = new Date().toISOString().split("T")[0];
+
     const handleCreate = async () => {
-        if (!date || !timeWindow) {
-            toast.error("Date and time window are required");
+        if (!date) {
+            toast.error("Date is required");
             return;
         }
 
-        const selected = TIME_WINDOWS.find(w => w.label === timeWindow);
+        if (!timeFrom || !timeTo) {
+            toast.error("Both time fields are required");
+            return;
+        }
 
-        await api.post("/admin/blocked-slots", {
-            date,
-            timeFrom: selected?.from,
-            timeTo: selected?.to,
-            zonePrefix: zonePrefix || undefined,
-            reason: reason || undefined,
-        });
+        if (timeFrom >= timeTo) {
+            toast.error("Time From must be earlier than Time To");
+            return;
+        }
 
-        toast.success("Slot blocked successfully");
-        onSuccess();
+        // Minimum duration 15 mins (optional rule)
+        const from = new Date(`1970-01-01T${timeFrom}:00`);
+        const to = new Date(`1970-01-01T${timeTo}:00`);
+        const diffMin = (to.getTime() - from.getTime()) / 60000;
+
+        if (diffMin < 15) {
+            toast.error("Minimum block duration is 15 minutes");
+            return;
+        }
+
+        if (reason && reason.length > 200) {
+            toast.error("Reason must be under 200 characters");
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            await api.post("/admin/blocked-slots", {
+                date,
+                timeFrom,
+                timeTo,
+                zonePrefix: zonePrefix || undefined,
+                reason: reason?.trim() || undefined,
+            });
+
+            toast.success("Slot blocked successfully");
+            onSuccess();
+        } catch (err: any) {
+            toast.error(getApiError(err));
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div className="bg-white rounded-xl border p-6 space-y-4">
+        <div className="bg-white rounded-xl border p-6 space-y-6">
+            {/* Date + Time Row */}
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label className="text-sm font-medium">Date</label>
                     <input
                         type="date"
+                        min={minDate}
                         value={date}
                         onChange={e => setDate(e.target.value)}
-                        className="w-full border rounded-lg p-2"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500"
                     />
                 </div>
 
                 <div>
-                    <label className="text-sm font-medium">Time Window</label>
+                    <label className="text-sm font-medium">
+                        Zone/Postcode
+                    </label>
                     <select
-                        value={timeWindow}
-                        onChange={e => setTimeWindow(e.target.value)}
-                        className="w-full border rounded-lg p-2"
+                        value={zonePrefix}
+                        onChange={e => setZonePrefix(e.target.value)}
+                        disabled={!date}
+                        className="w-full border rounded-lg px-3 py-2 text-sm disabled:bg-gray-100 focus:ring-2 focus:ring-emerald-500"
                     >
-                        <option value="">Select time…</option>
-                        {TIME_WINDOWS.map(w => (
-                            <option key={w.label}>{w.label}</option>
+                        <option value="">
+                            {date ? "Select zone…" : "Select date first"}
+                        </option>
+                        {filteredZones.map(zone => (
+                            <option key={zone.id} value={zone.postcodePrefix}>
+                                {zone.postcodePrefix}
+                            </option>
                         ))}
                     </select>
                 </div>
+
             </div>
 
-            <div>
-                <label className="text-sm font-medium">Zone/Postcode (optional)</label>
-                <select
-                    value={zonePrefix}
-                    onChange={e => setZonePrefix(e.target.value)}
-                    className="w-full border rounded-lg p-2"
-                    disabled={!date}
-                >
-                    <option value="">
-                        {date ? "Select zone…" : "Select date first"}
-                    </option>
-                    {filteredZones.map(zone => (
-                        <option key={zone.id} value={zone.postcodePrefix}>
-                            {zone.postcodePrefix}
-                        </option>
-                    ))}
-                </select>
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <label className="text-sm font-medium">Time From</label>
+                    <input
+                        type="time"
+                        value={timeFrom}
+                        onChange={e => setTimeFrom(e.target.value)}
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500"
+                    />
+                </div>
+
+                <div>
+                    <label className="text-sm font-medium">Time To</label>
+                    <input
+                        type="time"
+                        value={timeTo}
+                        onChange={e => setTimeTo(e.target.value)}
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500"
+                    />
+                </div>
             </div>
 
+            {/* Reason */}
             <div>
-                <label className="text-sm font-medium">Reason (optional)</label>
+                <label className="text-sm font-medium">
+                    Reason (optional)
+                </label>
                 <textarea
                     value={reason}
                     onChange={e => setReason(e.target.value)}
-                    className="w-full border rounded-lg p-2"
+                    rows={3}
+                    className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 resize-none"
                 />
             </div>
 
+            {/* Actions */}
             <div className="flex gap-3">
                 <button
                     onClick={handleCreate}
-                    className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg"
+                    disabled={loading}
+                    className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg disabled:opacity-50"
                 >
-                    <Ban size={16} /> Block Slot
+                    <Ban size={16} />
+                    {loading ? "Blocking..." : "Block Slot"}
                 </button>
+
                 <button
                     onClick={onCancel}
-                    className="px-4 py-2 border rounded-lg"
+                    className="px-5 py-2 border rounded-lg hover:bg-gray-100"
                 >
                     Cancel
                 </button>

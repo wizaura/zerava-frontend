@@ -15,6 +15,7 @@ import SlotForm from "./AddSlotsForm";
 import SlotsList from "./SlotsList";
 import { getZones, Zone } from "@/lib/admin/zones.api";
 import OperatorManagerModal from "./CreateOperatorModal";
+import { getApiError } from "@/lib/utils";
 
 export default function AdminSlotsPage() {
     const [slots, setSlots] = useState<ServiceSlot[]>([]);
@@ -45,20 +46,58 @@ export default function AdminSlotsPage() {
         setZones(await getZones());
     }
 
+    function validateSlot(data: any): string | null {
+        if (!data.operatorId) return "Please select an operator";
+        if (!data.date) return "Please select a date";
+        if (!data.zonePrefix) return "Please select a zone";
+        if (!data.timeFrom || !data.timeTo) return "Please select time range";
+        if (!data.maxBookings || data.maxBookings < 1)
+            return "Max bookings must be at least 1";
+
+        if (data.timeFrom >= data.timeTo)
+            return "Time From must be earlier than Time To";
+
+        const from = new Date(`1970-01-01T${data.timeFrom}:00`);
+        const to = new Date(`1970-01-01T${data.timeTo}:00`);
+        const durationMinutes = (to.getTime() - from.getTime()) / 60000;
+
+        if (durationMinutes < 30)
+            return "Slot duration must be at least 30 minutes";
+
+        const todayStr = new Date().toISOString().slice(0, 10);
+        if (data.date < todayStr)
+            return "Cannot create slot for past date";
+
+        return null;
+    }
+
     async function handleSave(data: any) {
-        if (editingSlot) {
-            // EDIT
-            await updateSlot(editingSlot.id, data);
-            toast.success("Slot updated");
-        } else {
-            // CREATE
-            await createSlot(data);
-            toast.success("Slot added");
+
+        const error = validateSlot(data);
+
+        if (error) {
+            toast.error(error);
+            console.log("error")
+            return;
         }
 
-        setEditingSlot(null);
-        setShowForm(false);
-        await refresh();
+        console.log("hii")
+
+        try {
+            if (editingSlot) {
+                await updateSlot(editingSlot.id, data);
+                toast.success("Slot updated");
+            } else {
+                await createSlot(data);
+                toast.success("Slot added");
+            }
+
+            setEditingSlot(null);
+            setShowForm(false);
+            await refresh();
+        } catch (err: any) {
+            toast.error(getApiError(err));
+        }
     }
 
 
@@ -89,7 +128,7 @@ export default function AdminSlotsPage() {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => setShowOperatorModal(true)}
-                        className="rounded-full border px-5 py-2 text-sm font-medium"
+                        className="rounded-full border px-5 py-2 text-sm font-medium hover:bg-gray-200"
                     >
                         + Manage Operators
                     </button>
@@ -99,7 +138,7 @@ export default function AdminSlotsPage() {
                             setEditingSlot(null);
                             setShowForm(true);
                         }}
-                        className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-medium text-black"
+                        className="rounded-full bg-emerald-500 hover:bg-emerald-600 px-5 py-2 text-sm font-medium text-black"
                     >
                         + Add Slot
                     </button>

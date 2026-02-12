@@ -60,7 +60,7 @@ export default function AdminDashboardAnalytics() {
             d.setDate(d.getDate() - i);
             d.setHours(0, 0, 0, 0);
 
-            const key = d.toISOString().slice(0, 10); // YYYY-MM-DD
+            const key = d.toISOString().slice(0, 10);
 
             const label = d.toLocaleDateString("en-GB", {
                 day: "numeric",

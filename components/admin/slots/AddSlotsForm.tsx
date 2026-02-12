@@ -62,7 +62,7 @@ export default function SlotForm({
             timeFrom: slot.timeFrom,
             timeTo: slot.timeTo,
             maxBookings: slot.maxBookings,
-            zonePrefix: slot.zonePrefix || "",
+            zonePrefix: slot.zonePrefix ?? "",
             status: slot.status,
         });
     }, [slot]);
@@ -92,8 +92,11 @@ export default function SlotForm({
     }, [zones, selectedServiceDay]);
 
     useEffect(() => {
-        setForm((f) => ({ ...f, zonePrefix: "" }));
+        if (!form.id) {
+            setForm((f) => ({ ...f, zonePrefix: "" }));
+        }
     }, [form.date]);
+
 
     return (
         <div className="rounded-xl border bg-white p-6">
@@ -200,7 +203,6 @@ export default function SlotForm({
                 </div>
 
                 {/* Zone */}
-                {/* Zone */}
                 <div className="col-span-1">
                     <label className="mb-1 block text-sm font-medium">
                         Zone / Postcode
@@ -208,10 +210,11 @@ export default function SlotForm({
 
                     <select
                         disabled={!form.date}
-                        value={form.zonePrefix}
+                        value={form.zonePrefix || ""}
                         onChange={(e) => update("zonePrefix", e.target.value)}
                         className="w-full rounded-md border px-3 py-2 text-sm disabled:bg-gray-100"
                     >
+
                         <option value="">
                             {!form.date
                                 ? "Select date first"
@@ -234,14 +237,14 @@ export default function SlotForm({
             <div className="mt-6 flex gap-3">
                 <button
                     onClick={() => onSubmit(form)}
-                    className="rounded-md bg-emerald-500 px-6 py-2 text-sm font-medium text-black"
+                    className="rounded-md bg-emerald-500 hover:bg-emerald-600 px-6 py-2 text-sm font-medium text-black"
                 >
                     {slot ? "Update Slot" : "Add Slot"}
                 </button>
 
                 <button
                     onClick={onCancel}
-                    className="rounded-md border px-6 py-2 text-sm"
+                    className="rounded-md border px-6 py-2 text-sm hover:bg-gray-200"
                 >
                     Cancel
                 </button>

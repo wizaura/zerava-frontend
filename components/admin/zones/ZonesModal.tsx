@@ -8,6 +8,8 @@ import {
     deleteZone,
     getZones,
 } from "@/lib/admin/zones.api";
+import { getApiError } from "@/lib/utils";
+import toast from "react-hot-toast";
 
 const DAYS = [
     { label: "Monday", value: 1 },
@@ -47,24 +49,55 @@ export default function ZonesModal() {
     }
 
     async function handleAdd() {
-        if (!postcode || !zoneCode) return;
+        const cleanPrefix = postcode.trim().toUpperCase();
+        const cleanZone = zoneCode.trim().toUpperCase();
+
+        if (!cleanPrefix) {
+            alert("Postcode prefix required");
+            return;
+        }
+
+        if (cleanPrefix.length < 2) {
+            alert("Minimum 2 characters required");
+            return;
+        }
+
+        if (!/^[A-Z0-9]+$/.test(cleanPrefix)) {
+            alert("Only letters and numbers allowed");
+            return;
+        }
+
+        if (!cleanZone) {
+            alert("Zone code required");
+            return;
+        }
 
         setLoading(true);
-        await createZone({
-            postcodePrefix: postcode.toUpperCase(),
-            serviceDay: day,
-            zoneCode: zoneCode.toUpperCase(),
-        });
 
-        setPostcode("");
-        setZoneCode("");
-        await loadZones();
-        setLoading(false);
+        try {
+            await createZone({
+                postcodePrefix: cleanPrefix,
+                serviceDay: day,
+                zoneCode: cleanZone,
+            });
+
+            setPostcode("");
+            setZoneCode("");
+            await loadZones();
+        } catch (err: any) {
+            toast.error(getApiError(err));
+        } finally {
+            setLoading(false);
+        }
     }
-
+    
     async function handleDelete(id: string) {
-        await deleteZone(id);
-        setZones((prev) => prev.filter((z) => z.id !== id));
+        try{
+            await deleteZone(id);
+            setZones((prev) => prev.filter((z) => z.id !== id));
+        }catch(err: any){
+            toast.error(getApiError(err));
+        }
     }
 
     if (!isZonesOpen) return null;
@@ -78,7 +111,7 @@ export default function ZonesModal() {
                         Service Zone Manager
                     </h2>
                     <button onClick={closeZones}>
-                        <X size={18} className="text-eco-black"/>
+                        <X size={18} className="text-eco-black" />
                     </button>
                 </div>
 

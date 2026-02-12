@@ -7,7 +7,7 @@ import {
     MoreVertical,
 } from "lucide-react";
 import BookingDetailsModal from "./DetailsModal";
-import { AdminBooking } from "@/lib/admin/booking.api";
+import { AdminBooking, cancelAdminBooking, completeAdminBooking, confirmAdminBooking } from "@/lib/admin/booking.api";
 import adminApi from "@/lib/admin/axios";
 import toast from "react-hot-toast";
 
@@ -44,24 +44,31 @@ export default function BookingsTable({
 
     async function confirmBooking(id: string) {
         if (!confirmAction("Confirm this booking?")) return;
-        await adminApi.post(`/admin/bookings/${id}/confirm`);
+
+        await confirmAdminBooking(id);
+
         toast.success("Booking confirmed");
-        onRefresh(); // reload list
+        onRefresh();
     }
 
     async function cancelBooking(id: string) {
         if (!confirmAction("Cancel this booking? This cannot be undone.")) return;
-        await adminApi.post(`/admin/bookings/${id}/cancel`);
+
+        await cancelAdminBooking(id);
+
         toast.success("Booking cancelled");
         onRefresh();
     }
 
     async function completeBooking(id: string) {
         if (!confirmAction("Mark this booking as completed?")) return;
-        await adminApi.post(`/admin/bookings/${id}/complete`);
+
+        await completeAdminBooking(id);
+
         toast.success("Booking completed");
         onRefresh();
     }
+
 
     function confirmAction(message: string) {
         return window.confirm(message);
@@ -97,7 +104,7 @@ export default function BookingsTable({
                         >
                             <option value="all">All statuses</option>
                             <option value="CONFIRMED">Confirmed</option>
-                            <option value="PENDING">Pending</option>
+                            <option value="PENDING_PAYMENT">Pending</option>
                             <option value="COMPLETED">Completed</option>
                             <option value="CANCELLED">Cancelled</option>
                         </select>
@@ -149,7 +156,7 @@ export default function BookingsTable({
                                         </td>
 
                                         <td className="px-6 py-4">
-                                            {b.serviceType}
+                                            {b.service.name}
                                         </td>
 
                                         <td className="px-6 py-4">

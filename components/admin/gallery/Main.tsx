@@ -35,7 +35,7 @@ export default function GalleryMain() {
                 {mode === "list" && (
                     <button
                         onClick={() => setMode("add")}
-                        className="flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-white hover:bg-emerald-600"
+                        className="flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-white hover:bg-emerald-600"
                     >
                         <Upload size={18} />
                         Add Photos

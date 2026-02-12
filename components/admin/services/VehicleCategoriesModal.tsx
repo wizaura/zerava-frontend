@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import api from "@/lib/admin/axios";
+import toast from "react-hot-toast";
+import { getApiError } from "@/lib/utils";
+import { createVehicleCategory, updateVehicleCategory } from "@/lib/admin/services.api";
 
 type Props = {
     category?: {
@@ -21,96 +24,124 @@ export default function VehicleCategoryModal({
 }: Props) {
     const [name, setName] = useState(category?.name ?? "");
     const [slug, setSlug] = useState(category?.slug ?? "");
-    const [description, setDescription] = useState(
-        category?.description ?? "",
-    );
+    const [description, setDescription] =
+        useState(category?.description ?? "");
     const [loading, setLoading] = useState(false);
 
-    /* ---------- AUTO SLUG ---------- */
+    const isEdit = Boolean(category);
+
+    /* 🔥 Auto slug generation (create only) */
     useEffect(() => {
-        if (!category) {
+        if (!isEdit) {
             setSlug(
                 name
                     .toLowerCase()
                     .replace(/[^a-z0-9]+/g, "-")
-                    .replace(/(^-|-$)/g, ""),
+                    .replace(/(^-|-$)/g, "")
             );
         }
-    }, [name, category]);
+    }, [name, isEdit]);
 
     const submit = async () => {
-        if (!name.trim()) return;
+        if (!name.trim()) {
+            toast.error("Category name is required");
+            return;
+        }
+
+        if (!slug.trim()) {
+            toast.error("Slug is required");
+            return;
+        }
 
         setLoading(true);
+
         try {
-            if (category) {
-                await api.patch(
-                    `/admin/service-pricing/categories/${category.id}`,
-                    {
-                        name,
-                        slug,
-                        description,
-                    },
-                );
+            if (isEdit) {
+                await updateVehicleCategory(category!.id, {
+                    name,
+                    slug,
+                    description,
+                });
             } else {
-                await api.post("/admin/service-pricing/categories", {
+                await createVehicleCategory({
                     name,
                     slug,
                     description,
                 });
             }
 
+            toast.success(
+                isEdit
+                    ? "Category updated"
+                    : "Category created"
+            );
+
             onSaved();
             onClose();
+        } catch (err: any) {
+            toast.error(getApiError(err));
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="w-full max-w-md rounded-2xl bg-white p-6 space-y-5">
-                <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-medium">
-                        {category
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-6">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold">
+                        {isEdit
                             ? "Edit Vehicle Category"
                             : "Add Vehicle Category"}
                     </h3>
-                    <button onClick={onClose}>✕</button>
+
+                    <button
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-black"
+                    >
+                        ✕
+                    </button>
                 </div>
 
                 {/* Name */}
                 <div>
-                    <label className="block mb-1 text-xs font-medium text-gray-600">
-                        Category name
+                    <label className="block mb-1 text-sm font-medium">
+                        Category Name
                     </label>
                     <input
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) =>
+                            setName(e.target.value)
+                        }
                         placeholder="Standard"
-                        className="w-full rounded-xl border px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/10"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+                                   focus:outline-none focus:ring-2 focus:ring-electric-teal"
                     />
                 </div>
 
                 {/* Slug */}
                 <div>
-                    <label className="block mb-1 text-xs font-medium text-gray-600">
+                    <label className="block mb-1 text-sm font-medium">
                         Slug
                     </label>
                     <input
                         value={slug}
-                        onChange={(e) => setSlug(e.target.value)}
+                        onChange={(e) =>
+                            setSlug(e.target.value)
+                        }
                         placeholder="standard"
-                        className="w-full rounded-xl border px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/10"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+                                   focus:outline-none focus:ring-2 focus:ring-electric-teal"
                     />
-                    <p className="mt-1 text-xs text-gray-400">
+                    <p className="mt-1 text-xs text-gray-500">
                         Used internally (URLs & keys)
                     </p>
                 </div>
 
                 {/* Description */}
                 <div>
-                    <label className="block mb-1 text-xs font-medium text-gray-600">
+                    <label className="block mb-1 text-sm font-medium">
                         Description
                     </label>
                     <textarea
@@ -120,15 +151,16 @@ export default function VehicleCategoryModal({
                         }
                         placeholder="Eg: Hatchbacks, small saloons, compact cars"
                         rows={3}
-                        className="w-full resize-none rounded-xl border px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/10"
+                        className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 text-sm
+                                   focus:outline-none focus:ring-2 focus:ring-electric-teal"
                     />
                 </div>
 
                 {/* Footer */}
-                <div className="flex justify-end gap-3 pt-4">
+                <div className="flex justify-end gap-3 pt-2">
                     <button
                         onClick={onClose}
-                        className="rounded-full border px-5 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        className="rounded-full hover:bg-gray-200 border px-5 py-2 text-sm"
                     >
                         Cancel
                     </button>
@@ -136,9 +168,13 @@ export default function VehicleCategoryModal({
                     <button
                         disabled={loading}
                         onClick={submit}
-                        className="rounded-full bg-black px-6 py-2 text-sm text-white hover:bg-gray-800 disabled:opacity-60"
+                        className="rounded-full bg-emerald-500 hover:bg-emerald-600 px-6 py-2 text-sm font-medium text-black disabled:opacity-50"
                     >
-                        {loading ? "Saving…" : "Save"}
+                        {loading
+                            ? "Saving..."
+                            : isEdit
+                                ? "Update Category"
+                                : "Save Category"}
                     </button>
                 </div>
             </div>

@@ -8,18 +8,22 @@ import {
 import CustomerList from "./List";
 
 export default function AdminCustomersPage() {
-    const [customers, setCustomers] = useState<AdminCustomer[]>([]);
+    const [accounts, setAccounts] = useState<AdminCustomer[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         getAdminCustomers()
-            .then(setCustomers)
+            .then(setAccounts)
             .finally(() => setLoading(false));
     }, []);
 
     return (
         <div className="space-y-6">
-            <CustomerList customers={customers} loading={loading} />
+            <CustomerList
+                customers={accounts}
+                loading={loading}
+                onStatusChange={setAccounts}
+            />
         </div>
     );
 }

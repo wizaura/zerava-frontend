@@ -6,6 +6,8 @@ import UploadBox from "@/components/ui/UploadBox";
 import TextInput from "@/components/ui/TextInput";
 import TextArea from "@/components/ui/TextArea";
 import SelectInput from "@/components/ui/SelectInput";
+import toast from "react-hot-toast";
+import { getApiError } from "@/lib/utils";
 
 type Props = {
     onSuccess: (item: GalleryItem) => void;
@@ -43,6 +45,8 @@ export default function GalleryAdd({ onSuccess, onCancel }: Props) {
             });
 
             onSuccess(item);
+        } catch (err: any) {
+            toast.error(getApiError(err));
         } finally {
             setLoading(false);
         }

@@ -1,6 +1,14 @@
 import adminApi from "./axios";
 
-export type BookingStatus = "CONFIRMED" | "CANCELLED" | "PENDING_PAYMENT" | "COMPLETED";
+/* ---------- STATUS TYPE ---------- */
+
+export type BookingStatus =
+    | "CONFIRMED"
+    | "CANCELLED"
+    | "PENDING_PAYMENT"
+    | "COMPLETED";
+
+/* ---------- BOOKING TYPE (MATCHES BACKEND) ---------- */
 
 export type AdminBooking = {
     id: string;
@@ -8,23 +16,32 @@ export type AdminBooking = {
     name: string;
     email: string;
     phone: string;
-    serviceType: string;
-    vehicleSize: string;
-    price: number;
-    postcode: string;
     timeFrom: string;
     timeTo: string;
+    postcode: string;
+    address: string;
+    price: number;
     status: BookingStatus;
     createdAt: string;
-    address: string;
-    notes: string;
+    notes: string | null;
+
+    service: {
+        name: string;
+    };
+
+    vehicleCategory: {
+        name: string;
+    };
+
     serviceSlot: {
         date: string;
         operator: {
             name: string;
-        }
+        };
     };
 };
+
+/* ---------- FETCH BOOKINGS ---------- */
 
 export async function getAdminBookings(params?: {
     search?: string;
@@ -32,4 +49,18 @@ export async function getAdminBookings(params?: {
 }) {
     const res = await adminApi.get("/admin/bookings", { params });
     return res.data as AdminBooking[];
+}
+
+/* ---------- ACTION APIS ---------- */
+
+export async function confirmAdminBooking(id: string) {
+    return adminApi.post(`/admin/bookings/${id}/confirm`);
+}
+
+export async function cancelAdminBooking(id: string) {
+    return adminApi.post(`/admin/bookings/${id}/cancel`);
+}
+
+export async function completeAdminBooking(id: string) {
+    return adminApi.post(`/admin/bookings/${id}/complete`);
 }
