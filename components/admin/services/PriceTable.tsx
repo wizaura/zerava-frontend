@@ -48,7 +48,7 @@ export default function PriceTable({
             </div>
 
             {/* 🔥 Table */}
-            <div className="overflow-hidden rounded-xl border">
+            <div className="overflow-scroll rounded-xl border">
                 <table className="w-full text-sm">
                     <thead className="bg-gray-100 text-gray-600">
                         <tr>

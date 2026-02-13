@@ -9,9 +9,11 @@ import {
     getAdminBookings,
     AdminBooking,
     BookingStatus,
+    updateAdminBookingNotes,
 } from "@/lib/admin/booking.api";
 
 import BookingDetailsModal from "../booking/DetailsModal";
+import toast from "react-hot-toast";
 
 /* ---------- CALENDAR EVENT TYPE ---------- */
 type CalendarEvent = {
@@ -62,13 +64,14 @@ export default function AdminCalendarPage() {
                         left: "prev",
                         center: "title",
                         right: "today next",
-                    }}
+                    }}  
                     events={events}
                     height="auto"
                     dayMaxEvents
                     eventDisplay="block"
+                    displayEventTime={false}
                     eventClassNames={() =>
-                        "rounded-lg px-2 py-1 text-xs font-medium text-black leading-tight"
+                        "rounded-lg px-2 py-1 text-xs font-medium text-black leading-tight cursor-pointer transition-all duration-200 hover:brightness-90 hover:scale-[1.02] hover:shadow-md"
                     }
                     eventClick={(info) => {
                         const booking = bookings.find(
@@ -94,41 +97,29 @@ export default function AdminCalendarPage() {
                 <BookingDetailsModal
                     booking={selectedBooking}
                     onClose={() => setSelectedBooking(null)}
-                    onSave={(updates) => {
-                        // 🔹 TODO: call PATCH /admin/bookings/:id here
+                    onSave={async (updates) => {
+                        if (!selectedBooking) return;
 
-                        // OPTIMISTIC UPDATE (BOOKINGS)
-                        setBookings((prev): AdminBooking[] =>
-                            prev.map((b): AdminBooking =>
-                                b.id === selectedBooking.id
-                                    ? {
-                                        ...b,
-                                        status: updates.status,
-                                        notes: updates.notes as string,
-                                        serviceSlot: {
-                                            date: updates.date,
-                                            operator: b.serviceSlot.operator,
-                                        },
-                                    }
-                                    : b
-                            )
-                        );
+                        try {
+                            await updateAdminBookingNotes(
+                                selectedBooking.id,
+                                updates.notes ?? ""
+                            );
 
-                        // OPTIMISTIC UPDATE (CALENDAR)
-                        setEvents((prev) =>
-                            prev.map((e) =>
-                                e.id === selectedBooking.id
-                                    ? {
-                                        ...e,
-                                        start: updates.date,
-                                        backgroundColor:
-                                            STATUS_COLORS[updates.status],
-                                    }
-                                    : e
-                            )
-                        );
+                            // Optimistic update (notes only)
+                            setBookings((prev) =>
+                                prev.map((b) =>
+                                    b.id === selectedBooking.id
+                                        ? { ...b, notes: updates.notes ?? "" }
+                                        : b
+                                )
+                            );
 
-                        setSelectedBooking(null);
+                            toast.success("Notes updated");
+                            setSelectedBooking(null);
+                        } catch (err) {
+                            toast.error("Failed to update notes");
+                        }
                     }}
                 />
             )}

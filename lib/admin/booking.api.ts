@@ -64,3 +64,13 @@ export async function cancelAdminBooking(id: string) {
 export async function completeAdminBooking(id: string) {
     return adminApi.post(`/admin/bookings/${id}/complete`);
 }
+
+export async function updateAdminBookingNotes(
+    id: string,
+    notes: string
+) {
+    return adminApi.patch(`/admin/bookings/${id}`, {
+        notes,
+    });
+}
+

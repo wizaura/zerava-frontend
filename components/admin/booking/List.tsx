@@ -7,8 +7,8 @@ import {
     MoreVertical,
 } from "lucide-react";
 import BookingDetailsModal from "./DetailsModal";
-import { AdminBooking, cancelAdminBooking, completeAdminBooking, confirmAdminBooking } from "@/lib/admin/booking.api";
-import adminApi from "@/lib/admin/axios";
+import { AdminBooking, cancelAdminBooking, completeAdminBooking, confirmAdminBooking, updateAdminBookingNotes } from "@/lib/admin/booking.api";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 import toast from "react-hot-toast";
 
 const STATUS_STYLES: Record<AdminBooking["status"], string> = {
@@ -36,43 +36,19 @@ export default function BookingsTable({
     const [activeMenu, setActiveMenu] = useState<string | null>(null);
     const [selectedBooking, setSelectedBooking] =
         useState<AdminBooking | null>(null);
+    const [actionBookingId, setActionBookingId] = useState<string | null>(null);
+    const [actionType, setActionType] = useState<
+        "confirm" | "cancel" | "complete" | null
+    >(null);
+    const [actionLoading, setActionLoading] = useState(false);
+
 
     const filteredBookings =
         statusFilter === "all"
             ? bookings
             : bookings.filter((b) => b.status === statusFilter);
 
-    async function confirmBooking(id: string) {
-        if (!confirmAction("Confirm this booking?")) return;
 
-        await confirmAdminBooking(id);
-
-        toast.success("Booking confirmed");
-        onRefresh();
-    }
-
-    async function cancelBooking(id: string) {
-        if (!confirmAction("Cancel this booking? This cannot be undone.")) return;
-
-        await cancelAdminBooking(id);
-
-        toast.success("Booking cancelled");
-        onRefresh();
-    }
-
-    async function completeBooking(id: string) {
-        if (!confirmAction("Mark this booking as completed?")) return;
-
-        await completeAdminBooking(id);
-
-        toast.success("Booking completed");
-        onRefresh();
-    }
-
-
-    function confirmAction(message: string) {
-        return window.confirm(message);
-    }
 
 
     return (
@@ -205,7 +181,8 @@ export default function BookingsTable({
                                                         <button
                                                             onClick={() => {
                                                                 setActiveMenu(null);
-                                                                confirmBooking(b.id);
+                                                                setActionBookingId(b.id);
+                                                                setActionType("confirm");
                                                             }}
                                                             className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                                                         >
@@ -218,7 +195,8 @@ export default function BookingsTable({
                                                         <button
                                                             onClick={() => {
                                                                 setActiveMenu(null);
-                                                                completeBooking(b.id);
+                                                                setActionBookingId(b.id);
+                                                                setActionType("complete");
                                                             }}
                                                             className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
                                                         >
@@ -232,7 +210,8 @@ export default function BookingsTable({
                                                             <button
                                                                 onClick={() => {
                                                                     setActiveMenu(null);
-                                                                    cancelBooking(b.id);
+                                                                    setActionBookingId(b.id);
+                                                                    setActionType("cancel");
                                                                 }}
                                                                 className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
                                                             >
@@ -250,14 +229,85 @@ export default function BookingsTable({
                 )}
             </div>
 
+            <ConfirmModal
+                open={!!actionBookingId}
+                title={
+                    actionType === "confirm"
+                        ? "Confirm Booking"
+                        : actionType === "complete"
+                            ? "Complete Booking"
+                            : "Cancel Booking"
+                }
+                description={
+                    actionType === "cancel"
+                        ? "Are you sure you want to cancel this booking? This cannot be undone."
+                        : "Are you sure you want to proceed?"
+                }
+                confirmText={
+                    actionType === "confirm"
+                        ? "Confirm"
+                        : actionType === "complete"
+                            ? "Complete"
+                            : "Cancel Booking"
+                }
+                variant={actionType === "cancel" ? "danger" : "default"}
+                loading={actionLoading}
+                onCancel={() => {
+                    setActionBookingId(null);
+                    setActionType(null);
+                }}
+                onConfirm={async () => {
+                    if (!actionBookingId || !actionType) return;
+
+                    try {
+                        setActionLoading(true);
+
+                        if (actionType === "confirm") {
+                            await confirmAdminBooking(actionBookingId);
+                            toast.success("Booking confirmed");
+                        }
+
+                        if (actionType === "complete") {
+                            await completeAdminBooking(actionBookingId);
+                            toast.success("Booking completed");
+                        }
+
+                        if (actionType === "cancel") {
+                            await cancelAdminBooking(actionBookingId);
+                            toast.success("Booking cancelled");
+                        }
+
+                        setActionBookingId(null);
+                        setActionType(null);
+                        onRefresh();
+                    } catch (err) {
+                        toast.error("Action failed");
+                    } finally {
+                        setActionLoading(false);
+                    }
+                }}
+            />
+
             {/* DETAILS MODAL */}
             {selectedBooking && (
                 <BookingDetailsModal
                     booking={selectedBooking}
                     onClose={() => setSelectedBooking(null)}
-                    onSave={(updates) => {
-                        // PATCH /admin/bookings/:id
-                        setSelectedBooking(null);
+                    onSave={async (updates) => {
+                        try {
+                            if (!selectedBooking) return;
+
+                            await updateAdminBookingNotes(
+                                selectedBooking.id,
+                                updates.notes ?? ""
+                            );
+
+                            toast.success("Notes updated successfully");
+                            setSelectedBooking(null);
+                            onRefresh();
+                        } catch (err) {
+                            toast.error("Failed to update notes");
+                        }
                     }}
                 />
             )}

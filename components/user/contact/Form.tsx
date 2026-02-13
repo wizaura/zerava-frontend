@@ -1,6 +1,8 @@
 "use client";
 
+import { userApi } from "@/lib/user/user.api";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function ContactForm() {
     const [form, setForm] = useState({
@@ -11,7 +13,6 @@ export default function ContactForm() {
     });
 
     const [loading, setLoading] = useState(false);
-    const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -22,21 +23,14 @@ export default function ContactForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setStatus("idle");
 
         try {
-            const res = await fetch("/api/contact", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
-            });
+            await userApi.contact(form);
 
-            if (!res.ok) throw new Error("Failed");
-
-            setStatus("success");
+            toast.success("Message sent successfully");
             setForm({ name: "", email: "", phone: "", message: "" });
         } catch {
-            setStatus("error");
+            toast.error("Message sending failed");
         } finally {
             setLoading(false);
         }
@@ -114,7 +108,7 @@ export default function ContactForm() {
                     value={form.message}
                     onChange={handleChange}
                     className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm
-                   focus:border-electric-teal focus:outline-none"
+                    focus:border-electric-teal focus:outline-none"
                 />
             </div>
 
@@ -122,17 +116,10 @@ export default function ContactForm() {
                 type="submit"
                 disabled={loading}
                 className="w-full rounded-xl bg-eco-black px-6 py-4 text-sm font-semibold
-                 text-white transition hover:brightness-110"
+                    text-white transition hover:brightness-110"
             >
                 {loading ? "Sending..." : "Send Enquiry"}
             </button>
-
-            {status === "success" && (
-                <p className="text-sm text-green-600">Message sent successfully.</p>
-            )}
-            {status === "error" && (
-                <p className="text-sm text-red-600">Failed to send. Please try again.</p>
-            )}
         </form>
     );
 

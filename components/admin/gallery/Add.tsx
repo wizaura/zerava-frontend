@@ -26,11 +26,53 @@ export default function GalleryAdd({ onSuccess, onCancel }: Props) {
 
     const [loading, setLoading] = useState(false);
 
-    async function submit() {
+    function validate() {
         if (!before || !after) {
-            alert("Both images are required");
-            return;
+            toast.error("Both images are required");
+            return false;
         }
+
+        if (!title.trim()) {
+            toast.error("Title is required");
+            return false;
+        }
+
+        if (title.length < 5) {
+            toast.error("Title must be at least 5 characters");
+            return false;
+        }
+
+        if (!vehicleType.trim()) {
+            toast.error("Vehicle type is required");
+            return false;
+        }
+
+        if (description.length > 500) {
+            toast.error("Description must be under 500 characters");
+            return false;
+        }
+
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+        if (!allowedTypes.includes(before.type) || !allowedTypes.includes(after.type)) {
+            toast.error("Only JPG, PNG or WEBP images allowed");
+            return false;
+        }
+
+        const maxSize = 5 * 1024 * 1024;
+
+        if (before.size > maxSize || after.size > maxSize) {
+            toast.error("Images must be under 5MB");
+            return false;
+        }
+
+        return true;
+    }
+
+
+    async function submit() {
+
+        if (!validate()) return;
 
         setLoading(true);
         try {
@@ -40,8 +82,8 @@ export default function GalleryAdd({ onSuccess, onCancel }: Props) {
                 vehicleType,
                 description,
                 featured,
-                beforeImage: before,
-                afterImage: after,
+                beforeImage: before as File,
+                afterImage: after as File,
             });
 
             onSuccess(item);

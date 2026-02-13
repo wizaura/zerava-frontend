@@ -198,5 +198,3 @@ function formatTime(time: string) {
         .replace("am", "AM")
         .replace("pm", "PM");
 }
-
-

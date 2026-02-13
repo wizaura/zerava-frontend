@@ -65,6 +65,10 @@ export default function ConfirmRescheduleStep({
                     label="Vehicle"
                     value={draft.vehicleCategory}
                 />
+                <SummaryRow
+                    label="Postcode"
+                    value={draft.postcode}
+                />
 
                 <div className="space-y-1">
                     <p className="text-xs uppercase tracking-wide text-gray-500">

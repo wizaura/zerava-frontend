@@ -16,3 +16,16 @@ export function getApiError(err: any): string {
     return err?.message || "Something went wrong";
 }
 
+
+export function formatDate(value: string | Date, locale = "en-GB") {
+    if (!value) return "-";
+
+    const date = typeof value === "string" ? new Date(value) : value;
+
+    return date.toLocaleDateString(locale, {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+    });
+}
+

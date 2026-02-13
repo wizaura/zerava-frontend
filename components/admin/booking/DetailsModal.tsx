@@ -4,6 +4,7 @@ import { Mail, User, Phone, MapPin, X } from "lucide-react";
 import { useState } from "react";
 import { AdminBooking } from "@/lib/admin/booking.api";
 import TextArea from "@/components/ui/TextArea";
+import { formatDate } from "@/lib/utils";
 
 type BookingUpdatePayload = {
     notes?: string;
@@ -33,7 +34,7 @@ export default function BookingDetailsModal({
                     <h2 className="text-lg font-semibold">Booking Details</h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-black"
+                        className="text-gray-400 hover:text-red-500"
                     >
                         <X size={18} />
                     </button>
@@ -45,13 +46,9 @@ export default function BookingDetailsModal({
                     {/* SUMMARY */}
                     <div className="grid grid-cols-2 gap-4 rounded-lg bg-gray-50 p-4 text-sm">
                         <Info label="Reference" value={booking.referenceCode} />
-                        <Info
-                            label="Created"
-                            value={new Date(booking.createdAt).toLocaleString("en-GB")}
-                        />
                         <Info label="Service" value={booking.service.name} />
                         <Info label="Vehicle Size" value={booking.vehicleCategory.name} />
-                        <Info label="Date" value={booking.serviceSlot?.date} />
+                        <Info label="Date" value={formatDate(booking.serviceSlot?.date)} />
                         <Info
                             label="Time"
                             value={`${booking.timeFrom} – ${booking.timeTo}`}
@@ -84,13 +81,13 @@ export default function BookingDetailsModal({
                 <div className="flex justify-end gap-3 border-t px-6 py-4">
                     <button
                         onClick={onClose}
-                        className="rounded-lg border px-5 py-2"
+                        className="rounded-full hover:bg-gray-200 border px-5 py-2"
                     >
                         Close
                     </button>
                     <button
                         onClick={handleSave}
-                        className="rounded-lg bg-black px-6 py-2 text-white"
+                        className="rounded-full bg-emerald-500 hover:bg-emerald-600 px-6 py-2 text-white"
                     >
                         Save Notes
                     </button>
@@ -119,7 +116,7 @@ function Detail({
     value: string;
 }) {
     return (
-        <p className="flex items-center gap-2 text-sm">
+        <p className="flex items-center gap-2 text-md">
             {icon}
             {value}
         </p>

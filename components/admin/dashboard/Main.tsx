@@ -1,6 +1,8 @@
 "use client";
 
 import adminApi from "@/lib/admin/axios";
+import { downloadAllBookingsCsv, downloadTodaysBookingsExcel, sendCustomerInvite } from "@/lib/admin/dashboard.api";
+import { getApiError } from "@/lib/utils";
 import {
     CheckCircle,
     Bell,
@@ -12,9 +14,11 @@ import {
     Droplet,
     Leaf,
     UserPlus,
+    Send,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function AdminDashboardOverview() {
     const [stats, setStats] = useState<any>(null);
@@ -41,11 +45,6 @@ export default function AdminDashboardOverview() {
                     value={stats.pendingBookings}
                     bg="bg-emerald-500"
                     icon={<CheckCircle />}
-                    action={
-                        <Button muted disabled={stats.pendingBookings === 0}>
-                            Confirm All
-                        </Button>
-                    }
                 />
 
                 <StatCard
@@ -54,9 +53,9 @@ export default function AdminDashboardOverview() {
                     bg="bg-blue-500"
                     icon={<Bell />}
                     action={
-                        <Button>
+                        <Button onClick={downloadTodaysBookingsExcel}>
                             <Download size={16} />
-                            Export All
+                            Export Today
                         </Button>
                     }
                 />
@@ -68,7 +67,11 @@ export default function AdminDashboardOverview() {
                     subtitle="Download all booking records"
                     bg="bg-orange-500"
                     icon={<Download />}
-                    action={<Button>Download CSV</Button>}
+                    action={
+                        <Button onClick={downloadAllBookingsCsv}>
+                            Download CSV
+                        </Button>
+                    }
                 />
             </div>
 
@@ -152,7 +155,7 @@ export default function AdminDashboardOverview() {
                 </div>
                 <div className="rounded-xl border bg-white p-6">
                     <div className="mb-4 flex items-center justify-between">
-                        <h3 className="text-lg font-semibold">Recent Bookings</h3>
+                        <h3 className="text-lg font-semibold">Active Subscriptions</h3>
 
                         <button
                             onClick={() => router.push("/admin/subscriptions")}
@@ -243,21 +246,62 @@ function StatCard({
 }
 
 
-function InviteCard() {
+export function InviteCard() {
+    const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const isValidEmail =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    async function handleInvite() {
+        if (!isValidEmail || loading) return;
+
+        try {
+            setLoading(true);
+            await sendCustomerInvite(email);
+
+            toast.success("Invitation sent successfully 🎉");
+            setEmail("");
+        } catch (err: any) {
+            toast.error(getApiError(err));
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
         <div className="flex h-40 flex-col justify-between rounded-2xl border bg-white p-6">
+            {/* HEADER */}
             <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium">Invite Customer</h3>
+                <h3 className="text-sm font-medium">
+                    Invite Customer
+                </h3>
                 <UserPlus className="text-purple-500" />
             </div>
 
+            {/* INPUT + BUTTON */}
             <div className="flex gap-2">
                 <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="Email..."
-                    className="flex-1 rounded-lg border px-3 py-2 text-sm focus:outline-none"
+                    className="flex-1 rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
                 />
-                <button className="rounded-lg bg-purple-500 px-3 py-2 text-white">
-                    →
+
+                <button
+                    onClick={handleInvite}
+                    disabled={!isValidEmail || loading}
+                    className={`flex items-center justify-center rounded-lg px-4 py-2 text-white transition ${
+                        isValidEmail
+                            ? "bg-purple-500 hover:bg-purple-600"
+                            : "bg-gray-300 cursor-not-allowed"
+                    }`}
+                >
+                    {loading ? (
+                        "..."
+                    ) : (
+                        <Send size={16} />
+                    )}
                 </button>
             </div>
         </div>

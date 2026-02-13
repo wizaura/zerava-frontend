@@ -141,7 +141,7 @@ export default function SlotForm({
                 </div>
 
                 {/* Time + Max Bookings Row */}
-                <div className="col-span-2 grid grid-cols-3 gap-6">
+                <div className="col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-6">
                     {/* Time From */}
                     <div>
                         <label className="mb-1 block text-sm font-medium">

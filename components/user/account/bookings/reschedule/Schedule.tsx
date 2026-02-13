@@ -9,7 +9,8 @@ import { RescheduleDraft } from "./Main";
 import { Clock } from "lucide-react";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const UK_POSTCODE_REGEX = /^SO\d{2}$/;
+const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d{2}$/;
+const UK_POSTCODE_REGEX_FULL = /^[A-Z]{1,2}\d{2}\s?\d[A-Z]{2}$/i;
 
 type Slot = {
     startTime: string;
@@ -50,12 +51,18 @@ export default function ScheduleStep({
     });
 
 
-    console.log(address,'ad')
+    console.log(address, 'ad')
 
     /* ---------------- POSTCODE CHECK ---------------- */
 
+    const outwardCode = postcode
+        .toUpperCase()
+        .trim()
+        .split(" ")[0];
+
     useEffect(() => {
-        if (!UK_POSTCODE_REGEX.test(postcode)) return;
+
+        if (!UK_POSTCODE_REGEX.test(outwardCode)) return;
 
         const timeout = setTimeout(async () => {
             try {
@@ -63,7 +70,7 @@ export default function ScheduleStep({
                 setError(null);
 
                 const res = await api.get(
-                    `/service-zones/check/${postcode.toUpperCase()}`
+                    `/service-zones/check/${outwardCode.toUpperCase()}`
                 );
 
                 if (!res.data.available) {
@@ -95,7 +102,7 @@ export default function ScheduleStep({
         }, 600);
 
         return () => clearTimeout(timeout);
-    }, [postcode]);
+    }, [outwardCode]);
 
     /* ---------------- AVAILABILITY ---------------- */
 
@@ -120,10 +127,26 @@ export default function ScheduleStep({
     }
 
     useEffect(() => {
-        if (!selectedDate) return;
-        if (!UK_POSTCODE_REGEX.test(postcode)) return;
+        const full = postcode.trim().toUpperCase();
 
-        fetchAvailability(selectedDate, postcode);
+        if (!UK_POSTCODE_REGEX_FULL.test(full)) return;
+
+        setDraft((d) => ({
+            ...d,
+            postcode: full,
+        }));
+    }, [postcode]);
+
+    useEffect(() => {
+        if (!selectedDate) return;
+        const outwardCode = postcode
+            .toUpperCase()
+            .trim()
+            .split(" ")[0];
+
+        if (!UK_POSTCODE_REGEX.test(outwardCode)) return;
+
+        fetchAvailability(selectedDate, outwardCode);
     }, [selectedDate, postcode]);
 
     /* ---------------- HELPERS ---------------- */
@@ -139,6 +162,17 @@ export default function ScheduleStep({
             timeTo: null,
         }));
     }
+
+    const groupedSlots = slots.reduce((acc, slot) => {
+        const key = slot.startTime;
+
+        if (!acc[key]) {
+            acc[key] = [];
+        }
+
+        acc[key].push(slot);
+        return acc;
+    }, {} as Record<string, typeof slots>);
 
     function selectSlot(slot: Slot) {
         setDraft((d) => ({
@@ -170,6 +204,20 @@ export default function ScheduleStep({
         });
     }
 
+    const matchesFirstStage =
+        /^[A-Z]{1,2}\d{2}$/i.test(outwardCode);
+
+    const matchesFullPostcode =
+        /^[A-Z]{1,2}\d{2}\s?\d[A-Z]{2}$/i.test(postcode.trim());
+
+    const showPostcodeError =
+        matchesFirstStage && !matchesFullPostcode;
+
+
+    const canSubmit =
+        draft.serviceSlotId && matchesFullPostcode;
+
+
     function renderSchedule(
         date: string | null,
         timeFrom: string | null,
@@ -199,7 +247,7 @@ export default function ScheduleStep({
                     <span className="text-gray-600">
                         {formatTime12h(timeFrom)} – {formatTime12h(timeTo)} · {postcode}
                     </span>
-                    
+
                 </div>
             </div>
         );
@@ -237,6 +285,12 @@ export default function ScheduleStep({
                     placeholder="SO16"
                     className="w-full rounded-xl border px-4 py-3 text-sm focus:border-electric-teal focus:outline-none"
                 />
+
+                {showPostcodeError && (
+                    <p className="mt-2 text-sm text-red-500">
+                        Please enter full postcode to continue (Eg: SO16 4ER)
+                    </p>
+                )}
 
                 {loading && (
                     <p className="text-xs text-gray-400">
@@ -327,27 +381,40 @@ export default function ScheduleStep({
                         </div>
                     ) : (
                         <div className="grid md:grid-cols-3 gap-4">
-                            {slots.map((slot) => {
-                                const isSelected =
-                                    draft.serviceSlotId ===
-                                    slot.serviceSlotId &&
-                                    draft.timeFrom === slot.startTime;
+                            {Object.entries(groupedSlots)
+                                .sort(([a], [b]) => a.localeCompare(b))
+                                .map(([time, timeSlots]) => (
+                                    <div key={time}>
+                                        <p className="mb-2 text-sm font-semibold text-gray-600">
+                                            {formatTime12h(time)}
+                                        </p>
 
-                                return (
-                                    <button
-                                        key={`${slot.serviceSlotId}-${slot.startTime}`}
-                                        onClick={() => selectSlot(slot)}
-                                        className={`flex gap-2 items-center rounded-xl border px-4 py-3 transition ${isSelected
-                                            ? "border-electric-teal bg-electric-teal/10"
-                                            : "hover:border-black"
-                                            }`}
-                                    >
-                                        <Clock size={16} />
-                                        {formatTime12h(slot.startTime)} –{" "}
-                                        {formatTime12h(slot.endTime)}
-                                    </button>
-                                );
-                            })}
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {timeSlots.map((slot) => {
+                                                const isSelected =
+                                                    draft.serviceSlotId === slot.serviceSlotId &&
+                                                    draft.timeFrom === slot.startTime;
+
+                                                return (
+                                                    <button
+                                                        key={`${slot.serviceSlotId}-${slot.startTime}`}
+                                                        onClick={() => selectSlot(slot)}
+                                                        className={[
+                                                            "flex items-center justify-between rounded-xl border px-4 py-3 transition",
+                                                            isSelected
+                                                                ? "border-electric-teal bg-electric-teal/10"
+                                                                : "hover:border-black",
+                                                        ].join(" ")}
+                                                    >
+                                                        <span className="text-sm text-gray-600">
+                                                            till {formatTime12h(slot.endTime)}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
                         </div>
                     )}
                 </div>
@@ -377,9 +444,9 @@ export default function ScheduleStep({
             {/* CONTINUE */}
             <div className="flex justify-end">
                 <button
-                    disabled={!draft.serviceSlotId}
+                    disabled={!canSubmit}
                     onClick={onContinue}
-                    className={`rounded-full px-8 py-2 text-sm text-white ${draft.serviceSlotId
+                    className={`rounded-full px-8 py-2 text-sm text-white ${canSubmit
                         ? "bg-black hover:bg-gray-800"
                         : "bg-gray-300 cursor-not-allowed"
                         }`}

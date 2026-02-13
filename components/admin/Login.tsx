@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { adminRequestOtp, adminVerifyOtp } from "@/lib/admin/admin.api";
 
@@ -10,6 +10,8 @@ export default function AdminLoginPage() {
     const [step, setStep] = useState<1 | 2>(1);
     const [email, setEmail] = useState("");
     const [otp, setOtp] = useState("");
+    const [timeLeft, setTimeLeft] = useState(0);
+    const [canResend, setCanResend] = useState(false);
     const [loading, setLoading] = useState(false);
 
     /* ---------------- STEP 1: SEND OTP ---------------- */
@@ -18,11 +20,13 @@ export default function AdminLoginPage() {
         e.preventDefault();
         setLoading(true);
 
-        const res = await adminRequestOtp(email);
+        await adminRequestOtp(email);
 
         setLoading(false);
 
         setStep(2);
+        setTimeLeft(120);
+        setCanResend(false);
     }
 
     /* ---------------- STEP 2: VERIFY OTP ---------------- */
@@ -37,6 +41,33 @@ export default function AdminLoginPage() {
 
         router.push("/admin");
     }
+
+    async function resendOtp() {
+        if (!canResend) return;
+
+        setLoading(true);
+        await adminRequestOtp(email);
+        setLoading(false);
+
+        setTimeLeft(120);
+        setCanResend(false);
+    }
+
+
+
+    useEffect(() => {
+        if (timeLeft <= 0) {
+            setCanResend(true);
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            setTimeLeft((prev) => prev - 1);
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    }, [timeLeft]);
+
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-eco-black to-black px-4">
@@ -97,6 +128,23 @@ export default function AdminLoginPage() {
                         >
                             Change email
                         </button>
+                        <div className="text-center text-sm text-gray-500">
+                            {canResend ? (
+                                <button
+                                    type="button"
+                                    onClick={resendOtp}
+                                    className="text-emerald-600 hover:underline"
+                                >
+                                    Resend OTP
+                                </button>
+                            ) : (
+                                <span>
+                                    Resend in {Math.floor(timeLeft / 60)}:
+                                    {String(timeLeft % 60).padStart(2, "0")}
+                                </span>
+                            )}
+                        </div>
+
                     </form>
                 )}
             </div>

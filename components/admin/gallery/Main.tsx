@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import GalleryList from "./List";
 import GalleryAdd from "./Add";
-import { getGallery, GalleryItem } from "@/lib/admin/gallery.api";
+import { getGallery, GalleryItem, deleteGalleryItem } from "@/lib/admin/gallery.api";
 import { Upload } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function GalleryMain() {
     const [items, setItems] = useState<GalleryItem[]>([]);
@@ -16,6 +17,20 @@ export default function GalleryMain() {
             .then(setItems)
             .finally(() => setLoading(false));
     }, []);
+
+    async function handleDelete(id: string) {
+
+        try {
+            await deleteGalleryItem(id);
+
+            // Optimistic update
+            setItems((prev) => prev.filter((item) => item.id !== id));
+
+            toast.success("Gallery item deleted");
+        } catch (err) {
+            toast.error("Failed to delete item");
+        }
+    }
 
     if (loading) {
         return <div className="py-20 text-center">Loading...</div>;
@@ -44,7 +59,9 @@ export default function GalleryMain() {
             </div>
 
             {/* CONTENT */}
-            {mode === "list" && <GalleryList items={items} />}
+            {mode === "list" && (
+                <GalleryList items={items} onDelete={handleDelete} />
+            )}
 
             {mode === "add" && (
                 <GalleryAdd

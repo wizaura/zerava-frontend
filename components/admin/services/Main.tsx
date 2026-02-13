@@ -47,7 +47,7 @@ export default function ServicePricingPage() {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col md:flex-row items-center gap-3">
                     <button
                         onClick={() => setOpenCategory(true)}
                         className="rounded-full hover:bg-gray-200 border px-5 py-2 text-sm font-medium"

@@ -34,7 +34,7 @@ export default function BlockedSlots() {
                         console.log("clicked");
                         setShowForm(v => !v);
                     }}
-                    className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-full"
+                    className="flex items-center text-sm gap-2 bg-emerald-600 text-white px-4 py-2 rounded-full"
                 >
                     <Plus size={16} /> Block Slot
                 </button>

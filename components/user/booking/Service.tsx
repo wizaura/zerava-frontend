@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { BookingDraft, Service, VehicleCategory } from "./Main";
+import { Sparkles, Shield, Wrench } from "lucide-react";
 
 type Props = {
     services: Service[];
@@ -26,6 +27,8 @@ export default function ServiceStep({
                 .map((c) => [c.id, c]),
         ).values(),
     );
+
+    const serviceIcons = [Sparkles, Shield, Wrench];
 
     return (
         <div className="space-y-10 max-w-3xl mx-auto">
@@ -67,7 +70,7 @@ export default function ServiceStep({
                                 <p className="font-medium text-gray-900">
                                     {c.name}
                                 </p>
-                                <p className="mt-3 text-sm font-light text-gray-500">{c.description}</p>
+                                <p className="mt-1 text-sm font-light text-gray-500">{c.description}</p>
                             </button>
                         );
                     })}
@@ -77,19 +80,19 @@ export default function ServiceStep({
             {/* SERVICES */}
             {selectedCategory && (
                 <div className="space-y-4">
-                    {services.map((service) => {
+                    {services.map((service, index) => {
                         const priceForCategory = service.prices.find(
-                            (p) =>
-                                p.vehicleCategory.id === selectedCategory.id,
+                            (p) => p.vehicleCategory.id === selectedCategory.id,
                         );
-
-                        const isPopular = service.slug === "zerava-care-plus";
 
                         if (!priceForCategory) return null;
 
+                        const isPopular = service.isMaintenance;
+
                         const selected =
-                            bookingDraft.servicePriceId ===
-                            priceForCategory.id;
+                            bookingDraft.servicePriceId === priceForCategory.id;
+
+                        const Icon = serviceIcons[index % serviceIcons.length];
 
                         return (
                             <button
@@ -99,17 +102,16 @@ export default function ServiceStep({
                                         ...d,
                                         servicePriceId: priceForCategory.id,
                                         serviceName: service.name,
-                                        vehicleCategory:
-                                            selectedCategory.name,
+                                        vehicleCategory: selectedCategory.name,
                                         basePrice: priceForCategory.price,
                                         serviceDurationMin: service.durationMin,
                                     }))
                                 }
                                 className={[
                                     "relative w-full rounded-xl p-6 text-left transition",
-                                    "border bg-white shadow-sm",
+                                    "border shadow-sm",
                                     selected
-                                        ? "border-electric-teal bg-electric-teal/5"
+                                        ? "border-electric-teal bg-electric-teal/10"
                                         : "border-gray-200 hover:shadow-md hover:border-electric-teal/90",
                                 ].join(" ")}
                             >
@@ -121,15 +123,27 @@ export default function ServiceStep({
                                 )}
 
                                 <div className="flex items-center justify-between gap-6">
-                                    <div>
-                                        <p className="font-medium text-gray-900">
-                                            {service.name}
-                                        </p>
-                                        {service.description && (
-                                            <p className="mt-1 text-sm text-gray-500">
-                                                {service.description}
+                                    <div className="flex items-start gap-4">
+                                        {/* Icon */}
+                                        <div className="m-auto rounded-lg bg-gray-100 p-3">
+                                            <Icon className="h-7 w-7 text-gray-700" />
+                                        </div>
+
+                                        <div>
+                                            <p className="font-medium text-gray-900">
+                                                {service.name}
                                             </p>
-                                        )}
+
+                                            {service.description && (
+                                                <p className="mt-1 text-sm text-gray-500">
+                                                    {service.description}
+                                                </p>
+                                            )}
+
+                                            <p className="mt-2 text-xs text-gray-400">
+                                                ⏱ Up to {service.durationMin} min
+                                            </p>
+                                        </div>
                                     </div>
 
                                     <p className="text-xl font-semibold text-gray-900">
@@ -139,6 +153,7 @@ export default function ServiceStep({
                             </button>
                         );
                     })}
+
                 </div>
             )}
 

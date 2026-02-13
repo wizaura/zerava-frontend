@@ -125,7 +125,7 @@ export default function AdminSlotsPage() {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-center gap-3">
                     <button
                         onClick={() => setShowOperatorModal(true)}
                         className="rounded-full border px-5 py-2 text-sm font-medium hover:bg-gray-200"

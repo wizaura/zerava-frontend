@@ -115,6 +115,14 @@ export default function BookingClient({
         }));
     }, [user]);
 
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    }, [currentStep]);
+
+
     /* ---------- RENDER ---------- */
 
     return (
