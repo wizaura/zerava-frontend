@@ -8,13 +8,13 @@ import { useSelector } from "react-redux";
 
 const navItems = [
     { label: "Home", href: "/" },
-    { label: "Services", href: "/services" },
-    { label: "Pricing", href: "/services#pricing" },
-    { label: "Our Works", href: "/gallery" },
+    // { label: "Services", href: "/services" },
+    // { label: "Pricing", href: "/services#pricing" },
+    // { label: "Our Works", href: "/gallery" },
     { label: "Fleet", href: "/fleet" },
     { label: "About", href: "/about" },
-    { label: "FAQs", href: "/FAQs" },
-    { label: "Contact", href: "/contact" },
+    // { label: "FAQs", href: "/FAQs" },
+    // { label: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
@@ -75,15 +75,15 @@ export default function Navbar() {
                 {/* Right Actions */}
                 <div className="flex items-center gap-1 sm:gap-3">
                     {/* Book Now */}
-                    <Link
+                    {/* <Link
                         href="/booking"
                         className="rounded-full bg-electric-teal px-5 py-2 text-sm font-semibold text-eco-black transition hover:brightness-110"
                     >
                         Book Now
-                    </Link>
+                    </Link> */}
 
                     {/* Account */}
-                    {(
+                    {/* {(
                         <Link
                             href={isAuthenticated ? "/account" : "/login"}
                             className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
@@ -99,7 +99,7 @@ export default function Navbar() {
                                 {isAuthenticated ? "Account" : "Login"}
                             </span>
                         </Link>
-                    )}
+                    )} */}
 
                     {/* Mobile Menu Toggle */}
                     <button
