@@ -1,20 +1,33 @@
 import api from "@/lib/user/axios";
-import { SubscriptionDraft } from "@/components/user/subscribe/types";
 
 export const SubscriptionsAPI = {
-    // STEP 1: get setup intent
+    /* ==============================
+       STEP 1: Create Setup Intent
+    ============================== */
+
     createSetupIntent: async () => {
         const res = await api.post("/subscriptions/setup-intent");
         return res.data as {
             clientSecret: string;
-            customerId: string;
         };
     },
 
-    // STEP 2: create subscription
+    /* ==============================
+       STEP 2: Create Subscription
+    ============================== */
+
     createSubscription: async (payload: {
         paymentMethodId: string;
-        draft: SubscriptionDraft;
+        subscriptionData: {
+            servicePriceId: string;
+            stripePriceId: string;
+            postcode: string;
+            address: string;
+            preferredDay: number;
+            templateId: string;
+            timeFrom: string;
+            timeTo: string;
+        };
     }) => {
         const res = await api.post("/subscriptions/create", payload);
         return res.data;

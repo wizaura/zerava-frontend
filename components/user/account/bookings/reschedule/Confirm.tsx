@@ -14,7 +14,12 @@ export default function ConfirmRescheduleStep({
         await api.patch(`/bookings/${draft.bookingId}/reschedule`, {
             postcode: draft.postcode,
             date: draft.date,
+
             serviceSlotId: draft.serviceSlotId,
+            templateId: draft.templateId,
+            isTemplate: draft.isTemplate,
+            operatorId: draft.operatorId,
+
             timeFrom: draft.timeFrom,
             timeTo: draft.timeTo,
             address: draft.address,

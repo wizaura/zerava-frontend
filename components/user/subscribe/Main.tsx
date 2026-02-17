@@ -9,27 +9,49 @@ import ScheduleStep from "./Schedule";
 import PaymentStep from "./Payment";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { SubscriptionService } from "./Call";
 
+const stripePromise = loadStripe(
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
-export default function SubscribeClient() {
+export default function SubscribeClient({
+    services,
+}: {
+    services: SubscriptionService[];
+}) {
     const [currentStep, setCurrentStep] = useState(0);
-    const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+
 
     const [draft, setDraft] = useState<SubscriptionDraft>({
         plan: null,
-        vehicleSize: null,
-        serviceType: null,
-        pricePerClean: null,
-        address: null,
+        vehicleCategoryId: null,
+        servicePriceId: null,
+        stripePriceId: null,
+        vehicleCategory: null,
+
+        serviceName: undefined,
+        basePrice: undefined,
+        durationMin: undefined,
+
         postcode: null,
+        address: null,
+
+        preferredDay: null,
+        templateId: null,
+        timeFrom: null,
+        timeTo: null,
+
         serviceable: null,
-        subscriptionDay: null,
-        timeWindow: null,
+
+        pricePerClean: undefined,
     });
 
+
     const handleSubscribe = () => {
-        console.log("Final subscription payload:", draft);
+        window.location.href = "/account/subscriptions";
     };
+
 
     return (
         <>
@@ -42,8 +64,10 @@ export default function SubscribeClient() {
                         draft={draft}
                         setDraft={setDraft}
                         onContinue={() => setCurrentStep(1)}
+                        services={services}
                     />
                 )}
+
                 {currentStep === 1 && (
                     <ScheduleStep
                         draft={draft}
@@ -52,6 +76,7 @@ export default function SubscribeClient() {
                         onBack={() => setCurrentStep(0)}
                     />
                 )}
+
                 {currentStep === 2 && (
                     <Elements stripe={stripePromise}>
                         <PaymentStep
@@ -61,7 +86,6 @@ export default function SubscribeClient() {
                         />
                     </Elements>
                 )}
-
             </main>
         </>
     );

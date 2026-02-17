@@ -9,13 +9,30 @@ export type Status = "ACTIVE" | "INACTIVE";
 
 export type ServiceSlot = {
     id: string;
-    date: string;
+
+    date: string; // ISO string from backend
     timeFrom: string;
     timeTo: string;
+
     maxBookings: number;
+
     zonePrefix?: string | null;
+
     status: Status;
+
     operator: Operator;
+
+    templateId?: string | null;
+
+    template?: {
+        id: string;
+        serviceDay: number;
+        timeFrom: string;
+        timeTo: string;
+        maxBookings: number;
+        zonePrefix?: string | null;
+    } | null;
+
     _count: {
         bookings: number;
     };

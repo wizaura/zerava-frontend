@@ -1,19 +1,44 @@
 export type SubscriptionDraft = {
-    plan: "WEEKLY" | "FORTNIGHTLY" | "MONTHLY" | null;
-    vehicleSize: "SMALL" | "MEDIUM" | "LARGE" | null;
-    serviceType: "EXTERIOR" | "INTERIOR" | "FULL_VALET" | null;
-    pricePerClean: number | null;
-    address: string | null;
+    /* ==============================
+       PLAN SELECTION
+    ============================== */
+
+    plan: "FORTNIGHTLY" | "MONTHLY" | null;
+    stripePriceId: string | null;
+    vehicleCategoryId: string | null;
+    vehicleCategory: string | null;
+    servicePriceId: string | null;
+
+    /* ==============================
+       DERIVED DISPLAY
+    ============================== */
+
+    serviceName?: string;
+    basePrice?: number;      // in pence
+    durationMin?: number;
+
+    /* ==============================
+       SCHEDULE (RECURRING RULE)
+    ============================== */
+
     postcode: string | null;
+    address: string | null;
+
+    preferredDay: number | null;   // 0–6 (Sunday–Saturday)
+    templateId: string | null;
+
+    timeFrom: string | null;
+    timeTo: string | null;
+
+    /* ==============================
+       AVAILABILITY
+    ============================== */
+
     serviceable: boolean | null;
-    subscriptionDay:
-    | "MONDAY"
-    | "TUESDAY"
-    | "WEDNESDAY"
-    | "THURSDAY"
-    | "FRIDAY"
-    | "SATURDAY"
-    | "SUNDAY"
-    | null;
-    timeWindow: "AM_8_10" | "AM_11_1" | "PM_2_4" | "PM_4_6" | null;
+
+    /* ==============================
+       PRICING
+    ============================== */
+
+    pricePerClean?: number; // in pence
 };

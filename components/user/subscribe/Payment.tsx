@@ -1,6 +1,5 @@
 "use client";
 
-import { Lock } from "lucide-react";
 import { SubscriptionDraft } from "./types";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useState } from "react";
@@ -13,41 +12,65 @@ type Props = {
     onSubscribe: () => void;
 };
 
-export default function PaymentStep({ draft, onBack, onSubscribe }: Props) {
-
+export default function PaymentStep({
+    draft,
+    onBack,
+    onSubscribe,
+}: Props) {
     const stripe = useStripe();
     const elements = useElements();
     const [loading, setLoading] = useState(false);
 
+    const canSubscribe =
+        draft.postcode &&
+        draft.address &&
+        draft.templateId &&
+        draft.timeFrom &&
+        draft.timeTo &&
+        draft.servicePriceId &&
+        draft.stripePriceId &&
+        draft.preferredDay !== null;
+
     const handleSubscribe = async () => {
         if (!stripe || !elements) return;
+
+        if (!canSubscribe) {
+            toast.error("Please complete your schedule selection");
+            return;
+        }
 
         try {
             setLoading(true);
 
-            // 1️⃣ Get SetupIntent
+            /* 1️⃣ Setup Intent */
             const { clientSecret } =
                 await SubscriptionsAPI.createSetupIntent();
 
-            // 2️⃣ Confirm card
             const card = elements.getElement(CardElement);
             if (!card) throw new Error("Card element not found");
 
             const { setupIntent, error } =
                 await stripe.confirmCardSetup(clientSecret, {
-                    payment_method: {
-                        card,
-                    },
+                    payment_method: { card },
                 });
 
             if (error || !setupIntent?.payment_method) {
                 throw new Error(error?.message || "Card setup failed");
             }
 
-            // 3️⃣ Create subscription
+            /* 2️⃣ Create Subscription */
             await SubscriptionsAPI.createSubscription({
                 paymentMethodId: setupIntent.payment_method as string,
-                draft,
+                subscriptionData: {
+                    servicePriceId: draft.servicePriceId!,
+                    stripePriceId: draft.stripePriceId!,
+                    postcode: draft.postcode!,
+                    address: draft.address!,
+                    preferredDay: draft.preferredDay!,
+                    templateId: draft.templateId!,
+                    timeFrom: draft.timeFrom!,
+                    timeTo: draft.timeTo!,
+                },
             });
 
             toast.success("Subscription activated 🎉");
@@ -78,15 +101,15 @@ export default function PaymentStep({ draft, onBack, onSubscribe }: Props) {
                 />
             </div>
 
-            {/* SUBSCRIBE CTA */}
+            {/* CTA */}
             <button
-                disabled={loading}
+                disabled={!canSubscribe || loading}
                 onClick={handleSubscribe}
                 className="w-full rounded-2xl bg-black py-4 text-white font-medium disabled:opacity-60"
             >
                 {loading
                     ? "Processing…"
-                    : `Subscribe • £${draft.pricePerClean}/month`}
+                    : `Subscribe • £${((draft.basePrice ?? 0) / 100).toFixed(2)} / ${draft.plan?.toLowerCase()}`}
             </button>
 
             {/* SUMMARY */}
@@ -95,22 +118,23 @@ export default function PaymentStep({ draft, onBack, onSubscribe }: Props) {
 
                 <div className="text-sm space-y-2">
                     <Row label="Plan" value={draft.plan} />
-                    <Row label="Service" value={draft.serviceType} />
-                    <Row label="Vehicle" value={draft.vehicleSize} />
+                    <Row label="Service" value={draft.serviceName} />
+                    <Row label="Vehicle Type" value={draft.vehicleCategory} />
                     <Row
                         label="Schedule"
-                        value={`${draft.subscriptionDay}s • ${draft.timeWindow}`}
+                        value={`${formatWeekday(draft.preferredDay)} • ${formatTimeRange(
+                            draft.timeFrom,
+                            draft.timeTo
+                        )}`}
                     />
+                    <Row label="Postcode" value={draft.postcode} />
                 </div>
 
                 <div className="border-t border-white/10 pt-4 flex justify-between">
-                    <div>
-                        <p className="text-sm">Price per clean</p>
-                        <p className="text-xs text-electric-teal">
-                            Save vs one-time booking
-                        </p>
-                    </div>
-                    <p className="font-medium">£{draft.pricePerClean}</p>
+                    <span className="text-sm">Recurring charge</span>
+                    <span className="font-medium">
+                        £{((draft.basePrice ?? 0) / 100).toFixed(2)}
+                    </span>
                 </div>
             </div>
 
@@ -123,18 +147,44 @@ export default function PaymentStep({ draft, onBack, onSubscribe }: Props) {
             </button>
 
             <p className="text-center text-xs text-gray-500">
-                You can cancel or pause your subscription anytime from your account
-                dashboard.
+                You can cancel or pause anytime from your dashboard.
             </p>
         </div>
     );
 }
 
+/* Helpers */
+
 function Row({ label, value }: { label: string; value: any }) {
     return (
         <div className="flex justify-between">
             <span className="text-gray-400">{label}</span>
-            <span>{value}</span>
+            <span>{value ?? "—"}</span>
         </div>
     );
+}
+
+function formatWeekday(day?: number | null) {
+    if (day === null || day === undefined) return "—";
+    const days = [
+        "Sunday", "Monday", "Tuesday", "Wednesday",
+        "Thursday", "Friday", "Saturday"
+    ];
+    return days[day];
+}
+
+function formatTimeRange(from?: string | null, to?: string | null) {
+    if (!from || !to) return "—";
+
+    const f = new Date(`1970-01-01T${from}`);
+    const t = new Date(`1970-01-01T${to}`);
+
+    const fmt = (d: Date) =>
+        d.toLocaleTimeString("en-GB", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        });
+
+    return `${fmt(f)} – ${fmt(t)}`;
 }

@@ -10,6 +10,7 @@ import { clearAuth } from "@/store/slices/authSlice";
 const tabs = [
     { label: "Dashboard", href: "/account" },
     { label: "Bookings", href: "/account/bookings" },
+    { label: "Subscriptions", href: "/account/subscriptions" },
     { label: "Referrals", href: "/account/referrals" },
     { label: "Eco Certificate", href: "/account/eco-certificate" },
     { label: "Settings", href: "/account/settings" },

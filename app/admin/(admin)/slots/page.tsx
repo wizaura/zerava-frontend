@@ -1,9 +1,9 @@
-import AdminSlotsPage from "@/components/admin/slots/Main";
+import SlotTemplatePage from "@/components/admin/slots/Main";
 
 export default function Slots() {
     return (
         <div>
-            <AdminSlotsPage />
+            <SlotTemplatePage />
         </div>
     )
 }

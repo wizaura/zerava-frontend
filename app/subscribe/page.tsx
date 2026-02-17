@@ -1,9 +1,9 @@
-import SubscribeClient from "@/components/user/subscribe/Main";
+import SubscribeCall from "@/components/user/subscribe/Call";
 
 export default function SubscribePage() {
     return (
         <div>
-            <SubscribeClient />
+            <SubscribeCall />
         </div>
     )
 }

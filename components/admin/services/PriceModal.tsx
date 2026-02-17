@@ -13,6 +13,7 @@ const PRICING_MODES = [
 
 const BILLING_CYCLES = [
     { key: "MONTHLY", label: "Monthly" },
+    { key: "FORTNIGHTLY", label: "Bi-Weekly" },
 ];
 
 export default function PriceModal({
@@ -26,6 +27,7 @@ export default function PriceModal({
         vehicleCategoryId: price?.vehicleCategoryId ?? "",
         pricingMode: price?.pricingMode ?? "ONE_OFF",
         billingCycle: price?.billingCycle ?? "MONTHLY",
+        stripePriceId: price?.stripePriceId ?? null,
         price: price ? String(price.price / 100) : "",
     });
 
@@ -36,7 +38,12 @@ export default function PriceModal({
     const canSubmit =
         Boolean(form.vehicleCategoryId) &&
         Boolean(form.pricingMode) &&
-        Number(form.price) > 0;
+        Number(form.price) > 0 &&
+        (form.pricingMode === "ONE_OFF" ||
+            (form.pricingMode === "SUBSCRIPTION" &&
+                Boolean(form.billingCycle) &&
+                Boolean(form.stripePriceId)));
+
 
     const submit = async () => {
         if (!canSubmit) {
@@ -59,6 +66,7 @@ export default function PriceModal({
                 pricingMode: form.pricingMode,
                 ...(form.pricingMode === "SUBSCRIPTION" && {
                     billingCycle: form.billingCycle || "MONTHLY",
+                    stripePriceId: form.stripePriceId,
                 }),
                 price: Math.round(Number(form.price) * 100),
             });
@@ -168,6 +176,30 @@ export default function PriceModal({
                                 </option>
                             ))}
                         </select>
+                    </div>
+                )}
+
+                {form.pricingMode === "SUBSCRIPTION" && (
+                    <div>
+                        <label className="block text-sm font-medium mb-1">
+                            Stripe Price ID
+                        </label>
+                        <input
+                            type="text"
+                            value={form.stripePriceId}
+                            onChange={(e) =>
+                                setForm({
+                                    ...form,
+                                    stripePriceId: e.target.value.trim(),
+                                })
+                            }
+                            placeholder="price_1Nxxxxxxx"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+                       focus:outline-none focus:ring-2 focus:ring-electric-teal"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                            Create this recurring price in Stripe Dashboard.
+                        </p>
                     </div>
                 )}
 

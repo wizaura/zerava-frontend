@@ -1,8 +1,9 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
-import { CheckCircle, Clock, MapPin } from "lucide-react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { CheckCircle, Clock, MapPin, Loader2 } from "lucide-react";
 import { SubscriptionDraft } from "./types";
+import api from "@/lib/user/axios";
 
 type Props = {
     draft: SubscriptionDraft;
@@ -11,12 +12,11 @@ type Props = {
     onContinue: () => void;
 };
 
-const timeWindows = [
-    { key: "AM_8_10", label: "8:00 AM – 10:00 AM" },
-    { key: "AM_11_1", label: "11:00 AM – 1:00 PM" },
-    { key: "PM_2_4", label: "2:00 PM – 4:00 PM" },
-    { key: "PM_4_6", label: "4:00 PM – 6:00 PM" },
-] as const;
+type TemplateSlot = {
+    templateId: string;
+    startTime: string;
+    endTime: string;
+};
 
 export default function ScheduleStep({
     draft,
@@ -25,32 +25,122 @@ export default function ScheduleStep({
     onContinue,
 }: Props) {
     const [checking, setChecking] = useState(false);
+    const [availableTemplates, setAvailableTemplates] = useState<TemplateSlot[]>([]);
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-    const checkPostcode = async () => {
-        if (!draft.postcode) return;
+    /* =========================================================
+       AUTO POSTCODE CHECK (LIKE BOOKING)
+    ========================================================== */
 
-        setChecking(true);
+    useEffect(() => {
+        const postcode = draft.postcode?.trim().toUpperCase();
 
-        // 🔜 Replace with real API later
-        setTimeout(() => {
-            setDraft(d => ({
+        if (!postcode || postcode.length < 4 || !draft.durationMin) return;
+
+        const timeout = setTimeout(() => {
+            checkPostcode(postcode);
+        }, 500); // debounce 500ms
+
+        return () => clearTimeout(timeout);
+    }, [draft.postcode]);
+
+    const checkPostcode = async (postcode: string) => {
+        try {
+            setChecking(true);
+
+            const res = await api.post("/availability/subscription-check", {
+                postcode,
+                serviceDuration: draft.durationMin,
+                plan: draft.plan,
+            });
+
+            const data = res.data;
+
+            if (!data.serviceable) {
+                resetSchedule(false);
+                setAvailableTemplates([]);
+                setSelectedIndex(null);
+                return;
+            }
+
+            // Reset previous selection
+            setSelectedIndex(null);
+
+            setDraft((d) => ({
                 ...d,
                 serviceable: true,
-                subscriptionDay: "TUESDAY",
+                preferredDay: data.subscriptionDay,
+                templateId: null,
+                timeFrom: null,
+                timeTo: null,
             }));
+
+            setAvailableTemplates(data.slots || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
             setChecking(false);
-        }, 800);
+        }
     };
+
+    const resetSchedule = (serviceable: boolean) => {
+        setDraft((d) => ({
+            ...d,
+            serviceable,
+            preferredDay: null,
+            templateId: null,
+            timeFrom: null,
+            timeTo: null,
+        }));
+    };
+
+    /* =========================================================
+       TEMPLATE SELECTION
+    ========================================================== */
+
+    const handleSelectTemplate = (template: TemplateSlot, index: number) => {
+
+        console.log(template,'temp')
+        if (selectedIndex === index) {
+            // Deselect
+            setSelectedIndex(null);
+            setDraft((d) => ({
+                ...d,
+                templateId: null,
+                timeFrom: null,
+                timeTo: null,
+            }));
+            return;
+        }
+
+        // Select
+        setSelectedIndex(index);
+
+        setDraft((d) => ({
+            ...d,
+            templateId: template.templateId,
+            timeFrom: template.startTime,
+            timeTo: template.endTime,
+        }));
+    };
+
+    /* =========================================================
+       CONTINUE VALIDATION
+    ========================================================== */
 
     const canContinue =
         draft.serviceable &&
-        draft.subscriptionDay &&
-        draft.timeWindow &&
-        draft.address;
+        !!draft.templateId &&
+        !!draft.timeFrom &&
+        !!draft.timeTo &&
+        !!draft.address;
+
+    /* =========================================================
+       UI
+    ========================================================== */
 
     return (
         <div className="max-w-3xl mx-auto space-y-10">
-
             <h2 className="text-2xl font-medium text-gray-900">
                 Schedule your subscription
             </h2>
@@ -69,24 +159,28 @@ export default function ScheduleStep({
                     <input
                         value={draft.postcode ?? ""}
                         onChange={(e) =>
-                            setDraft(d => ({
+                            setDraft((d) => ({
                                 ...d,
                                 postcode: e.target.value.toUpperCase(),
-                                serviceable: null,
-                                subscriptionDay: null,
-                                timeWindow: null,
                             }))
                         }
-                        onBlur={checkPostcode}
                         placeholder="SO15"
                         className="w-full rounded-xl border border-gray-300 pl-10 pr-4 py-3 text-sm
-            focus:border-electric-teal focus:ring-electric-teal"
+                        focus:border-electric-teal focus:ring-electric-teal"
                     />
                 </div>
             </div>
 
-            {/* SERVICEABLE MESSAGE */}
-            {draft.serviceable && draft.subscriptionDay && (
+            {/* LOADER */}
+            {checking && (
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <Loader2 className="animate-spin" size={16} />
+                    Checking availability...
+                </div>
+            )}
+
+            {/* SERVICEABLE */}
+            {draft.serviceable && draft.preferredDay !== null && (
                 <div className="flex items-start gap-3 rounded-xl border border-electric-teal bg-electric-teal/10 p-4">
                     <CheckCircle className="text-electric-teal" />
                     <div>
@@ -94,44 +188,53 @@ export default function ScheduleStep({
                             Great! We serve your area
                         </p>
                         <p className="text-sm text-gray-600">
-                            Your subscription day is{" "}
+                            Your recurring service day{" "}
                             <span className="font-medium text-electric-teal">
-                                {draft.subscriptionDay}
+                                {formatWeekday(draft.preferredDay as number)}
                             </span>
                         </p>
                     </div>
                 </div>
             )}
 
-            {/* TIME WINDOW */}
-            {draft.serviceable && (
+            {/* TEMPLATE GRID */}
+            {draft.serviceable && availableTemplates.length > 0 && (
                 <div>
-                    <p className="mb-3 text-sm font-medium text-gray-700">
-                        Choose your time window
+                    <p className="mb-4 text-sm font-medium text-gray-700">
+                        Choose your recurring time window
                     </p>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        {timeWindows.map(t => {
-                            const selected = draft.timeWindow === t.key;
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {availableTemplates.map((template, index) => {
+                            const selected = selectedIndex === index;
 
                             return (
                                 <button
-                                    key={t.key}
+                                    type="button"
+                                    key={`${template.templateId}_${template.startTime}_${template.endTime}_${index}`}
                                     onClick={() =>
-                                        setDraft(d => ({
-                                            ...d,
-                                            timeWindow: t.key,
-                                        }))
+                                        handleSelectTemplate(template, index)
                                     }
                                     className={[
-                                        "rounded-xl border px-4 py-4 text-sm transition",
+                                        "rounded-2xl border px-5 py-5 transition text-left",
                                         selected
-                                            ? "border-electric-teal bg-electric-teal/15 text-electric-teal"
+                                            ? "border-electric-teal bg-electric-teal/10"
                                             : "border-gray-200 bg-white hover:border-gray-300",
                                     ].join(" ")}
                                 >
-                                    <Clock className="mx-auto mb-1" size={16} />
-                                    {t.label}
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Clock size={16} />
+                                        <span className="font-medium">
+                                            {formatTime(template.startTime)} –{" "}
+                                            {formatTime(template.endTime)}
+                                        </span>
+                                    </div>
+
+                                    {selected && (
+                                        <p className="text-xs text-electric-teal">
+                                            Selected
+                                        </p>
+                                    )}
                                 </button>
                             );
                         })}
@@ -149,14 +252,14 @@ export default function ScheduleStep({
                         rows={3}
                         value={draft.address ?? ""}
                         onChange={(e) =>
-                            setDraft(d => ({
+                            setDraft((d) => ({
                                 ...d,
                                 address: e.target.value,
                             }))
                         }
                         placeholder="House / Flat number, street name"
                         className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm
-            focus:border-electric-teal focus:ring-electric-teal"
+                        focus:border-electric-teal focus:ring-electric-teal"
                     />
                 </div>
             )}
@@ -164,14 +267,15 @@ export default function ScheduleStep({
             {/* FOOTER */}
             <div className="flex justify-between pt-6">
                 <button
+                    type="button"
                     onClick={onBack}
-                    className="rounded-full border border-gray-300 bg-white px-6 py-2 text-sm
-          text-gray-700 hover:bg-gray-50"
+                    className="rounded-full border border-gray-300 bg-white px-6 py-2 text-sm text-gray-700 hover:bg-gray-50"
                 >
                     ← Back
                 </button>
 
                 <button
+                    type="button"
                     disabled={!canContinue}
                     onClick={onContinue}
                     className={[
@@ -186,4 +290,33 @@ export default function ScheduleStep({
             </div>
         </div>
     );
+}
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function formatWeekday(day: number) {
+    const days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ];
+    return days[day - 1] ?? "";
+}
+
+function formatTime(time: string) {
+    const d = new Date(`1970-01-01T${time}`);
+    return d
+        .toLocaleTimeString("en-GB", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        })
+        .replace("am", "AM")
+        .replace("pm", "PM");
 }

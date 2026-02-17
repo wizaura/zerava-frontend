@@ -22,7 +22,10 @@ export default function ConfirmStep({
 
     const canSubmit =
         Boolean(bookingDraft.servicePriceId) &&
-        Boolean(bookingDraft.serviceSlotId) &&
+        // (
+        //     bookingDraft.serviceSlotId ||
+        //     (bookingDraft.isTemplate && bookingDraft.templateId)
+        // ) &&
         Boolean(bookingDraft.timeFrom) &&
         Boolean(bookingDraft.timeTo) &&
         Boolean(bookingDraft.name?.trim()) &&
@@ -48,7 +51,14 @@ export default function ConfirmStep({
         try {
             const bookingRes = await api.post("/bookings", {
                 servicePriceId: bookingDraft.servicePriceId,
-                serviceSlotId: bookingDraft.serviceSlotId,
+
+                serviceSlotId: bookingDraft.serviceSlotId ?? null,
+                templateId: bookingDraft.templateId ?? null,
+                isTemplate: bookingDraft.isTemplate ?? false,
+
+                operatorId: bookingDraft.operatorId,
+                date: bookingDraft.date,
+
                 timeFrom: bookingDraft.timeFrom,
                 timeTo: bookingDraft.timeTo,
 

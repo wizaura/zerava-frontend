@@ -1,141 +1,135 @@
 "use client";
 
-import { Dispatch, SetStateAction } from "react";
-import { Sparkles, Wind, ShieldCheck } from "lucide-react";
+import { Dispatch, SetStateAction, useMemo } from "react";
 import { SubscriptionDraft } from "./types";
+import { SubscriptionService } from "./Call";
 
 type Props = {
     draft: SubscriptionDraft;
     setDraft: Dispatch<SetStateAction<SubscriptionDraft>>;
     onContinue: () => void;
+    services: SubscriptionService[];
 };
-
-const plans = [
-    {
-        key: "WEEKLY",
-        label: "Weekly",
-        discount: 20,
-        desc: "Perfect for high-mileage drivers",
-        badge: "Best Value",
-    },
-    {
-        key: "FORTNIGHTLY",
-        label: "Fortnightly",
-        discount: 15,
-        desc: "Keep consistently clean",
-    },
-    {
-        key: "MONTHLY",
-        label: "Monthly",
-        discount: 10,
-        desc: "Regular maintenance",
-    },
-] as const;
-
-const vehicleSizes = [
-    { key: "SMALL", label: "Small", hint: "Polo, Fiesta, Corsa" },
-    { key: "MEDIUM", label: "Medium", hint: "Golf, 3 Series, A4" },
-    { key: "LARGE", label: "Large", hint: "Q7, X5, Discovery" },
-] as const;
-
-const services = [
-    {
-        key: "EXTERIOR",
-        title: "Exterior Clean",
-        desc: "Full exterior wash, wheels & windows",
-        basePrice: 30,
-        icon: Sparkles,
-        popular: false
-    },
-    {
-        key: "INTERIOR",
-        title: "Interior Refresh",
-        desc: "Vacuum, dashboard, seats & freshening",
-        basePrice: 50,
-        icon: Wind,
-        popular: false
-    },
-    {
-        key: "FULL_VALET",
-        title: "Full Valet",
-        desc: "Complete inside & out treatment",
-        basePrice: 75,
-        icon: ShieldCheck,
-        popular: true,
-    },
-] as const;
 
 export default function PlanServiceStep({
     draft,
     setDraft,
     onContinue,
+    services,
 }: Props) {
-    const selectedPlan = plans.find(p => p.key === draft.plan);
 
-    const calculatePrice = (base: number) => {
-        if (!selectedPlan) return null;
-        return Math.round(base * (1 - selectedPlan.discount / 100));
-    };
+    /* ---------------- DERIVED FREQUENCIES ---------------- */
 
-    const canContinue =
-        Boolean(
-            draft.plan &&
-            draft.vehicleSize &&
-            draft.serviceType &&
-            draft.pricePerClean !== null
+    const frequencies = useMemo(() => {
+        const cycles = new Set<string>();
+
+        services.forEach(service => {
+            service.prices.forEach(price => {
+                cycles.add(price.billingCycle);
+            });
+        });
+
+        return Array.from(cycles);
+    }, [services]);
+
+    /* ---------------- DERIVED VEHICLE CATEGORIES ---------------- */
+
+    const vehicleCategories = useMemo(() => {
+        const map = new Map<string, { id: string; name: string; description: string }>();
+
+        services.forEach(service => {
+            service.prices.forEach(price => {
+                map.set(price.vehicleCategory.id, price.vehicleCategory);
+            });
+        });
+
+        return Array.from(map.values());
+    }, [services]);
+
+    /* ---------------- FILTERED SERVICES ---------------- */
+
+    const availableServicePrices = useMemo(() => {
+        if (!draft.plan || !draft.vehicleCategoryId) return [];
+
+        return services.flatMap(service =>
+            service.prices
+                .filter(
+                    p =>
+                        p.billingCycle === draft.plan &&
+                        p.vehicleCategory.id === draft.vehicleCategoryId
+                )
+                .map(p => ({
+                    serviceId: service.id,
+                    serviceName: service.name,
+                    description: service.description,
+                    durationMin: service.durationMin,
+                    servicePriceId: p.id,
+                    stripePriceId: p.stripePriceId,
+                    price: p.price,
+                }))
         );
+    }, [draft.plan, draft.vehicleCategoryId, services]);
+
+    const canContinue = Boolean(draft.servicePriceId);
 
     return (
         <div className="max-w-4xl mx-auto space-y-12">
 
-            {/* PLAN */}
+            {/* FREQUENCY */}
             <section>
-                <h2 className="text-2xl font-medium mb-4">Choose your frequency</h2>
-                <div className="grid md:grid-cols-3 gap-4">
-                    {plans.map(p => {
-                        const selected = draft.plan === p.key;
+                <h2 className="text-2xl font-medium mb-4">
+                    Choose your frequency
+                </h2>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                    {frequencies.map(freq => {
+                        const selected = draft.plan === freq;
+
                         return (
                             <button
-                                key={p.key}
+                                key={freq}
                                 onClick={() =>
                                     setDraft(d => ({
                                         ...d,
-                                        plan: p.key,
-                                        serviceType: null,
-                                        pricePerClean: null,
+                                        plan: freq as "FORTNIGHTLY" | "MONTHLY",
+                                        servicePriceId: null,
+                                        stripePriceId: null,
                                     }))
                                 }
                                 className={[
-                                    "relative rounded-xl p-6 text-left border transition",
+                                    "rounded-xl p-6 text-left border transition",
                                     selected
                                         ? "border-electric-teal bg-electric-teal/15"
-                                        : "border-gray-200 bg-white hover:border-gray-300",
+                                        : "border-gray-200 hover:border-gray-300",
                                 ].join(" ")}
                             >
-                                <p className="font-medium">{p.label}</p>
-                                <p className="text-sm text-electric-teal">{p.discount}% off</p>
-                                <p className="text-sm text-gray-500">{p.desc}</p>
+                                <p className="font-medium">{freq}</p>
                             </button>
                         );
                     })}
                 </div>
             </section>
 
-            {/* VEHICLE SIZE */}
+            {/* VEHICLE CATEGORY */}
             <section>
-                <h3 className="text-lg font-medium mb-3">Vehicle size</h3>
+                <h3 className="text-lg font-medium mb-3">
+                    Vehicle size
+                </h3>
+
                 <div className="grid md:grid-cols-3 gap-4">
-                    {vehicleSizes.map(v => {
-                        const selected = draft.vehicleSize === v.key;
+                    {vehicleCategories.map(v => {
+                        const selected = draft.vehicleCategoryId === v.id;
+
                         return (
                             <button
-                                key={v.key}
+                                key={v.id}
                                 onClick={() =>
                                     setDraft(d => ({
                                         ...d,
-                                        vehicleSize: v.key,
-                                        serviceType: null,
-                                        pricePerClean: null,
+                                        vehicleCategoryId: v.id,
+                                        vehicleCategory: v.name,
+                                        servicePriceId: null,
+                                        stripePriceId: null,
                                     }))
                                 }
                                 className={[
@@ -145,73 +139,62 @@ export default function PlanServiceStep({
                                         : "border-gray-200 hover:border-gray-300",
                                 ].join(" ")}
                             >
-                                <p className="font-medium">{v.label}</p>
-                                <p className="text-sm text-gray-500">{v.hint}</p>
+                                <p className="font-medium">{v.name}</p>
+                                <p className="text-sm text-gray-500">
+                                    {v.description}
+                                </p>
                             </button>
                         );
                     })}
                 </div>
             </section>
 
-            {/* SERVICE */}
-            {draft.vehicleSize && selectedPlan && (
+            {/* SERVICES */}
+            {draft.plan && draft.vehicleCategoryId && (
                 <section className="space-y-4">
-                    <h3 className="text-lg font-medium">Select service</h3>
+                    <h3 className="text-lg font-medium">
+                        Select service
+                    </h3>
 
-                    {services.map(s => {
-                        const Icon = s.icon;
-                        const discounted = calculatePrice(s.basePrice);
-                        if (discounted === null) return null;
-
-                        const selected = draft.serviceType === s.key;
+                    {availableServicePrices.map(s => {
+                        const selected =
+                            draft.servicePriceId === s.servicePriceId;
 
                         return (
                             <button
-                                key={s.key}
+                                key={s.servicePriceId}
                                 onClick={() =>
                                     setDraft(d => ({
                                         ...d,
-                                        serviceType: s.key,
-                                        pricePerClean: discounted,
+                                        servicePriceId: s.servicePriceId,
+                                        stripePriceId: s.stripePriceId,
+                                        serviceName: s.serviceName,
+                                        basePrice: s.price,
+                                        durationMin: s.durationMin,
                                     }))
                                 }
                                 className={[
-                                    "relative w-full rounded-2xl p-6 text-left border transition",
+                                    "w-full rounded-2xl p-6 text-left border transition",
                                     selected
                                         ? "border-electric-teal bg-electric-teal/15"
-                                        : "border-gray-200 bg-white hover:border-gray-300",
+                                        : "border-gray-200 hover:border-gray-300",
                                 ].join(" ")}
                             >
-                                {s.popular && (
-                                    <span className="absolute right-5 -top-3 rounded-full bg-electric-teal px-3 py-1 text-xs text-white">
-                                        Popular
-                                    </span>
-                                )}
-
-                                <div className="flex justify-between items-start gap-6">
-                                    <div className="flex gap-4">
-                                        <div
-                                            className={[
-                                                "h-10 w-10 rounded-xl flex items-center justify-center",
-                                                selected
-                                                    ? "bg-electric-teal text-white"
-                                                    : "bg-gray-100 text-gray-600",
-                                            ].join(" ")}
-                                        >
-                                            <Icon />
-                                        </div>
-                                        <div>
-                                            <p className="font-medium">{s.title}</p>
-                                            <p className="text-sm text-gray-500">{s.desc}</p>
-                                        </div>
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="font-medium">
+                                            {s.serviceName}
+                                        </p>
+                                        {s.description && (
+                                            <p className="text-sm text-gray-500">
+                                                {s.description}
+                                            </p>
+                                        )}
                                     </div>
 
                                     <div className="text-right">
-                                        <p className="text-sm line-through text-gray-400">
-                                            £{s.basePrice}
-                                        </p>
                                         <p className="text-lg font-medium">
-                                            £{discounted}
+                                            £{(s.price / 100).toFixed(2)}
                                         </p>
                                     </div>
                                 </div>
@@ -221,7 +204,7 @@ export default function PlanServiceStep({
                 </section>
             )}
 
-            {/* FOOTER */}
+            {/* CONTINUE */}
             <div className="flex justify-end pt-6">
                 <button
                     disabled={!canContinue}

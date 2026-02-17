@@ -12,11 +12,19 @@ const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d{2}$/;
 const UK_POSTCODE_REGEX_FULL = /^[A-Z]{1,2}\d{2}\s?\d[A-Z]{2}$/i;
 
+type AvailableOperator = {
+    operatorId: string;
+    serviceSlotId?: string;
+    templateId?: string;
+    isTemplate?: boolean;
+};
+
 type Slot = {
     startTime: string;
     endTime: string;
-    serviceSlotId: string;
+    availableOperators: AvailableOperator[];
 };
+
 
 type Props = {
     draft: RescheduleDraft;
@@ -163,25 +171,23 @@ export default function ScheduleStep({
         }));
     }
 
-    const groupedSlots = slots.reduce((acc, slot) => {
-        const key = slot.startTime;
-
-        if (!acc[key]) {
-            acc[key] = [];
-        }
-
-        acc[key].push(slot);
-        return acc;
-    }, {} as Record<string, typeof slots>);
 
     function selectSlot(slot: Slot) {
+        if (!slot.availableOperators?.length) return;
+
+        const assigned = slot.availableOperators[0];
+
         setDraft((d) => ({
             ...d,
-            serviceSlotId: slot.serviceSlotId,
+            serviceSlotId: assigned.serviceSlotId ?? null,
+            templateId: assigned.templateId ?? null,
+            isTemplate: assigned.isTemplate ?? false,
+            operatorId: assigned.operatorId,
             timeFrom: slot.startTime,
             timeTo: slot.endTime,
         }));
     }
+
 
     function isAllowedDate(date: Date) {
         if (!serviceDays) return false;
@@ -215,7 +221,10 @@ export default function ScheduleStep({
 
 
     const canSubmit =
-        draft.serviceSlotId && matchesFullPostcode;
+        matchesFullPostcode &&
+        selectedDate &&
+        draft.timeFrom &&
+        draft.timeTo;
 
 
     function renderSchedule(
@@ -380,41 +389,38 @@ export default function ScheduleStep({
                             No slots available
                         </div>
                     ) : (
-                        <div className="grid md:grid-cols-3 gap-4">
-                            {Object.entries(groupedSlots)
-                                .sort(([a], [b]) => a.localeCompare(b))
-                                .map(([time, timeSlots]) => (
-                                    <div key={time}>
-                                        <p className="mb-2 text-sm font-semibold text-gray-600">
-                                            {formatTime12h(time)}
-                                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {slots.map((slot) => {
+                                const isSelected =
+                                    draft.timeFrom === slot.startTime;
 
-                                        <div className="grid grid-cols-2 gap-4">
-                                            {timeSlots.map((slot) => {
-                                                const isSelected =
-                                                    draft.serviceSlotId === slot.serviceSlotId &&
-                                                    draft.timeFrom === slot.startTime;
+                                return (
+                                    <button
+                                        key={`${slot.startTime}-${slot.endTime}`}
+                                        onClick={() => selectSlot(slot)}
+                                        className={[
+                                            "flex items-center gap-3 rounded-xl border px-4 py-3 transition text-sm",
+                                            isSelected
+                                                ? "border-electric-teal bg-electric-teal/10"
+                                                : "hover:border-black",
+                                        ].join(" ")}
+                                    >
+                                        <Clock
+                                            size={16}
+                                            className={
+                                                isSelected
+                                                    ? "text-electric-teal"
+                                                    : "text-gray-500"
+                                            }
+                                        />
 
-                                                return (
-                                                    <button
-                                                        key={`${slot.serviceSlotId}-${slot.startTime}`}
-                                                        onClick={() => selectSlot(slot)}
-                                                        className={[
-                                                            "flex items-center justify-between rounded-xl border px-4 py-3 transition",
-                                                            isSelected
-                                                                ? "border-electric-teal bg-electric-teal/10"
-                                                                : "hover:border-black",
-                                                        ].join(" ")}
-                                                    >
-                                                        <span className="text-sm text-gray-600">
-                                                            till {formatTime12h(slot.endTime)}
-                                                        </span>
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                ))}
+                                        <span className="font-medium text-gray-700">
+                                            {formatTime12h(slot.startTime)} –{" "}
+                                            {formatTime12h(slot.endTime)}
+                                        </span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     )}
                 </div>

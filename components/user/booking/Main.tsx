@@ -47,22 +47,35 @@ export type AddOns = {
 
 
 export type BookingDraft = {
+    /* ================= CORE SERVICE ================= */
+
     servicePriceId: string | null;
 
-    // derived (display only)
-    serviceName?: string;
-    vehicleCategory?: string;
-    basePrice?: number;
+    // Display only
+    serviceName: string | null;
+    vehicleCategory: string | null;
+    basePrice: number | null;
 
-    serviceDurationMin?: number;
+    serviceDurationMin: number;
     addOns: AddOns[];
-    addOnDurationMin?: number;
+    addOnDurationMin: number;
+
+    /* ================= SCHEDULING ================= */
 
     postcode: string | null;
     date: string | null;
-    serviceSlotId: string | null;
+
     timeFrom: string | null;
     timeTo: string | null;
+
+    /* Real Slot OR Template Slot */
+
+    serviceSlotId: string | null;   // if real slot
+    templateId: string | null;      // if template slot
+    isTemplate: boolean;            // true if template used
+    operatorId: string | null;      // assigned operator
+
+    /* ================= CONTACT ================= */
 
     address: string | null;
     notes: string | null;
@@ -70,6 +83,7 @@ export type BookingDraft = {
     email: string | null;
     phone: string | null;
 };
+
 
 /* ---------- COMPONENT ---------- */
 
@@ -85,13 +99,25 @@ export default function BookingClient({
 
     const [bookingDraft, setBookingDraft] = useState<BookingDraft>({
         servicePriceId: null,
+
+        serviceName: null,
+        vehicleCategory: null,
+        basePrice: null,
+
+        serviceDurationMin: 0,
         addOns: [],
+        addOnDurationMin: 0,
 
         postcode: null,
         date: null,
-        serviceSlotId: null,
+
         timeFrom: null,
         timeTo: null,
+
+        serviceSlotId: null,
+        templateId: null,
+        isTemplate: false,
+        operatorId: null,
 
         address: null,
         notes: null,

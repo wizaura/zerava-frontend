@@ -55,8 +55,8 @@ export default function ServiceStep({
                                         ...d,
                                         servicePriceId: null,
                                         vehicleCategory: c.name,
-                                        basePrice: undefined,
-                                        serviceName: undefined,
+                                        basePrice: null,
+                                        serviceName: null,
                                     }));
                                 }}
                                 className={[

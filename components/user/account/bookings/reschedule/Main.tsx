@@ -15,12 +15,17 @@ export type RescheduleDraft = {
     // editable
     postcode: string | null;
     date: string | null;
+
     serviceSlotId: string | null;
+    templateId: string | null;
+    isTemplate: boolean;
+    operatorId: string | null;
+
     timeFrom: string | null;
     timeTo: string | null;
     address: string | null;
 
-    // readonly (display only)
+    // readonly
     service: string;
     vehicleCategory: string;
     price: number;
@@ -45,14 +50,19 @@ export default function RescheduleClient() {
             .then((res) => {
                 const booking = res.data;
 
-                console.log(booking,'bk')
+                console.log(booking, 'bk')
 
                 setDraft({
                     bookingId: booking.id,
 
                     postcode: booking.postcode,
                     date: booking.date,
-                    serviceSlotId: booking.serviceSlotId,
+
+                    serviceSlotId: booking.serviceSlotId ?? null,
+                    templateId: null,
+                    isTemplate: false,
+                    operatorId: booking.operatorId ?? null,
+
                     timeFrom: booking.timeFrom,
                     timeTo: booking.timeTo,
                     address: booking.address,
