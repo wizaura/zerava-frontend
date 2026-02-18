@@ -15,6 +15,7 @@ export type UserBooking = {
 
     address: string;
     postcode: string;
+    rescheduleCount: number;
 
     service: {
         name: string;

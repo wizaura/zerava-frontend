@@ -3,14 +3,12 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-import BookingHero from "./Hero";
-import BookingSteps from "./Steps";
 import ServiceStep from "./Service";
-import AddOnsStep from "./AddOns";
 import ScheduleStep from "./Schedule";
-import AddressStep from "./Address";
 import ConfirmStep from "./Confirm";
 import ProcessingStep from "./Processing";
+import Stepper from "@/components/ui/Stepper";
+import FlowHero from "@/components/ui/FlowHero";
 
 /* ---------- TYPES ---------- */
 
@@ -30,6 +28,9 @@ export type Service = {
     id: string;
     name: string;
     slug: string;
+    icon: string;
+    isPopular?: boolean;
+    badgeLabel?: string;
     description?: string | null;
     isMaintenance: boolean;
     prices: ServicePrice[];
@@ -39,6 +40,7 @@ export type Service = {
 export type AddOns = {
     id: string;
     name: string;
+    icon?: string;
     description?: string | null;
     price: number;
     durationMin: number;
@@ -153,13 +155,19 @@ export default function BookingClient({
 
     return (
         <>
-            <BookingHero />
-            <BookingSteps currentStep={currentStep} />
-
+            <FlowHero
+                title="Book Your Clean"
+                subtitle="Premium waterless car care, delivered to you"
+            />
+            <Stepper
+                steps={["Service", "Schedule", "Details", "Payment"]}
+                currentStep={currentStep}
+            />
             <main className="mx-auto bg-white px-4 py-10">
                 {currentStep === 0 && (
                     <ServiceStep
                         services={services}
+                        addOns={addOns}
                         bookingDraft={bookingDraft}
                         setBookingDraft={setBookingDraft}
                         onContinue={() => setCurrentStep(1)}
@@ -167,8 +175,7 @@ export default function BookingClient({
                 )}
 
                 {currentStep === 1 && (
-                    <AddOnsStep
-                        addOns={addOns}
+                    <ScheduleStep
                         bookingDraft={bookingDraft}
                         setBookingDraft={setBookingDraft}
                         onBack={() => setCurrentStep(0)}
@@ -176,34 +183,25 @@ export default function BookingClient({
                     />
                 )}
 
-                {currentStep === 2 && (
-                    <ScheduleStep
+                {/* {currentStep === 2 && (
+                    <AddressStep
                         bookingDraft={bookingDraft}
                         setBookingDraft={setBookingDraft}
                         onBack={() => setCurrentStep(1)}
                         onContinue={() => setCurrentStep(3)}
                     />
-                )}
+                )} */}
 
-                {currentStep === 3 && (
-                    <AddressStep
-                        bookingDraft={bookingDraft}
-                        setBookingDraft={setBookingDraft}
-                        onBack={() => setCurrentStep(2)}
-                        onContinue={() => setCurrentStep(4)}
-                    />
-                )}
-
-                {currentStep === 4 && (
+                {currentStep === 2 && (
                     <ConfirmStep
                         bookingDraft={bookingDraft}
                         setBookingDraft={setBookingDraft}
-                        onBack={() => setCurrentStep(3)}
-                        onSuccess={() => setCurrentStep(5)}
+                        onBack={() => setCurrentStep(1)}
+                        onSuccess={() => setCurrentStep(3)}
                     />
                 )}
 
-                {currentStep === 5 && <ProcessingStep />}
+                {currentStep === 3 && <ProcessingStep />}
             </main>
         </>
     );

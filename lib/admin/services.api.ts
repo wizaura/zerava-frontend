@@ -125,13 +125,29 @@ export async function upsertService(data: {
     name: string;
     slug: string;
     description?: string;
-    isMaintenance: boolean;
+
     durationMin: number;
+
+    isPopular: boolean;
+    badgeLabel?: string;
+
+    vehicleConditionNote?: string;
+    highlightNote?: string;
+
+    icon?: string;
+    displayOrder?: number;
+    waterSavedLitres?: number;
+
+    features?: {
+        text: string;
+        order: number;
+    }[];
 }) {
     const res = await adminApi.post(
         "/admin/service-pricing/service",
         data
     );
+
     return res.data;
 }
 

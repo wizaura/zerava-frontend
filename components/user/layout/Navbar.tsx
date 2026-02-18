@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 
 const navItems = [
     { label: "Home", href: "/" },
-    // { label: "Services", href: "/services" },
+    { label: "Services", href: "/services" },
     // { label: "Pricing", href: "/services#pricing" },
     // { label: "Our Works", href: "/gallery" },
     { label: "Fleet", href: "/fleet" },
@@ -83,23 +83,23 @@ export default function Navbar() {
                     </Link> */}
 
                     {/* Account */}
-                    {/* {(
-                        <Link
-                            href={isAuthenticated ? "/account" : "/login"}
-                            className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
-      ${isHome ?
-                                    scrolled
-                                        ? "text-eco-black hover:bg-black/5"
-                                        : "text-gray-300 hover:bg-white/10"
-                                    : "text-eco-black hover:bg-black/5"
-                                }`}
-                        >
-                            <User size={16} />
-                            <span className="hidden sm:inline">
-                                {isAuthenticated ? "Account" : "Login"}
-                            </span>
-                        </Link>
-                    )} */}
+                    {(
+    //                     <Link
+    //                         href={isAuthenticated ? "/account" : "/login"}
+    //                         className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
+    //   ${isHome ?
+    //                                 scrolled
+    //                                     ? "text-eco-black hover:bg-black/5"
+    //                                     : "text-gray-300 hover:bg-white/10"
+    //                                 : "text-eco-black hover:bg-black/5"
+    //                             }`}
+    //                     >
+    //                         <User size={16} />
+    //                         <span className="hidden sm:inline">
+    //                             {isAuthenticated ? "Account" : "Login"}
+    //                         </span>
+    //                     </Link>
+                    )}
 
                     {/* Mobile Menu Toggle */}
                     <button

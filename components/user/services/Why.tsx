@@ -24,15 +24,10 @@ const benefits = [
 
 const plans = [
     {
-        name: "Weekly",
-        discount: "20% off",
-        description: "Perfect for high-mileage drivers",
-        highlight: true,
-    },
-    {
         name: "Fortnightly",
         discount: "15% off",
         description: "Keep consistently clean",
+        highlight: true,
     },
     {
         name: "Monthly",
@@ -90,13 +85,13 @@ export default function WhySubscribe() {
 
                 {/* Subscription plans */}
                 <div className="mx-auto max-w-5xl">
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
 
                         {plans.map((plan) => (
                             <div
                                 key={plan.name}
                                 className={`relative rounded-2xl border bg-white p-8 text-center transition hover:-translate-y-1 hover:shadow-xl
-                  ${plan.highlight
+                                    ${plan.highlight
                                         ? "border-electric-teal"
                                         : "border-gray-200"
                                     }`}

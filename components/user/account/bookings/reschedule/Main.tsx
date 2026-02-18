@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import api from "@/lib/user/axios";
 
 import ScheduleStep from "./Schedule";
 import ConfirmRescheduleStep from "./Confirm";
+import Stepper from "@/components/ui/Stepper";
+import FlowHero from "@/components/ui/FlowHero";
 
 /* ---------- TYPES ---------- */
 
@@ -35,7 +37,6 @@ export type RescheduleDraft = {
 
 export default function RescheduleClient() {
     const { bookingId } = useParams<{ bookingId: string }>();
-    const router = useRouter();
 
     const [step, setStep] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -80,23 +81,34 @@ export default function RescheduleClient() {
     /* ---------- RENDER ---------- */
 
     return (
-        <div className="mx-auto max-w-6xl border border-gray-200 rounded-2xl bg-white px-4 py-10">
-            {step === 0 && (
-                <ScheduleStep
-                    draft={draft}
-                    setDraft={setDraft as React.Dispatch<
-                        React.SetStateAction<RescheduleDraft>
-                    >}
-                    onContinue={() => setStep(1)}
-                />
-            )}
+        <>
+            <FlowHero
+                title="Reschedule Your Booking"
+                subtitle="Update your booking Details"
+            />
+            <Stepper
+                steps={["Schedule", "Confirm"]}
+                currentStep={step}
+            />
+            <main className="mx-auto bg-white px-4 py-10">
 
-            {step === 1 && (
-                <ConfirmRescheduleStep
-                    draft={draft}
-                    onBack={() => setStep(0)}
-                />
-            )}
-        </div>
+                {step === 0 && (
+                    <ScheduleStep
+                        draft={draft}
+                        setDraft={setDraft as React.Dispatch<
+                            React.SetStateAction<RescheduleDraft>
+                        >}
+                        onContinue={() => setStep(1)}
+                    />
+                )}
+
+                {step === 1 && (
+                    <ConfirmRescheduleStep
+                        draft={draft}
+                        onBack={() => setStep(0)}
+                    />
+                )}
+            </main>
+        </>
     );
 }

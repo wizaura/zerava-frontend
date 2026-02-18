@@ -95,13 +95,14 @@ export default function WhyZerava() {
                                 data-aos-duration="900"
                                 data-aos-easing="ease-out-cubic"
                                 className="
-                                    group rounded-3xl border border-white/10
-                                    bg-black backdrop-blur-md
-                                    px-6 py-4 text-left
-                                    transition-all duration-300 ease-out
-                                    hover:-translate-y-2 hover:scale-[1.03]
-                                    hover:shadow-mobility-green
-                                "
+    group rounded-3xl border border-white/5 hover:border-electric-teal/80
+    bg-black backdrop-blur-2xl
+    px-6 py-4 text-left
+    transition-all duration-300 ease-out
+    hover:-translate-y-2 hover:scale-[1.03]
+    hover:shadow-mobility-green
+"
+
                             >
                                 {/* Icon */}
                                 <div
@@ -113,12 +114,12 @@ export default function WhyZerava() {
                                 </div>
 
                                 {/* Title */}
-                                <h3 className="text-lg font-semibold text-gray-200">
+                                <h3 className="text-2xl font-light text-gray-200">
                                     {item.title}
                                 </h3>
 
                                 {/* Description */}
-                                <p className="mt-3 text-sm leading-relaxed text-text-secondary">
+                                <p className="mt-3 text-md leading-relaxed text-gray-400">
                                     {item.description}
                                 </p>
                             </div>

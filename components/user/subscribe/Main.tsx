@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import SubscribeHero from "./Hero";
-import SubscribeSteps from "./Steps";
 import PlanServiceStep from "./PlanService";
 import { SubscriptionDraft } from "./types";
 import ScheduleStep from "./Schedule";
@@ -10,6 +8,8 @@ import PaymentStep from "./Payment";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { SubscriptionService } from "./Call";
+import Stepper from "@/components/ui/Stepper";
+import FlowHero from "@/components/ui/FlowHero";
 
 const stripePromise = loadStripe(
     process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -55,9 +55,14 @@ export default function SubscribeClient({
 
     return (
         <>
-            <SubscribeHero />
-            <SubscribeSteps currentStep={currentStep} />
-
+            <FlowHero
+                title="Start Your Subscription"
+                subtitle="Enjoy regular premium car care without the hassle"
+            />
+            <Stepper
+                steps={["Plan", "Schedule", "Payment"]}
+                currentStep={currentStep}
+            />
             <main className="mx-auto bg-white px-4 py-10">
                 {currentStep === 0 && (
                     <PlanServiceStep

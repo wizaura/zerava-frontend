@@ -40,7 +40,7 @@ export default function UserLayout({
             <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
                 <UserHeader />
                 <div className="flex-1 overflow-y-auto">
-                    <main className="max-w-7xl mx-auto p-6">
+                    <main className="mx-auto">
                         {children}
                     </main>
                 </div>

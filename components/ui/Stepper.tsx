@@ -1,12 +1,14 @@
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 
-type BookingStepsProps = {
+type StepperProps = {
+    steps: string[];
     currentStep: number;
 };
 
-const steps = ["Service", "Add-Ons","Schedule", "Address", "Details", "Payment"];
-
-export default function BookingSteps({ currentStep }: BookingStepsProps) {
+export default function Stepper({
+    steps,
+    currentStep,
+}: StepperProps) {
     return (
         <div className="w-full border-b bg-white">
             <div className="mx-auto max-w-6xl px-4 py-6">

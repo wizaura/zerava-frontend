@@ -56,7 +56,7 @@ export default function UserDashboardPage() {
     const { ecoLevel, environment, recentBookings, subscription } = data;
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 max-w-6xl p-6 mx-auto">
             {/* TOP ROW */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <EcoLevelCard eco={ecoLevel} env={environment} />

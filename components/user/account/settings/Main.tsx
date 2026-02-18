@@ -37,7 +37,7 @@ export default function UserSettings() {
     };
 
     return (
-        <div className="max-w-3xl mx-auto rounded-2xl border bg-white p-8">
+        <div className="max-w-3xl mt-6 mx-auto rounded-2xl border bg-white p-8">
             {/* Header */}
             <div className="mb-8 flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Profile Settings</h2>

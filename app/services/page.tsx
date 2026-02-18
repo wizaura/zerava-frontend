@@ -3,6 +3,7 @@ import PageHero from "@/components/common/PageHero";
 import AddOnsSection from "@/components/user/services/AddOns";
 import ServicesList from "@/components/user/services/List";
 import PricingSection from "@/components/user/services/Pricing";
+import OurPromiseSection from "@/components/user/services/Promise";
 import WhySubscribe from "@/components/user/services/Why";
 
 export default function ServicesAndPricing() {
@@ -30,6 +31,7 @@ export default function ServicesAndPricing() {
             <AddOnsSection />
             <PricingSection />
             <WhySubscribe />
+            <OurPromiseSection />
             <FinalCTA
                 title="Questions about pricing?"
                 description="Get in touch and we'll help you find the perfect package for your needs."

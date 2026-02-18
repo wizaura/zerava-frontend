@@ -5,6 +5,7 @@ import { ShieldCheck, MapPin, CreditCard, CalendarClock } from "lucide-react";
 import { getUserBookings } from "@/lib/user/booking.api";
 import { useRouter } from "next/navigation";
 import api from "@/lib/user/axios";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
 const STATUS_STYLE: Record<
     "confirmed" | "pending" | "cancelled" | "completed",
@@ -24,6 +25,7 @@ type UIBooking = {
     timeFrom: string;    // "10:00"
     timeTo: string;      // "10:50"
     location: string;
+    rescheduleCount: number;
     status: "confirmed" | "pending" | "cancelled" | "completed";
     price: string;
 };
@@ -33,6 +35,9 @@ type UIBooking = {
 export default function UserBookingsSection() {
     const [bookings, setBookings] = useState<UIBooking[]>([]);
     const [loading, setLoading] = useState(true);
+    const [cancelTarget, setCancelTarget] = useState<UIBooking | null>(null);
+    const [cancelLoading, setCancelLoading] = useState(false);
+
     const router = useRouter();
 
     useEffect(() => {
@@ -88,6 +93,7 @@ export default function UserBookingsSection() {
                     timeFrom: b.timeFrom,
                     timeTo: b.timeTo,
                     location: `${b.address}, ${b.postcode}`,
+                    rescheduleCount: b.rescheduleCount,
                     status: mapStatus(b.status),
                     price: `£${b.price}`,
                 }))
@@ -98,8 +104,24 @@ export default function UserBookingsSection() {
         }
     }
 
+    async function handleCancelConfirm() {
+        if (!cancelTarget) return;
+
+        try {
+            setCancelLoading(true);
+
+            await api.patch(`/bookings/${cancelTarget.id}/cancel`);
+
+            setCancelTarget(null);
+            await load(); // reload bookings
+        } finally {
+            setCancelLoading(false);
+        }
+    }
+
+
     return (
-        <div className="rounded-xl border bg-white p-6">
+        <div className="mt-6 rounded-xl max-w-6xl mx-auto border bg-white p-6">
             <h2 className="mb-4 text-lg font-semibold">All Bookings</h2>
 
             <div className="space-y-3">
@@ -137,6 +159,7 @@ export default function UserBookingsSection() {
                             <p className="font-semibold">{b.price}</p>
 
                             {/* Actions */}
+                            {/* Actions */}
                             {b.status === "pending" && (
                                 <button
                                     onClick={() => goToStripe(b.id)}
@@ -146,7 +169,8 @@ export default function UserBookingsSection() {
                                 </button>
                             )}
 
-                            {b.status === "confirmed" && canReschedule(b.date, b.timeFrom) && (
+                            {/* RESCHEDULE */}
+                            {b.status === "confirmed" && canReschedule(b.date, b.timeFrom) && b.rescheduleCount < 1 && (
                                 <button
                                     onClick={() =>
                                         router.push(`/account/bookings/${b.id}/reschedule`)
@@ -157,16 +181,48 @@ export default function UserBookingsSection() {
                                     Reschedule
                                 </button>
                             )}
+                            {b.status === "confirmed" && canReschedule(b.date, b.timeFrom) && (
+                                <button
+                                    onClick={() => setCancelTarget(b)}
+                                    className="text-sm font-semibold text-red-600 hover:underline"
+                                >
+                                    Cancel Booking
+                                </button>
+                            )}
 
+                            {b.status === "confirmed" && canReschedule(b.date, b.timeFrom) && b.rescheduleCount >= 1 && (
+                                <p className="text-xs text-gray-400">
+                                    Reschedule limit reached
+                                </p>
+                            )}
+
+                            {/* LOCK MESSAGE */}
                             {b.status === "confirmed" && !canReschedule(b.date, b.timeFrom) && (
                                 <p className="text-xs text-gray-400">
-                                    Reschedule locked (within 24h)
+                                    Changes locked (within 24h)
                                 </p>
                             )}
                         </div>
                     </div>
                 ))}
             </div>
+            <ConfirmModal
+                open={!!cancelTarget}
+                title="Cancel Booking"
+                description={
+                    cancelTarget
+                        ? canReschedule(cancelTarget.date, cancelTarget.timeFrom)
+                            ? "You will receive a 100% refund. This cannot be undone."
+                            : "This booking is within 24 hours. No refund will be issued."
+                        : ""
+                }
+                confirmText="Yes, Cancel Booking"
+                cancelText="Keep Booking"
+                loading={cancelLoading}
+                variant="danger"
+                onCancel={() => setCancelTarget(null)}
+                onConfirm={handleCancelConfirm}
+            />
         </div>
     );
 }

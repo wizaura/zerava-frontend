@@ -3,6 +3,7 @@
 import { useState } from "react";
 import api from "@/lib/user/axios";
 import { BookingDraft } from "./Main";
+import { Leaf } from "lucide-react";
 
 type Props = {
     bookingDraft: BookingDraft;
@@ -11,7 +12,7 @@ type Props = {
     onSuccess: () => void;
 };
 
-export default function ConfirmStep({
+export default function FinalDetailsStep({
     bookingDraft,
     setBookingDraft,
     onBack,
@@ -20,20 +21,6 @@ export default function ConfirmStep({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const canSubmit =
-        Boolean(bookingDraft.servicePriceId) &&
-        // (
-        //     bookingDraft.serviceSlotId ||
-        //     (bookingDraft.isTemplate && bookingDraft.templateId)
-        // ) &&
-        Boolean(bookingDraft.timeFrom) &&
-        Boolean(bookingDraft.timeTo) &&
-        Boolean(bookingDraft.name?.trim()) &&
-        Boolean(bookingDraft.email?.trim()) &&
-        Boolean(bookingDraft.phone?.trim()) &&
-        Boolean(bookingDraft.address?.trim()) &&
-        Boolean(bookingDraft.postcode?.trim());
-
     const addOnsTotal = bookingDraft.addOns.reduce(
         (sum, a) => sum + a.price,
         0,
@@ -41,6 +28,16 @@ export default function ConfirmStep({
 
     const total =
         (bookingDraft.basePrice ?? 0) + addOnsTotal;
+
+    const canSubmit =
+        Boolean(bookingDraft.servicePriceId) &&
+        Boolean(bookingDraft.timeFrom) &&
+        Boolean(bookingDraft.timeTo) &&
+        Boolean(bookingDraft.name?.trim()) &&
+        Boolean(bookingDraft.email?.trim()) &&
+        Boolean(bookingDraft.phone?.trim()) &&
+        Boolean(bookingDraft.address?.trim()) &&
+        Boolean(bookingDraft.postcode?.trim());
 
     async function submitBooking() {
         if (!canSubmit) return;
@@ -51,33 +48,25 @@ export default function ConfirmStep({
         try {
             const bookingRes = await api.post("/bookings", {
                 servicePriceId: bookingDraft.servicePriceId,
-
                 serviceSlotId: bookingDraft.serviceSlotId ?? null,
                 templateId: bookingDraft.templateId ?? null,
                 isTemplate: bookingDraft.isTemplate ?? false,
-
                 operatorId: bookingDraft.operatorId,
                 date: bookingDraft.date,
-
                 timeFrom: bookingDraft.timeFrom,
                 timeTo: bookingDraft.timeTo,
-
                 address: bookingDraft.address,
                 postcode: bookingDraft.postcode,
                 notes: bookingDraft.notes,
-
                 name: bookingDraft.name,
                 email: bookingDraft.email,
                 phone: bookingDraft.phone,
-
                 addOnIds: bookingDraft.addOns.map(a => a.id),
             });
 
             const session = await api.post(
                 "/payments/create-session",
-                {
-                    bookingId: bookingRes.data.id,
-                },
+                { bookingId: bookingRes.data.id },
             );
 
             window.location.href = session.data.url;
@@ -93,102 +82,115 @@ export default function ConfirmStep({
     }
 
     return (
-        <div className="max-w-3xl mx-auto space-y-10">
+        <div className="max-w-4xl mx-auto space-y-10">
+
             <h2 className="text-2xl font-medium text-gray-900">
-                Confirm your booking
+                Final details
             </h2>
 
-            {/* Contact Details */}
-            <div className="rounded-2xl border bg-white p-6 space-y-6">
+            {/* CONTACT + ADDRESS */}
+            <div className="rounded-2xl border bg-white p-6 shadow-sm space-y-6">
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Input
                         label="Full name"
                         value={bookingDraft.name}
-                        onChange={(v) =>
-                            setBookingDraft(d => ({
-                                ...d,
-                                name: v,
-                            }))
+                        onChange={(v: string) =>
+                            setBookingDraft(d => ({ ...d, name: v }))
                         }
-                        placeholder="John Smith"
                     />
                     <Input
                         label="Email"
                         type="email"
                         value={bookingDraft.email}
-                        onChange={(v) =>
-                            setBookingDraft(d => ({
-                                ...d,
-                                email: v,
-                            }))
+                        onChange={(v: string) =>
+                            setBookingDraft(d => ({ ...d, email: v }))
                         }
-                        placeholder="john@email.com"
                     />
                     <Input
                         label="Phone"
                         value={bookingDraft.phone}
-                        onChange={(v) =>
+                        onChange={(v: string) =>
+                            setBookingDraft(d => ({ ...d, phone: v }))
+                        }
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">
+                        Full address
+                    </label>
+                    <input
+                        value={bookingDraft.address || ""}
+                        onChange={(e) =>
                             setBookingDraft(d => ({
                                 ...d,
-                                phone: v,
+                                address: e.target.value,
                             }))
                         }
-                        placeholder="07xxx xxxxxx"
+                        className="w-full rounded-xl border px-4 py-3 text-sm"
+                        placeholder="House number and street"
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">
+                        Special instructions (optional)
+                    </label>
+                    <textarea
+                        rows={3}
+                        value={bookingDraft.notes || ""}
+                        onChange={(e) =>
+                            setBookingDraft(d => ({
+                                ...d,
+                                notes: e.target.value,
+                            }))
+                        }
+                        className="w-full rounded-xl border px-4 py-3 text-sm"
                     />
                 </div>
             </div>
 
-            {/* Booking Summary */}
-            <div className="rounded-2xl bg-gradient-to-br from-[#0A0A0A] to-[#111] p-6 text-white space-y-4">
+            {/* ECO BANNER */}
+            <div className="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+                <Leaf size={16} />
+                This clean saves <strong>150 litres of water</strong>
+            </div>
+
+            {/* SUMMARY */}
+            <div className="rounded-2xl bg-black p-6 text-white space-y-4">
                 <h3 className="text-lg font-medium">
                     Booking Summary
                 </h3>
 
-                <div className="space-y-3 text-sm">
-                    <SummaryRow
-                        label="Service"
-                        value={bookingDraft.serviceName}
-                    />
-                    <SummaryRow
-                        label="Vehicle"
-                        value={bookingDraft.vehicleCategory}
-                    />
-                    <SummaryRow
-                        label="Date & Time"
-                        value={`${formatDate(
-                            bookingDraft.date,
-                        )} · ${formatTimeRange(
-                            bookingDraft.timeFrom,
-                            bookingDraft.timeTo,
-                        )}`}
-                    />
-                    <SummaryRow
-                        label="Location"
-                        value={bookingDraft.postcode}
-                    />
-                </div>
+                <SummaryRow label="Service" value={bookingDraft.serviceName} />
+                <SummaryRow label="Vehicle" value={bookingDraft.vehicleCategory} />
                 <SummaryRow
-                    label="Price"
-                    value={`£${bookingDraft.basePrice as number / 100}`}
+                    label="Date & Time"
+                    value={`${formatDate(bookingDraft.date)} · ${formatTimeRange(
+                        bookingDraft.timeFrom,
+                        bookingDraft.timeTo,
+                    )}`}
                 />
 
-                {bookingDraft.addOns.length > 0 && (
-                    <div className="mt-4 space-y-2 border-t border-white/20 pt-4">
-                        {bookingDraft.addOns.map(a => (
-                            <SummaryRow
-                                key={a.id}
-                                label={a.name}
-                                value={`+£${a.price / 100}`}
-                            />
-                        ))}
-                    </div>
-                )}
+                <div className="border-t border-white/20 pt-4 space-y-2">
+                    <SummaryRow
+                        label="Base price"
+                        value={`£${(bookingDraft.basePrice ?? 0) / 100}`}
+                    />
 
-                <div className="mt-4 border-t border-white/20 pt-4 flex justify-between">
-                    <p className="text-gray-300">Total</p>
-                    <p className="text-xl font-semibold">
-                        £{total / 100}
-                    </p>
+                    {bookingDraft.addOns.map(a => (
+                        <SummaryRow
+                            key={a.id}
+                            label={a.name}
+                            value={`+£${a.price / 100}`}
+                        />
+                    ))}
+                </div>
+
+                <div className="border-t border-white/20 pt-4 flex justify-between text-xl font-semibold">
+                    <span>Total</span>
+                    <span>£{total / 100}</span>
                 </div>
             </div>
 
@@ -196,8 +198,8 @@ export default function ConfirmStep({
                 <p className="text-sm text-red-500">{error}</p>
             )}
 
-            {/* Footer */}
-            <div className="flex justify-between pt-4">
+            {/* FOOTER */}
+            <div className="flex justify-between">
                 <button
                     onClick={onBack}
                     className="rounded-full border px-6 py-2 text-sm"
@@ -215,15 +217,12 @@ export default function ConfirmStep({
                             : "bg-gray-300 cursor-not-allowed",
                     ].join(" ")}
                 >
-                    {loading
-                        ? "Booking…"
-                        : "Confirm Booking"}
+                    {loading ? "Processing…" : "Confirm & Pay"}
                 </button>
             </div>
         </div>
     );
 }
-
 /* ---------- Helpers ---------- */
 
 function Input({

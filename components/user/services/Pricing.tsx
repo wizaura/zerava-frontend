@@ -36,7 +36,7 @@ export default function PricingSection() {
                         </p>
 
                         <p className="mt-8 text-4xl font-semibold text-gray-900">
-                            From £25
+                            From £29
                         </p>
 
                         <ul className="mt-8 space-y-3 text-sm text-gray-700">
@@ -55,7 +55,7 @@ export default function PricingSection() {
                         </ul>
 
                         <Link
-                            href="/book"
+                            href="/booking"
                             className="mt-10 inline-flex rounded-full bg-gray-900 px-10 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
                         >
                             Pay One-Off (Stripe)
@@ -77,7 +77,7 @@ export default function PricingSection() {
                         </p>
 
                         <p className="mt-8 text-2xl font-medium text-gray-900">
-                            Monthly <strong className="text-electric-teal">·</strong> Quarterly <strong className="text-electric-teal">·</strong> Annual
+                            Monthly <strong className="text-electric-teal">·</strong> Fortnightly
                         </p>
 
                         <ul className="mt-8 space-y-3 text-sm text-gray-700">
@@ -99,7 +99,7 @@ export default function PricingSection() {
                             href="/subscribe"
                             className="mt-10 inline-flex rounded-full bg-electric-teal px-10 py-3 text-sm font-semibold text-eco-black transition hover:brightness-110"
                         >
-                            Subscribe (GoCardless)
+                            Subscribe (Stripe)
                         </Link>
                     </div>
 
