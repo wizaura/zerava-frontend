@@ -12,25 +12,13 @@ export default function EcoMethod() {
                 title="The science of"
                 highlight="sustainable clean"
                 description="Our waterless technology represents the future of vehicle care — combining cutting-edge chemistry with environmental responsibility."
-                buttons={[
-                    {
-                        label: "Explore Our Technology",
-                        href: "#innovation",
-                        variant: "primary",
-                    },
-                    {
-                        label: "Our Sustainability Promise",
-                        href: "/about",
-                        variant: "secondary",
-                    },
-                ]}
             />
             <InnovationSection />
             <EnvironmentalImpactSection />
             <ProcessSection />
             <FinalCTA
-                title="Experience the eco difference"
-                description="Join the sustainable car care movement today."
+                title="Experience the new difference"
+                description="Join the sustainable vehicle care movement today."
                 buttons={[
                     {
                         label: "Book Your Clean",

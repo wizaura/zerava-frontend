@@ -11,25 +11,25 @@ const features = [
     {
         title: "Advanced Polymer Technology",
         description:
-            "Our formula uses plant-derived polymers that encapsulate dirt particles, lifting them safely from the surface without scratching.",
+            "Our formula uses advanced polymer technology to encapsulate dirt particles, lifting them safely from the surface. Each vehicle is cleaned using multiple premium microfibre towels, rotated and dedicated to specific surfaces to minimise friction and help protect modern paint finishes.",
         icon: FlaskConical,
     },
     {
         title: "Protective Coating",
         description:
-            "Each clean leaves behind a thin protective layer that repels dust and water, keeping your car cleaner for longer.",
+            "Each clean leaves behind a thin, temporary protective layer with hydrophobic properties, helping water bead and reduce dust build-up so your vehicle stays cleaner for longer.",
         icon: Shield,
     },
     {
-        title: "99.78% Biodegradable",
+        title: "Biodegradable Formulations",
         description:
-            "Readily biodegradable formula that breaks down naturally within 28 days. No harmful chemicals enter the water system.",
+            "Formulated with 99.78% biodegradable ingredients, designed to break down naturally after use and reduce environmental impact.",
         icon: Recycle,
     },
     {
         title: "Zero Water Required",
         description:
-            "Traditional car washes use 150–400 litres per wash. Our method uses none, saving precious freshwater resources.",
+            "Traditional car washes can use over 150 litres of water per wash. Our method requires no on-site water, helping conserve water resources.",
         icon: Droplets,
     },
 ];

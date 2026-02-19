@@ -7,9 +7,10 @@ import {
     MoreVertical,
 } from "lucide-react";
 import BookingDetailsModal from "./DetailsModal";
-import { AdminBooking, cancelAdminBooking, completeAdminBooking, confirmAdminBooking, updateAdminBookingNotes } from "@/lib/admin/booking.api";
+import { AdminBooking, cancelAdminBooking, completeAdminBooking, confirmAdminBooking, updateAdminBooking } from "@/lib/admin/booking.api";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import toast from "react-hot-toast";
+import { formatDate } from "@/lib/utils";
 
 const STATUS_STYLES: Record<AdminBooking["status"], string> = {
     CONFIRMED: "bg-emerald-100 text-emerald-700",
@@ -109,6 +110,7 @@ export default function BookingsTable({
                                     <th className="px-6 py-3 text-left">Service</th>
                                     <th className="px-6 py-3 text-left">Date</th>
                                     <th className="px-6 py-3 text-left">Status</th>
+                                    <th className="px-6 py-3 text-left">Type</th>
                                     <th className="px-6 py-3 text-left">Price</th>
                                     <th className="px-6 py-3 text-right">Actions</th>
                                 </tr>
@@ -136,7 +138,9 @@ export default function BookingsTable({
                                         </td>
 
                                         <td className="px-6 py-4">
-                                            {b?.serviceSlot?.date}
+                                            {b.serviceSlot?.date
+                                                ? formatDate(b.serviceSlot.date)
+                                                : "-"}
                                         </td>
 
                                         <td className="px-6 py-4">
@@ -147,6 +151,17 @@ export default function BookingsTable({
                                             </span>
                                         </td>
 
+                                        <td className="px-6 py-4">
+                                            {b.subscriptionId ? (
+                                                <span className="rounded-full bg-purple-100 text-purple-700 px-3 py-1 text-xs font-medium">
+                                                    Subscription
+                                                </span>
+                                            ) : (
+                                                <span className="rounded-full bg-gray-100 text-gray-700 px-3 py-1 text-xs font-medium">
+                                                    One-time
+                                                </span>
+                                            )}
+                                        </td>
                                         <td className="px-6 py-4 font-medium">
                                             £{b.price.toFixed(2)}
                                         </td>
@@ -297,16 +312,16 @@ export default function BookingsTable({
                         try {
                             if (!selectedBooking) return;
 
-                            await updateAdminBookingNotes(
+                            await updateAdminBooking(
                                 selectedBooking.id,
-                                updates.notes ?? ""
+                                updates
                             );
 
-                            toast.success("Notes updated successfully");
+                            toast.success("Booking updated successfully");
                             setSelectedBooking(null);
                             onRefresh();
                         } catch (err) {
-                            toast.error("Failed to update notes");
+                            toast.error("Failed to update booking");
                         }
                     }}
                 />

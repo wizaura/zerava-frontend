@@ -8,6 +8,7 @@ import { formatDate } from "@/lib/utils";
 
 type BookingUpdatePayload = {
     notes?: string;
+    status?: AdminBooking["status"];
 };
 
 export default function BookingDetailsModal({
@@ -20,10 +21,29 @@ export default function BookingDetailsModal({
     onSave: (updated: BookingUpdatePayload) => void;
 }) {
     const [notes, setNotes] = useState(booking.notes ?? "");
+    const [status, setStatus] = useState(booking.status);
 
     function handleSave() {
-        onSave({ notes });
+        onSave({ notes, status });
     }
+
+    function getAllowedStatuses(
+        current: AdminBooking["status"]
+    ): AdminBooking["status"][] {
+        switch (current) {
+            case "PENDING_PAYMENT":
+                return ["PENDING_PAYMENT", "CONFIRMED", "CANCELLED"];
+            case "CONFIRMED":
+                return ["CONFIRMED", "COMPLETED", "CANCELLED"];
+            case "COMPLETED":
+                return ["COMPLETED"];
+            case "CANCELLED":
+                return ["CANCELLED"];
+            default:
+                return [current];
+        }
+    }
+
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -53,8 +73,24 @@ export default function BookingDetailsModal({
                             label="Time"
                             value={`${booking.timeFrom} – ${booking.timeTo}`}
                         />
-                        <Info label="Status" value={booking.status} />
                         <Info label="Price" value={`£${booking.price.toFixed(2)}`} />
+                    </div>
+
+                    <div>
+                        <p className="text-gray-500">Status</p>
+                        <select
+                            value={status}
+                            onChange={(e) =>
+                                setStatus(e.target.value as AdminBooking["status"])
+                            }
+                            className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
+                        >
+                            {getAllowedStatuses(booking.status).map((s) => (
+                                <option key={s} value={s}>
+                                    {s}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     {/* CUSTOMER */}
@@ -89,7 +125,7 @@ export default function BookingDetailsModal({
                         onClick={handleSave}
                         className="rounded-full bg-emerald-500 hover:bg-emerald-600 px-6 py-2 text-white"
                     >
-                        Save Notes
+                        Save Booking
                     </button>
                 </div>
             </div>

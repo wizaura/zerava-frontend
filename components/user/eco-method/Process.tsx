@@ -11,12 +11,12 @@ const steps = [
     {
         number: "2",
         title: "Encapsulate",
-        description: "Polymers surround dirt particles",
+        description: "Polymers surround dirt particles to minimise surface friction",
     },
     {
         number: "3",
         title: "Lift",
-        description: "Microfibre cloths gently remove residue",
+        description: "Premium microfibre cloths gently remove residue",
     },
     {
         number: "4",

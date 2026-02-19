@@ -53,7 +53,7 @@ export default function EnvironmentalImpactSection() {
                             28 <span className="text-electric-teal text-2xl">days</span>
                         </p>
                         <p className="mt-3 text-sm text-gray-400">
-                            Full breakdown time
+                            breakdown time
                         </p>
                     </div>
 
@@ -67,13 +67,11 @@ export default function EnvironmentalImpactSection() {
                         {/* Left Text */}
                         <div>
                             <h3 className="text-2xl font-light">
-                                Certified eco-friendly
+                                Responsible Formulation
                             </h3>
 
                             <p className="mt-6 text-gray-400 leading-relaxed">
-                                Our products meet the highest environmental standards.
-                                We continuously work to improve our formulations and
-                                reduce our impact.
+                                Our products meet the highest environmental standards. We continuously work to improve our formulations and reduce our impact.
                             </p>
                         </div>
 
@@ -81,11 +79,11 @@ export default function EnvironmentalImpactSection() {
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
 
                             {[
-                                "Plant-based ingredients",
-                                "Cruelty-free tested",
-                                "Safe for all paint types",
+                                "Biodegradable ingredients",
                                 "No phosphates or nitrates",
+                                "Zero Run-off",
                                 "VOC compliant",
+                                "Safe for all paint types",
                                 "pH neutral formula",
                             ].map((item) => (
                                 <div

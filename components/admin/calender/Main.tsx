@@ -9,7 +9,7 @@ import {
     getAdminBookings,
     AdminBooking,
     BookingStatus,
-    updateAdminBookingNotes,
+    updateAdminBooking,
 } from "@/lib/admin/booking.api";
 
 import BookingDetailsModal from "../booking/DetailsModal";
@@ -45,8 +45,8 @@ export default function AdminCalendarPage() {
             setEvents(
                 data.map((b) => ({
                     id: b.id,
-                    title: `${b.timeFrom} – ${b.timeTo}\n${b.serviceSlot.operator.name}`,
-                    start: b.serviceSlot.date,
+                    title: `${b.timeFrom} – ${b.timeTo}\n${b.serviceSlot?.operator?.name ?? ""}`,
+                    start: new Date(b.serviceSlot!.date).toISOString(),
                     backgroundColor: STATUS_COLORS[b.status],
                 }))
             );
@@ -64,7 +64,7 @@ export default function AdminCalendarPage() {
                         left: "prev",
                         center: "title",
                         right: "today next",
-                    }}  
+                    }}
                     events={events}
                     height="auto"
                     dayMaxEvents
@@ -86,10 +86,10 @@ export default function AdminCalendarPage() {
 
             {/* LEGEND */}
             <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600">
-                <Legend color="#79b890" label="Confirmed" />
-                <Legend color="#d4c37e" label="Pending" />
-                <Legend color="#6183b9" label="Completed" />
-                <Legend color="#a06969" label="Cancelled" />
+                <Legend color={STATUS_COLORS.CONFIRMED} label="Confirmed" />
+                <Legend color={STATUS_COLORS.PENDING_PAYMENT} label="Pending" />
+                <Legend color={STATUS_COLORS.COMPLETED} label="Completed" />
+                <Legend color={STATUS_COLORS.CANCELLED} label="Cancelled" />
             </div>
 
             {/* DETAILS MODAL */}
@@ -101,24 +101,43 @@ export default function AdminCalendarPage() {
                         if (!selectedBooking) return;
 
                         try {
-                            await updateAdminBookingNotes(
+                            await updateAdminBooking(
                                 selectedBooking.id,
-                                updates.notes ?? ""
+                                updates
                             );
+
+                            const updatedBooking = {
+                                ...selectedBooking,
+                                ...updates,
+                            };
 
                             // Optimistic update (notes only)
                             setBookings((prev) =>
                                 prev.map((b) =>
                                     b.id === selectedBooking.id
-                                        ? { ...b, notes: updates.notes ?? "" }
+                                        ? updatedBooking
                                         : b
                                 )
                             );
 
-                            toast.success("Notes updated");
+                            setEvents((prev) =>
+                                prev.map((event) =>
+                                    event.id === selectedBooking.id
+                                        ? {
+                                            ...event,
+                                            backgroundColor:
+                                                updates.status
+                                                    ? STATUS_COLORS[updates.status]
+                                                    : event.backgroundColor,
+                                        }
+                                        : event
+                                )
+                            );
+
+                            toast.success("Booking updated");
                             setSelectedBooking(null);
                         } catch (err) {
-                            toast.error("Failed to update notes");
+                            toast.error("Failed to update booking");
                         }
                     }}
                 />

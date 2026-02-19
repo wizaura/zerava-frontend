@@ -12,6 +12,7 @@ export type UserBooking = {
     date: string;           // YYYY-MM-DD
     timeFrom: string;       // "10:00"
     timeTo: string;         // "10:50"
+    subscriptionId: string;
 
     address: string;
     postcode: string;

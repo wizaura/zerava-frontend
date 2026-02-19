@@ -26,6 +26,7 @@ type UIBooking = {
     timeTo: string;      // "10:50"
     location: string;
     rescheduleCount: number;
+    subscriptionId: string;
     status: "confirmed" | "pending" | "cancelled" | "completed";
     price: string;
 };
@@ -93,6 +94,7 @@ export default function UserBookingsSection() {
                     timeFrom: b.timeFrom,
                     timeTo: b.timeTo,
                     location: `${b.address}, ${b.postcode}`,
+                    subscriptionId: b.subscriptionId,
                     rescheduleCount: b.rescheduleCount,
                     status: mapStatus(b.status),
                     price: `£${b.price}`,
@@ -113,12 +115,23 @@ export default function UserBookingsSection() {
             await api.patch(`/bookings/${cancelTarget.id}/cancel`);
 
             setCancelTarget(null);
-            await load(); // reload bookings
+            await load();
         } finally {
             setCancelLoading(false);
         }
     }
 
+    function getCancelMessage(b: UIBooking) {
+        if (b.subscriptionId) {
+            return "This booking is part of a subscription. No refund will be issued.";
+        }
+
+        if (canReschedule(b.date, b.timeFrom)) {
+            return "You will receive a 100% refund. This cannot be undone.";
+        }
+
+        return "This booking is within 24 hours. No refund will be issued.";
+    }
 
     return (
         <div className="mt-6 rounded-xl max-w-6xl mx-auto border bg-white p-6">
@@ -137,10 +150,20 @@ export default function UserBookingsSection() {
                             </div>
 
                             <div>
-                                <p className="font-medium">{b.service}</p>
+                                <div className="flex items-center gap-2">
+                                    <p className="font-medium">{b.service}</p>
+
+                                    {b.subscriptionId && (
+                                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                                            Subscription
+                                        </span>
+                                    )}
+                                </div>
+
                                 <p className="text-sm text-gray-500">
                                     {formatDateTime(b.date, b.timeFrom, b.timeTo)}
                                 </p>
+
                                 <p className="flex items-center gap-1 text-sm text-gray-500">
                                     <MapPin size={14} />
                                     {b.location}
@@ -209,13 +232,7 @@ export default function UserBookingsSection() {
             <ConfirmModal
                 open={!!cancelTarget}
                 title="Cancel Booking"
-                description={
-                    cancelTarget
-                        ? canReschedule(cancelTarget.date, cancelTarget.timeFrom)
-                            ? "You will receive a 100% refund. This cannot be undone."
-                            : "This booking is within 24 hours. No refund will be issued."
-                        : ""
-                }
+                description={cancelTarget ? getCancelMessage(cancelTarget) : ""}
                 confirmText="Yes, Cancel Booking"
                 cancelText="Keep Booking"
                 loading={cancelLoading}

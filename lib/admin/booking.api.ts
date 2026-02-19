@@ -18,6 +18,7 @@ export type AdminBooking = {
     phone: string;
     timeFrom: string;
     timeTo: string;
+    subscriptionId: string;
     postcode: string;
     address: string;
     price: number;
@@ -65,12 +66,16 @@ export async function completeAdminBooking(id: string) {
     return adminApi.post(`/admin/bookings/${id}/complete`);
 }
 
-export async function updateAdminBookingNotes(
+export type AdminBookingUpdatePayload = {
+    notes?: string;
+    status?: "PENDING_PAYMENT" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
+};
+
+export async function updateAdminBooking(
     id: string,
-    notes: string
+    payload: AdminBookingUpdatePayload
 ) {
-    return adminApi.patch(`/admin/bookings/${id}`, {
-        notes,
-    });
+    return adminApi.patch(`/admin/bookings/${id}`, payload);
 }
+
 

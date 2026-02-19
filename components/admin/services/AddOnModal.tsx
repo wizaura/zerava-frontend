@@ -182,21 +182,23 @@ export default function AddOnModal({
                     </div>
                 </div>
 
-                <div>
-                    <label className="text-sm font-medium">
-                        Display Order
-                    </label>
-                    <input
-                        type="number"
-                        className="mt-1 w-full rounded-md border px-3 py-2"
-                        value={form.displayOrder}
-                        onChange={(e) =>
-                            setForm({
-                                ...form,
-                                displayOrder: Number(e.target.value),
-                            })
-                        }
-                    />
+                <div className="grid grid-cols-2">
+                    <div>
+                        <label className="text-sm font-medium">
+                            Display Order
+                        </label>
+                        <input
+                            type="number"
+                            className="mt-1 w-full rounded-md border px-3 py-2"
+                            value={form.displayOrder}
+                            onChange={(e) =>
+                                setForm({
+                                    ...form,
+                                    displayOrder: Number(e.target.value),
+                                })
+                            }
+                        />
+                    </div>
                 </div>
             </div>
 
