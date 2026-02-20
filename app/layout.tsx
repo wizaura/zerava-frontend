@@ -78,19 +78,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" className="dark">
-      <body
-        className={`bg-eco-black text-text-primary ${cormorant.variable} antialiased`}
-      >
+      <body className="bg-eco-black text-text-primary antialiased">
         <Providers>
           <AOSProvider />
-          <Navbar />
           {children}
-          <Footer />
           <Toaster position="top-right" />
         </Providers>
       </body>

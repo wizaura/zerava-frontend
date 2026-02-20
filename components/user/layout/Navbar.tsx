@@ -5,23 +5,42 @@ import Link from "next/link";
 import { Menu, X, User } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
+import { useRef } from "react";
 
-const navItems = [
+const mainNavItems = [
     { label: "Home", href: "/" },
     { label: "Services", href: "/services" },
-    // { label: "Pricing", href: "/services#pricing" },
-    // { label: "Our Works", href: "/gallery" },
     { label: "Fleet", href: "/fleet" },
     { label: "About", href: "/about" },
-    // { label: "FAQs", href: "/FAQs" },
-    // { label: "Contact", href: "/contact" },
+    { label: "Contact", href: "/contact" },
+];
+
+const moreNavItems = [
+    { label: "Pricing", href: "/services#pricing" },
+    { label: "Our Works", href: "/gallery" },
+    { label: "FAQs", href: "/FAQs" },
+];
+
+// Mobile keeps full list
+const mobileNavItems = [
+    { label: "Home", href: "/" },
+    { label: "Services", href: "/services" },
+    { label: "Pricing", href: "/services#pricing" },
+    { label: "Our Works", href: "/gallery" },
+    { label: "Fleet", href: "/fleet" },
+    { label: "About", href: "/about" },
+    { label: "FAQs", href: "/FAQs" },
+    { label: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const { isAuthenticated } = useSelector((s: any) => s.auth);
+    const [openDropdown, setOpenDropdown] = useState(false);
     const pathname = usePathname();
+    const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
+
     const isHome = pathname === "/";
 
     useEffect(() => {
@@ -32,7 +51,7 @@ export default function Navbar() {
 
     const isActive = (href: string) => {
         if (href.includes("#")) {
-            return pathname + "#pricing" === href;
+            return pathname === href.split("#")[0];
         }
         return pathname === href;
     };
@@ -48,17 +67,21 @@ export default function Navbar() {
                 }`}
         >
             <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2">
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-electric-teal/20">
                         <span className="font-bold text-electric-teal">Z</span>
                     </div>
-                    <span className="font-semibold tracking-wide">Zerava</span>
+                    <span className="font-semibold tracking-wide">
+                        Zerava
+                    </span>
                 </Link>
 
                 {/* Desktop Nav */}
                 <nav className="hidden items-center gap-8 text-sm font-medium md:flex">
-                    {navItems.map((item) => (
+
+                    {mainNavItems.map((item) => (
                         <Link
                             key={item.label}
                             href={item.href}
@@ -70,36 +93,72 @@ export default function Navbar() {
                             {item.label}
                         </Link>
                     ))}
+
+                    {/* More Dropdown */}
+                    <div
+                        className="relative"
+                        onMouseEnter={() => {
+                            if (dropdownTimeout.current) {
+                                clearTimeout(dropdownTimeout.current);
+                            }
+                            setOpenDropdown(true);
+                        }}
+                        onMouseLeave={() => {
+                            dropdownTimeout.current = setTimeout(() => {
+                                setOpenDropdown(false);
+                            }, 500);
+                        }}
+                    >
+                        <button className="flex items-center gap-1 transition hover:text-electric-teal">
+                            More
+                            <span className="text-xs">▾</span>
+                        </button>
+
+                        {openDropdown && (
+                            <div className="absolute left-0 mt-2 w-48 rounded-xl bg-white shadow-lg border border-black/10 z-50">
+                                <div className="py-2">
+                                    {moreNavItems.map((item) => (
+                                        <Link
+                                            key={item.label}
+                                            href={item.href}
+                                            className="block px-4 py-2 text-sm text-eco-black hover:bg-gray-100 transition"
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </nav>
 
                 {/* Right Actions */}
                 <div className="flex items-center gap-1 sm:gap-3">
+
                     {/* Book Now */}
-                    {/* <Link
+                    <Link
                         href="/booking"
                         className="rounded-full bg-electric-teal px-5 py-2 text-sm font-semibold text-eco-black transition hover:brightness-110"
                     >
                         Book Now
-                    </Link> */}
+                    </Link>
 
                     {/* Account */}
-                    {/* {(
-                        <Link
-                            href={isAuthenticated ? "/account" : "/login"}
-                            className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
-      ${isHome ?
-                                    scrolled
-                                        ? "text-eco-black hover:bg-black/5"
-                                        : "text-gray-300 hover:bg-white/10"
-                                    : "text-eco-black hover:bg-black/5"
-                                }`}
-                        >
-                            <User size={16} />
-                            <span className="hidden sm:inline">
-                                {isAuthenticated ? "Account" : "Login"}
-                            </span>
-                        </Link>
-                    )} */}
+                    <Link
+                        href={isAuthenticated ? "/account" : "/login"}
+                        className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
+                            ${isHome
+                                ? scrolled
+                                    ? "text-eco-black hover:bg-black/5"
+                                    : "text-gray-300 hover:bg-white/10"
+                                : "text-eco-black hover:bg-black/5"
+                            }`}
+                    >
+                        <User size={16} />
+                        <span className="hidden sm:inline">
+                            {isAuthenticated ? "Account" : "Login"}
+                        </span>
+                    </Link>
 
                     {/* Mobile Menu Toggle */}
                     <button
@@ -116,7 +175,7 @@ export default function Navbar() {
             {open && (
                 <div className="md:hidden bg-white border-t border-black/10">
                     <nav className="flex flex-col gap-4 px-6 py-6 text-sm font-medium text-eco-black">
-                        {navItems.map((item) => (
+                        {mobileNavItems.map((item) => (
                             <Link
                                 key={item.label}
                                 href={item.href}

@@ -95,7 +95,7 @@ export default function WhyZerava() {
                                 data-aos-duration="900"
                                 data-aos-easing="ease-out-cubic"
                                 className="
-    group rounded-3xl border border-white/5 hover:border-electric-teal/80
+    group rounded-3xl border border-white/5 hover:border-electric-teal/40
     bg-black backdrop-blur-2xl
     px-6 py-4 text-left
     transition-all duration-300 ease-out

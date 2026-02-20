@@ -4,6 +4,7 @@ import { useState } from "react";
 import api from "@/lib/user/axios";
 import { BookingDraft } from "./Main";
 import { Leaf } from "lucide-react";
+import { useSelector } from "react-redux";
 
 type Props = {
     bookingDraft: BookingDraft;
@@ -20,6 +21,7 @@ export default function FinalDetailsStep({
 }: Props) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { isAuthenticated } = useSelector((s: any) => s.auth);
 
     const addOnsTotal = bookingDraft.addOns.reduce(
         (sum, a) => sum + a.price,
@@ -29,7 +31,21 @@ export default function FinalDetailsStep({
     const total =
         (bookingDraft.basePrice ?? 0) + addOnsTotal;
 
+    function isValidUKReg(reg: string) {
+        const cleaned = reg.toUpperCase().replace(/\s/g, "");
+
+        const ukRegRegex = /^[A-Z]{2}[0-9]{2}[A-Z]{3}$/;
+
+        return ukRegRegex.test(cleaned);
+    }
+
+    const hasValidReg =
+        bookingDraft.registrationNumber
+            ? isValidUKReg(bookingDraft.registrationNumber)
+            : false;
+
     const canSubmit =
+        isAuthenticated &&
         Boolean(bookingDraft.servicePriceId) &&
         Boolean(bookingDraft.timeFrom) &&
         Boolean(bookingDraft.timeTo) &&
@@ -37,7 +53,8 @@ export default function FinalDetailsStep({
         Boolean(bookingDraft.email?.trim()) &&
         Boolean(bookingDraft.phone?.trim()) &&
         Boolean(bookingDraft.address?.trim()) &&
-        Boolean(bookingDraft.postcode?.trim());
+        Boolean(bookingDraft.postcode?.trim()) &&
+        hasValidReg;
 
     async function submitBooking() {
         if (!canSubmit) return;
@@ -57,6 +74,10 @@ export default function FinalDetailsStep({
                 timeTo: bookingDraft.timeTo,
                 address: bookingDraft.address,
                 postcode: bookingDraft.postcode,
+                make: bookingDraft.make,
+                model: bookingDraft.model,
+                registrationNumber: bookingDraft.registrationNumber,
+                parkingInstructions: bookingDraft.parkingInstructions,
                 notes: bookingDraft.notes,
                 name: bookingDraft.name,
                 email: bookingDraft.email,
@@ -91,6 +112,7 @@ export default function FinalDetailsStep({
             {/* CONTACT + ADDRESS */}
             <div className="rounded-2xl border bg-white p-6 shadow-sm space-y-6">
 
+                {/* Personal Info */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Input
                         label="Full name"
@@ -116,6 +138,40 @@ export default function FinalDetailsStep({
                     />
                 </div>
 
+                {/* Vehicle Details */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Input
+                        label="Make"
+                        value={bookingDraft.make || ""}
+                        onChange={(v: string) =>
+                            setBookingDraft(d => ({ ...d, make: v }))
+                        }
+                    />
+                    <Input
+                        label="Model"
+                        value={bookingDraft.model || ""}
+                        onChange={(v: string) =>
+                            setBookingDraft(d => ({ ...d, model: v }))
+                        }
+                    />
+                    <div>
+                        <Input
+                            label="Registration number"
+                            value={bookingDraft.registrationNumber || ""}
+                            onChange={(v: string) =>
+                                setBookingDraft(d => ({ ...d, registrationNumber: v }))
+                            }
+                        />
+                        {bookingDraft.registrationNumber &&
+                            !isValidUKReg(bookingDraft.registrationNumber) && (
+                                <p className="text-sm text-red-500 mt-1">
+                                    Please enter a valid UK registration (Eg: AB12 CDE)
+                                </p>
+                            )}
+                    </div>
+                </div>
+
+                {/* Address */}
                 <div className="space-y-2">
                     <label className="text-sm font-medium">
                         Full address
@@ -129,26 +185,29 @@ export default function FinalDetailsStep({
                             }))
                         }
                         className="w-full rounded-xl border px-4 py-3 text-sm"
-                        placeholder="House number and street"
+                        placeholder="House number, street, city"
                     />
                 </div>
 
+                {/* Parking Instructions */}
                 <div className="space-y-2">
                     <label className="text-sm font-medium">
-                        Special instructions (optional)
+                        Parking / access instructions
                     </label>
                     <textarea
                         rows={3}
-                        value={bookingDraft.notes || ""}
+                        value={bookingDraft.parkingInstructions || ""}
                         onChange={(e) =>
                             setBookingDraft(d => ({
                                 ...d,
-                                notes: e.target.value,
+                                parkingInstructions: e.target.value,
                             }))
                         }
                         className="w-full rounded-xl border px-4 py-3 text-sm"
+                        placeholder="Gate code, driveway location, etc."
                     />
                 </div>
+
             </div>
 
             {/* ECO BANNER */}
@@ -217,7 +276,11 @@ export default function FinalDetailsStep({
                             : "bg-gray-300 cursor-not-allowed",
                     ].join(" ")}
                 >
-                    {loading ? "Processing…" : "Confirm & Pay"}
+                    {loading
+                        ? "Processing…"
+                        : !isAuthenticated
+                            ? "Login & Continue"
+                            : "Confirm & Pay"}
                 </button>
             </div>
         </div>

@@ -44,35 +44,33 @@ export default function AddOnsSection() {
                         return (
                             <div
                                 key={addon.id}
-                                className="rounded-2xl bg-white border border-gray-200 hover:bg-white/95 p-6 transition hover:shadow-md"
+                                className="relative group rounded-2xl bg-white border border-gray-200 p-6 transition hover:shadow-md"
                             >
-                                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-electric-teal/10 text-electric-teal">
+
+                                {/* Duration Top Right */}
+                                <div className="absolute top-4 right-4 flex items-center gap-1 text-xs text-gray-500">
+                                    <Clock size={14} />
+                                    +{addon.durationMin} min
+                                </div>
+
+                                {/* Icon */}
+                                <div className="mb-4 flex h-10 w-10 items-center justify-center group-hover:bg-electric-teal group-hover:text-eco-black rounded-lg bg-electric-teal/10 text-electric-teal">
                                     {Icon && <Icon size={18} />}
                                 </div>
 
+                                {/* Title */}
                                 <h3 className="text-lg font-medium text-gray-900">
                                     {addon.name}
                                 </h3>
 
+                                {/* Description */}
                                 <p className="mt-2 text-sm text-gray-600">
                                     {addon.description}
                                 </p>
 
-                                <hr className="my-4" />
-
-                                <div className="flex items-center justify-between">
-                                    <p className="text-lg font-medium text-gray-900">
-                                        £{addon.price / 100}
-                                    </p>
-
-                                    <div className="flex items-center gap-1 text-sm text-gray-500">
-                                        <Clock size={14} />
-                                        +{addon.durationMin} min
-                                    </div>
-                                </div>
-
+                                {/* Optional Highlight */}
                                 {addon.highlightText && (
-                                    <p className="mt-3 text-xs text-electric-teal">
+                                    <p className="mt-4 text-xs text-electric-teal font-medium">
                                         {addon.highlightText}
                                     </p>
                                 )}

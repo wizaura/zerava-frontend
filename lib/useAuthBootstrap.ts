@@ -5,24 +5,26 @@ import {
     clearAuth,
     setBootstrapped,
 } from "@/store/slices/authSlice";
-import { fetchMeGracefully } from "./fetchGrace";
 import { usePathname } from "next/navigation";
+import api from "./user/axios";
 
 export const useAuthBootstrap = () => {
     const dispatch = useDispatch();
     const pathname = usePathname();
 
     useEffect(() => {
-        if (pathname.startsWith("/admin")) {
-            dispatch(setBootstrapped());
-            return;
-        }
-
         const initAuth = async () => {
             try {
-                const res = await fetchMeGracefully();
+                const endpoint = pathname.startsWith("/admin")
+                    ? "/admin/me"
+                    : "/user/me";
+
+                const res = await api.get(endpoint);
+
                 dispatch(setUser(res.data.user));
             } catch {
+                dispatch(clearAuth());
+            } finally {
                 dispatch(setBootstrapped());
             }
         };

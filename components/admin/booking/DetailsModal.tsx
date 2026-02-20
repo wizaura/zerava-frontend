@@ -5,6 +5,7 @@ import { useState } from "react";
 import { AdminBooking } from "@/lib/admin/booking.api";
 import TextArea from "@/components/ui/TextArea";
 import { formatDate } from "@/lib/utils";
+import ZeravaSelect from "@/components/ui/SelectOption";
 
 type BookingUpdatePayload = {
     notes?: string;
@@ -44,6 +45,12 @@ export default function BookingDetailsModal({
         }
     }
 
+    function formatStatusLabel(status: string) {
+        return status
+            .toLowerCase()
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, (l) => l.toUpperCase());
+    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
@@ -76,21 +83,34 @@ export default function BookingDetailsModal({
                         <Info label="Price" value={`£${booking.price.toFixed(2)}`} />
                     </div>
 
-                    <div>
-                        <p className="text-gray-500">Status</p>
-                        <select
+                    {/* VEHICLE DETAILS */}
+                    <div className="space-y-3 rounded-lg bg-gray-50 p-4 text-sm">
+                        <p className="font-medium text-gray-700">Vehicle Details</p>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <Info label="Make" value={booking.make} />
+                            <Info label="Model" value={booking.model} />
+                            <Info label="Registration" value={booking.registrationNumber} />
+                            <Info label="Vehicle Size" value={booking.vehicleCategory.name} />
+                        </div>
+                    </div>
+
+                    <div className="space-y-1">
+                        <p className="text-gray-500 text-sm font-medium">
+                            Status
+                        </p>
+
+                        <ZeravaSelect
                             value={status}
-                            onChange={(e) =>
-                                setStatus(e.target.value as AdminBooking["status"])
+                            onChange={(val) =>
+                                setStatus(val as AdminBooking["status"])
                             }
-                            className="mt-1 w-full rounded-md border px-3 py-2 text-sm"
-                        >
-                            {getAllowedStatuses(booking.status).map((s) => (
-                                <option key={s} value={s}>
-                                    {s}
-                                </option>
-                            ))}
-                        </select>
+                            options={getAllowedStatuses(booking.status).map((s) => ({
+                                label: formatStatusLabel(s),
+                                value: s,
+                            }))}
+                            className="w-full"
+                        />
                     </div>
 
                     {/* CUSTOMER */}
@@ -103,6 +123,16 @@ export default function BookingDetailsModal({
                             value={`${booking.postcode}, ${booking.address}`}
                         />
                     </div>
+
+                    {/* PARKING / ACCESS */}
+                    {booking.parkingInstructions && (
+                        <div className="space-y-1 text-sm">
+                            <p className="text-gray-500">Parking / Access Instructions</p>
+                            <p className="rounded-md bg-gray-50 p-3">
+                                {booking.parkingInstructions}
+                            </p>
+                        </div>
+                    )}
 
                     {/* NOTES (Editable) */}
                     <TextArea

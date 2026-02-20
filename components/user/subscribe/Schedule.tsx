@@ -5,6 +5,9 @@ import { CheckCircle, Clock, MapPin, Loader2 } from "lucide-react";
 import { SubscriptionDraft } from "./types";
 import api from "@/lib/user/axios";
 
+const UK_POSTCODE_REGEX_OUTWARD = /^[A-Z]{1,2}\d{2}$/i;
+const UK_POSTCODE_REGEX_FULL = /^[A-Z]{1,2}\d{2}\s?\d[A-Z]{2}$/i;
+
 type Props = {
     draft: SubscriptionDraft;
     setDraft: Dispatch<SetStateAction<SubscriptionDraft>>;
@@ -25,6 +28,7 @@ export default function ScheduleStep({
     onContinue,
 }: Props) {
     const [checking, setChecking] = useState(false);
+    const [postcode, setPostcode] = useState(draft.postcode || "");
     const [availableTemplates, setAvailableTemplates] = useState<TemplateSlot[]>([]);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
@@ -32,17 +36,30 @@ export default function ScheduleStep({
        AUTO POSTCODE CHECK (LIKE BOOKING)
     ========================================================== */
 
-    useEffect(() => {
-        const postcode = draft.postcode?.trim().toUpperCase();
+    const outwardCode = postcode
+        .toUpperCase()
+        .trim()
+        .split(" ")[0];
 
-        if (!postcode || postcode.length < 4 || !draft.durationMin) return;
+    useEffect(() => {
+
+        if (!UK_POSTCODE_REGEX_OUTWARD.test(outwardCode)) return;
 
         const timeout = setTimeout(() => {
-            checkPostcode(postcode);
-        }, 500); // debounce 500ms
+            checkPostcode(outwardCode);
+        }, 500);
 
         return () => clearTimeout(timeout);
-    }, [draft.postcode]);
+    }, [outwardCode]);
+
+    const matchesFirstStage =
+        outwardCode && UK_POSTCODE_REGEX_OUTWARD.test(outwardCode);
+
+    const matchesFullPostcode =
+        draft.postcode && UK_POSTCODE_REGEX_FULL.test(draft.postcode.trim());
+
+    const showPostcodeError =
+        matchesFirstStage && !matchesFullPostcode;
 
     const checkPostcode = async (postcode: string) => {
         try {
@@ -83,6 +100,17 @@ export default function ScheduleStep({
         }
     };
 
+    useEffect(() => {
+        const full = postcode.trim().toUpperCase();
+
+        if (!UK_POSTCODE_REGEX_FULL.test(full)) return;
+
+        setDraft((d) => ({
+            ...d,
+            postcode: full,
+        }));
+    }, [postcode]);
+
     const resetSchedule = (serviceable: boolean) => {
         setDraft((d) => ({
             ...d,
@@ -100,7 +128,7 @@ export default function ScheduleStep({
 
     const handleSelectTemplate = (template: TemplateSlot, index: number) => {
 
-        console.log(template,'temp')
+        console.log(template, 'temp')
         if (selectedIndex === index) {
             // Deselect
             setSelectedIndex(null);
@@ -129,11 +157,11 @@ export default function ScheduleStep({
     ========================================================== */
 
     const canContinue =
+        matchesFullPostcode &&
         draft.serviceable &&
         !!draft.templateId &&
         !!draft.timeFrom &&
-        !!draft.timeTo &&
-        !!draft.address;
+        !!draft.timeTo;
 
     /* =========================================================
        UI
@@ -157,25 +185,46 @@ export default function ScheduleStep({
                         className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                     />
                     <input
-                        value={draft.postcode ?? ""}
+                        value={postcode}
                         onChange={(e) =>
-                            setDraft((d) => ({
-                                ...d,
-                                postcode: e.target.value.toUpperCase(),
-                            }))
+                            setPostcode(e.target.value.toUpperCase())
                         }
-                        placeholder="SO15"
+                        placeholder="SO15 4ER"
                         className="w-full rounded-xl border border-gray-300 pl-10 pr-4 py-3 text-sm
                         focus:border-electric-teal focus:ring-electric-teal"
                     />
                 </div>
+                {showPostcodeError && (
+                    <p className="mt-2 text-sm text-red-500">
+                        Please enter full postcode to continue (Eg: SO16 4ER)
+                    </p>
+                )}
             </div>
 
+            {/* LOADER */}
             {/* LOADER */}
             {checking && (
                 <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Loader2 className="animate-spin" size={16} />
-                    Checking availability...
+                    Checking availability…
+                </div>
+            )}
+
+            {/* NOT SERVICEABLE */}
+            {draft.serviceable === false && !checking && (
+                <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100">
+                        <MapPin size={16} className="text-red-600" />
+                    </div>
+
+                    <div>
+                        <p className="font-medium text-red-700">
+                            Sorry, we don't serve this area yet
+                        </p>
+                        <p className="text-sm text-red-600">
+                            Try a different postcode or contact support.
+                        </p>
+                    </div>
                 </div>
             )}
 
@@ -239,28 +288,6 @@ export default function ScheduleStep({
                             );
                         })}
                     </div>
-                </div>
-            )}
-
-            {/* ADDRESS */}
-            {draft.serviceable && (
-                <div>
-                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                        Service address
-                    </label>
-                    <textarea
-                        rows={3}
-                        value={draft.address ?? ""}
-                        onChange={(e) =>
-                            setDraft((d) => ({
-                                ...d,
-                                address: e.target.value,
-                            }))
-                        }
-                        placeholder="House / Flat number, street name"
-                        className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm
-                        focus:border-electric-teal focus:ring-electric-teal"
-                    />
                 </div>
             )}
 

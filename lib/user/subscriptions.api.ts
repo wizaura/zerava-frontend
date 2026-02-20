@@ -27,6 +27,15 @@ export const SubscriptionsAPI = {
             templateId: string;
             timeFrom: string;
             timeTo: string;
+
+            /* NEW SNAPSHOT FIELDS */
+            name: string;
+            email: string;
+            phone: string;
+            make?: string | null;
+            model?: string | null;
+            registrationNumber?: string | null;
+            parkingInstructions?: string | null;
         };
     }) => {
         const res = await api.post("/subscriptions/create", payload);

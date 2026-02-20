@@ -10,11 +10,6 @@ export type SubscriptionStatus =
     | "unpaid"
     | "paused";
 
-export type User = {
-    fullName: string;
-    email: string;
-} 
-
 export type AdminSubscription = {
     id: string;
     planName: string;
@@ -24,7 +19,8 @@ export type AdminSubscription = {
     schedule: string;
     status: SubscriptionStatus;
     price: number;
-    user: User;
+    name: string;
+    email: string;
     subscriptionId?: string;
     nextBillingDate?: string;
     createdAt: string;
@@ -38,11 +34,4 @@ export async function getAdminSubscriptions(params?: {
     });
 
     return res.data as AdminSubscription[];
-}
-
-export async function updateAdminSubscription(
-    id: string,
-    payload: { status: string }
-) {
-    return adminApi.patch(`/admin/subscriptions/${id}`, payload);
 }

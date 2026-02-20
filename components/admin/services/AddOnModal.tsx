@@ -6,6 +6,7 @@ import { Footer } from "../common/Footer";
 import toast from "react-hot-toast";
 import { getApiError } from "@/lib/utils";
 import { createAddOn, updateAddOn } from "@/lib/admin/services.api";
+import ZeravaSelect from "@/components/ui/SelectOption";
 
 const ICON_OPTIONS = [
     "droplet",
@@ -90,23 +91,23 @@ export default function AddOnModal({
                         />
                     </div>
 
-                    <div>
-                        <label className="text-sm font-medium">
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium text-gray-700">
                             Icon
                         </label>
-                        <select
-                            className="mt-1 w-full rounded-md border px-3 py-2"
+
+                        <ZeravaSelect
                             value={form.icon}
-                            onChange={(e) =>
-                                setForm({ ...form, icon: e.target.value })
+                            onChange={(val) =>
+                                setForm({ ...form, icon: val })
                             }
-                        >
-                            {ICON_OPTIONS.map((i) => (
-                                <option key={i} value={i}>
-                                    {i}
-                                </option>
-                            ))}
-                        </select>
+                            options={ICON_OPTIONS.map((i) => ({
+                                label: i,
+                                value: i,
+                            }))}
+                            placeholder="Select icon"
+                            className="w-full"
+                        />
                     </div>
                 </div>
 

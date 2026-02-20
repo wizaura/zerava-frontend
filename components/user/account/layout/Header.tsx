@@ -38,27 +38,32 @@ export default function UserHeader() {
         <div className="w-full">
             {/* Top Bar */}
             <div className="bg-black text-white pt-16">
-                <div className="max-w-7xl mx-auto px-6 py-12 flex justify-between items-center">
+                <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6">
+
+                    {/* USER INFO */}
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-black font-semibold">
+                        <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-black font-semibold text-lg">
                             {user?.fullName?.charAt(0)?.toUpperCase() || "U"}
                         </div>
 
                         <div>
-                            <p className="font-medium text-2xl">
+                            <p className="font-medium text-xl sm:text-2xl">
                                 {user?.fullName || "User"}
                             </p>
-                            <p className="text-md text-gray-400">
+                            <p className="text-sm sm:text-md text-gray-400">
                                 {user?.email || ""}
                             </p>
                         </div>
                     </div>
 
+                    {/* LOGOUT BUTTON */}
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-2 text-sm bg-gray-300 px-4 py-1 rounded-full font-medium
-                                   hover:bg-black hover:border hover:border-red-600
-                                   text-black hover:text-red-500 transition"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 text-sm 
+                       bg-gray-300 px-5 py-2 rounded-full font-medium
+                       text-black transition border  border-gray-300
+                       hover:bg-black hover:border-red-600
+                       hover:text-red-500"
                     >
                         <LogOut size={16} />
                         Logout
@@ -67,10 +72,11 @@ export default function UserHeader() {
             </div>
 
             {/* Tabs */}
-            <div className="sticky top-16 z-40">
-                <div className="max-w-4xl mx-auto px-6 py-3 flex justify-center">
-                    <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 p-1 shadow-sm">
-                        {tabs.map(t => {
+            {/* Tabs */}
+            <div className="sticky top-16 z-40 bg-white">
+                <div className="max-w-3xl mx-auto px-6 py-3 overflow-x-auto no-scrollbar">
+                    <div className="flex items-center gap-2 whitespace-nowrap min-w-max rounded-full border border-gray-200 bg-gray-50 p-1 shadow-sm">
+                        {tabs.map((t) => {
                             const active = pathname === t.href;
 
                             return (
@@ -78,7 +84,7 @@ export default function UserHeader() {
                                     key={t.href}
                                     href={t.href}
                                     className={`px-5 py-2 rounded-full text-sm font-medium transition-all
-                                        ${active
+                            ${active
                                             ? "bg-white text-emerald-600 shadow"
                                             : "text-gray-500 hover:text-gray-800"
                                         }`}

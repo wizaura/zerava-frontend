@@ -262,6 +262,10 @@ export default function ScheduleStep({
         );
     }
 
+    const today = new Date();
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() + 30);
+
     /* ---------------- UI ---------------- */
 
     return (
@@ -331,6 +335,7 @@ export default function ScheduleStep({
                         }}
                         disabled={[
                             { before: new Date() },
+                            { after: maxDate },
                             (date) => !isAllowedDate(date),
                         ]}
                         modifiers={{

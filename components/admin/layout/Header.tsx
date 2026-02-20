@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import ZonesModal from "../zones/ZonesModal";
 import { isAdminAuthenticated } from "@/lib/adminAuth";
@@ -17,7 +19,6 @@ import {
     Package,
 } from "lucide-react";
 
-
 const tabs = [
     { label: "Overview", href: "/admin", icon: LayoutGrid },
     { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
@@ -31,7 +32,6 @@ const tabs = [
     { label: "Operator Slots", href: "/admin/slots", icon: UserCog },
 ];
 
-
 export default function AdminHeader() {
     const router = useRouter();
     const pathname = usePathname();
@@ -44,24 +44,27 @@ export default function AdminHeader() {
         })();
     }, [router]);
 
-
     return (
         <>
-            {/* ===== MAIN HEADER ===== */}
-            <header className="w-full text-white">
-                <div className="px-6 py-8 bg-eco-black">
-                    <div className="mx-auto max-w-7xl flex justify-between items-center">
+            <header className="w-full">
+                {/* ===== MAIN HEADER ===== */}
+                <div className="px-6 py-8 bg-eco-black text-white">
+                    <div className="mx-auto max-w-7xl flex flex-col md:flex-row md:justify-between gap-6">
+                        {/* Title Section */}
                         <div>
-                            <h1 className="text-3xl font-light pb-2">Admin Dashboard</h1>
+                            <h1 className="text-3xl font-light pb-2">
+                                Admin Dashboard
+                            </h1>
                             <p className="text-md text-gray-400">
                                 Manage bookings, subscriptions, and customers
                             </p>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row items-center gap-3">
+                        {/* Buttons BELOW text */}
+                        <div className="flex flex-wrap items-center gap-3">
                             <button
                                 onClick={openZones}
-                                className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-black hover:brightness-110"
+                                className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-black hover:brightness-110 transition"
                             >
                                 Manage Zones
                             </button>
@@ -71,7 +74,7 @@ export default function AdminHeader() {
                                     localStorage.removeItem("admin_token");
                                     router.push("/admin/login");
                                 }}
-                                className="rounded-full border border-gray-600 px-4 py-2 text-sm hover:bg-gray-800"
+                                className="rounded-full border border-gray-600 px-4 py-2 text-sm hover:bg-gray-800 transition"
                             >
                                 Logout
                             </button>
@@ -80,14 +83,15 @@ export default function AdminHeader() {
                 </div>
 
                 {/* ===== TAB BAR ===== */}
-                <div className="text-center">
-                    <div className="mx-auto inline-flex max-w-7xl px-6 py-3">
-                        <div className="flex flex-wrap justify-center items-center gap-2 rounded-full border border-gray-200 bg-white p-1 shadow-sm">
+                <div className="px-4 py-2">
+                    <div className="mx-auto max-w-7xl border border-gray-100 bg-white rounded-full  px-6 py-3 overflow-x-auto no-scrollbar">
+                        <div className="flex items-center gap-2 whitespace-nowrap min-w-max">
                             {tabs.map((tab) => {
                                 const active =
                                     tab.href === "/admin"
                                         ? pathname === "/admin"
-                                        : pathname === tab.href || pathname.startsWith(`${tab.href}/`);
+                                        : pathname === tab.href ||
+                                          pathname.startsWith(`${tab.href}/`);
 
                                 const Icon = tab.icon;
 
@@ -95,10 +99,11 @@ export default function AdminHeader() {
                                     <Link
                                         key={tab.href}
                                         href={tab.href}
-                                        className={`flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-all
-            ${active
-                                                ? "bg-emerald-500 text-black shadow-sm"
-                                                : "text-gray-600 hover:bg-gray-200"
+                                        className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all
+                                            ${
+                                                active
+                                                    ? "bg-emerald-500 text-black shadow-sm"
+                                                    : "text-gray-600 hover:bg-gray-100"
                                             }`}
                                     >
                                         <Icon size={16} />

@@ -21,7 +21,7 @@ export default function BlockedSlots() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row gap-2 sm:items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-semibold">Block Time Slots</h1>
                     <p className="text-sm text-muted-foreground">
@@ -34,7 +34,7 @@ export default function BlockedSlots() {
                         console.log("clicked");
                         setShowForm(v => !v);
                     }}
-                    className="flex items-center text-sm gap-2 bg-emerald-600 text-white px-4 py-2 rounded-full"
+                    className="flex text-center items-center text-sm gap-2 bg-emerald-600 text-white px-4 py-2 rounded-full"
                 >
                     <Plus size={16} /> Block Slot
                 </button>

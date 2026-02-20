@@ -6,7 +6,7 @@ import "react-day-picker/dist/style.css";
 import api from "@/lib/user/axios";
 import { CheckCircleIcon, ClockIcon } from "@heroicons/react/20/solid";
 import { BookingDraft } from "./Main";
-import { Clock } from "lucide-react";
+import { Clock, Loader2, MapPin } from "lucide-react";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d{2}$/;
@@ -212,6 +212,9 @@ export default function ScheduleStep({
         matchesFullPostcode && selectedDate && bookingDraft.timeFrom && bookingDraft.timeTo;
 
 
+    const today = new Date();
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() + 30);
 
 
     /* ---------------- UI ---------------- */
@@ -244,14 +247,29 @@ export default function ScheduleStep({
                     </p>
                 )}
 
+                {/* LOADER */}
                 {loading && (
-                    <p className="text-xs text-gray-400">
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Loader2 className="animate-spin" size={16} />
                         Checking availability…
-                    </p>
+                    </div>
                 )}
 
                 {error && (
-                    <p className="text-sm text-red-600">{error}</p>
+                    <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100">
+                            <MapPin size={16} className="text-red-600" />
+                        </div>
+
+                        <div>
+                            <p className="font-medium text-red-700">
+                                No time slots available
+                            </p>
+                            <p className="text-sm text-red-600">
+                                {error}
+                            </p>
+                        </div>
+                    </div>
                 )}
             </div>
 
@@ -280,7 +298,7 @@ export default function ScheduleStep({
 
             {/* Calendar */}
             {serviceDays && (
-                <div className="rounded-2xl max-w-2xl border bg-white p-10 shadow-sm flex justify-center items-center mx-auto">
+                <div className="rounded-2xl border p-8 flex justify-center">
                     <DayPicker
                         mode="single"
                         selected={selectedDate ? new Date(selectedDate) : undefined}
@@ -297,6 +315,7 @@ export default function ScheduleStep({
                         }}
                         disabled={[
                             { before: new Date() },
+                            { after: maxDate },
                             (date) => !isAllowedDate(date),
                         ]}
                         modifiers={{
@@ -331,8 +350,8 @@ export default function ScheduleStep({
                                 padding: "0.75rem",
                             },
                             day: {
-                                width: "4.75rem",
-                                height: "4.75rem",
+                                width: "7.75rem",
+                                height: "7.75rem",
                                 fontSize: "1.25rem",
                                 borderRadius: "1rem",
                                 margin: "0 auto",

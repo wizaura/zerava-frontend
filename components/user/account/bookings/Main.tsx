@@ -141,26 +141,33 @@ export default function UserBookingsSection() {
                 {bookings.map((b) => (
                     <div
                         key={b.id}
-                        className="flex items-center justify-between rounded-xl bg-gray-50 p-4"
+                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-xl bg-gray-50 p-4 gap-4"
                     >
-                        {/* Left */}
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-200">
+                        {/* LEFT SIDE */}
+                        <div className="flex items-start gap-4">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-200 shrink-0">
                                 <ShieldCheck size={22} />
                             </div>
 
-                            <div>
-                                <div className="flex items-center gap-2">
+                            <div className="flex-1">
+                                {/* Top row */}
+                                <div className="flex items-center justify-between sm:justify-start gap-2">
                                     <p className="font-medium">{b.service}</p>
 
-                                    {b.subscriptionId && (
-                                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                                            Subscription
-                                        </span>
-                                    )}
+                                    <span
+                                        className={`sm:hidden rounded-md px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[b.status]}`}
+                                    >
+                                        {b.status}
+                                    </span>
                                 </div>
 
-                                <p className="text-sm text-gray-500">
+                                {b.subscriptionId && (
+                                    <span className="mt-1 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                                        Subscription
+                                    </span>
+                                )}
+
+                                <p className="mt-1 text-sm text-gray-500">
                                     {formatDateTime(b.date, b.timeFrom, b.timeTo)}
                                 </p>
 
@@ -171,60 +178,69 @@ export default function UserBookingsSection() {
                             </div>
                         </div>
 
-                        {/* Right */}
-                        <div className="flex flex-col items-end gap-2">
+                        {/* RIGHT SIDE */}
+                        <div className="flex flex-col sm:items-end gap-2 w-full sm:w-auto">
+                            {/* Status (desktop only) */}
                             <span
-                                className={`rounded-md px-3 py-1 text-xs font-medium ${STATUS_STYLE[b.status]}`}
+                                className={`hidden sm:inline rounded-md px-3 py-1 text-xs font-medium ${STATUS_STYLE[b.status]}`}
                             >
                                 {b.status}
                             </span>
 
-                            <p className="font-semibold">{b.price}</p>
+                            <p className="font-semibold text-sm sm:text-base">
+                                {b.price}
+                            </p>
 
-                            {/* Actions */}
-                            {/* Actions */}
-                            {b.status === "pending" && (
-                                <button
-                                    onClick={() => goToStripe(b.id)}
-                                    className="text-sm font-medium text-electric-teal hover:underline"
-                                >
-                                    Complete payment
-                                </button>
-                            )}
+                            {/* ACTIONS */}
+                            <div className="flex flex-col items-start sm:items-end gap-2 w-full sm:w-auto">
+                                {b.status === "pending" && (
+                                    <button
+                                        onClick={() => goToStripe(b.id)}
+                                        className="text-sm font-medium text-electric-teal hover:underline"
+                                    >
+                                        Complete payment
+                                    </button>
+                                )}
 
-                            {/* RESCHEDULE */}
-                            {b.status === "confirmed" && canReschedule(b.date, b.timeFrom) && b.rescheduleCount < 1 && (
-                                <button
-                                    onClick={() =>
-                                        router.push(`/account/bookings/${b.id}/reschedule`)
-                                    }
-                                    className="flex items-center gap-1 text-sm font-medium text-electric-teal hover:underline"
-                                >
-                                    <CalendarClock size={14} />
-                                    Reschedule
-                                </button>
-                            )}
-                            {b.status === "confirmed" && canReschedule(b.date, b.timeFrom) && (
-                                <button
-                                    onClick={() => setCancelTarget(b)}
-                                    className="text-sm font-semibold text-red-600 hover:underline"
-                                >
-                                    Cancel Booking
-                                </button>
-                            )}
+                                {b.status === "confirmed" &&
+                                    canReschedule(b.date, b.timeFrom) &&
+                                    b.rescheduleCount < 1 && (
+                                        <button
+                                            onClick={() =>
+                                                router.push(`/account/bookings/${b.id}/reschedule`)
+                                            }
+                                            className="flex items-center gap-1 text-sm font-medium text-electric-teal hover:underline"
+                                        >
+                                            <CalendarClock size={14} />
+                                            Reschedule
+                                        </button>
+                                    )}
 
-                            {b.status === "confirmed" && canReschedule(b.date, b.timeFrom) && b.rescheduleCount >= 1 && (
-                                <p className="text-xs text-gray-400">
-                                    Reschedule limit reached
-                                </p>
-                            )}
+                                {b.status === "confirmed" &&
+                                    canReschedule(b.date, b.timeFrom) && (
+                                        <button
+                                            onClick={() => setCancelTarget(b)}
+                                            className="text-sm font-semibold text-red-600 hover:underline"
+                                        >
+                                            Cancel Booking
+                                        </button>
+                                    )}
 
-                            {/* LOCK MESSAGE */}
-                            {b.status === "confirmed" && !canReschedule(b.date, b.timeFrom) && (
-                                <p className="text-xs text-gray-400">
-                                    Changes locked (within 24h)
-                                </p>
-                            )}
+                                {b.status === "confirmed" &&
+                                    canReschedule(b.date, b.timeFrom) &&
+                                    b.rescheduleCount >= 1 && (
+                                        <p className="text-xs text-gray-400">
+                                            Reschedule limit reached
+                                        </p>
+                                    )}
+
+                                {b.status === "confirmed" &&
+                                    !canReschedule(b.date, b.timeFrom) && (
+                                        <p className="text-xs text-gray-400">
+                                            Changes locked (within 24h)
+                                        </p>
+                                    )}
+                            </div>
                         </div>
                     </div>
                 ))}

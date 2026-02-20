@@ -29,7 +29,7 @@ export default function ServicesList() {
 
     return (
         <section className="bg-white py-20">
-            <div className="mx-auto max-w-6xl px-6">
+            <div className="mx-auto max-w-5xl px-6">
 
                 {/* SECTION HEADING */}
                 <div className="mb-16 mx-auto text-center max-w-2xl">
@@ -56,144 +56,90 @@ export default function ServicesList() {
                         return (
                             <div
                                 key={service.id}
-                                className="relative rounded-2xl border border-gray-50 hover:border-gray-100 bg-gray-50 hover:bg-gray-100 p-8 shadow-sm transition hover:shadow-md"
+                                className="group relative rounded-3xl border border-gray-200 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                             >
+
                                 {/* POPULAR BADGE */}
                                 {service.isPopular && (
-                                    <span className="absolute right-6 -top-3 rounded-full bg-electric-teal px-4 py-1 text-xs font-medium text-eco-black">
+                                    <span className="absolute -top-4 right-6 rounded-full bg-electric-teal px-4 py-1 text-xs font-semibold text-eco-black shadow-md">
                                         {service.badgeLabel || "Most Popular"}
                                     </span>
                                 )}
 
                                 {/* ICON */}
                                 {Icon && (
-                                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gray-900 text-white">
-                                        <Icon size={30} />
+                                    <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-eco-black text-electric-teal transition group-hover:scale-105">
+                                        <Icon size={26} />
                                     </div>
                                 )}
 
                                 {/* TITLE */}
-                                <h3 className="text-2xl font-light text-gray-900">
+                                <h3 className="text-2xl font-semibold tracking-tight text-gray-900">
                                     {service.name}
                                 </h3>
 
                                 {/* DESCRIPTION */}
-                                <p className="mt-3 text-md font-light text-gray-600">
+                                <p className="mt-3 text-sm leading-relaxed text-gray-600">
                                     {service.description}
                                 </p>
 
                                 {/* PRICE + DURATION */}
                                 <div className="mt-6 flex items-center gap-6 text-sm text-gray-600">
+
                                     {fromPrice && (
                                         <>
                                             <div>
-                                                <span className="text-xs text-gray-500">
+                                                <span className="text-xs uppercase tracking-wide text-gray-400">
                                                     From
                                                 </span>
-                                                <div className="text-2xl font-light text-gray-900">
+                                                <div className="text-3xl font-semibold text-gray-900">
                                                     £{fromPrice / 100}
                                                 </div>
                                             </div>
 
-                                            {/* Separator */}
-                                            <div className="h-8 w-px bg-gray-300" />
+                                            <div className="h-10 w-px bg-gray-200" />
                                         </>
                                     )}
 
-                                    <div className="flex items-center gap-2">
-                                        <Clock
-                                            size={14}
-                                            className="text-electric-teal"
-                                        />
+                                    <div className="flex items-center gap-2 text-gray-500">
+                                        <Clock size={14} className="text-electric-teal" />
                                         up to {service.durationMin} minutes
                                     </div>
                                 </div>
 
-                                <hr className="my-6" />
+                                {/* DIVIDER */}
+                                <div className="my-8 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
                                 {/* VEHICLE CONDITION */}
                                 {service.vehicleConditionNote && (
-                                    <p className="text-xs italic text-gray-500 mb-4">
-                                        Vehicle condition:{" "}
+                                    <p className="mb-5 text-xs italic text-gray-500">
                                         {service.vehicleConditionNote}
                                     </p>
                                 )}
 
                                 {/* FEATURES */}
                                 <ul className="space-y-3 text-sm text-gray-700">
-                                    {service.features.map(
-                                        (feature: string) => (
-                                            <li
-                                                key={feature}
-                                                className="flex items-start gap-3"
-                                            >
-                                                <Check
-                                                    size={16}
-                                                    className="mt-0.5 text-electric-teal shrink-0"
-                                                    strokeWidth={2.5}
-                                                />
-                                                <span>{feature}</span>
-                                            </li>
-                                        )
-                                    )}
+                                    {service.features.map((feature: string) => (
+                                        <li key={feature} className="flex items-start gap-3">
+                                            <Check
+                                                size={16}
+                                                className="mt-0.5 text-electric-teal shrink-0"
+                                                strokeWidth={2.5}
+                                            />
+                                            <span>{feature}</span>
+                                        </li>
+                                    ))}
                                 </ul>
 
                                 {/* HIGHLIGHT NOTE */}
                                 {service.highlightNote && (
-                                    <p className="mt-6 text-base italic text-gray-600">
+                                    <div className="mt-6 rounded-xl bg-electric-teal/10 shadow-md p-4 text-sm text-gray-700">
                                         {service.highlightNote}
                                         {service.waterSavedLitres
                                             ? ` Saves ${service.waterSavedLitres}L of water per wash.`
                                             : ""}
-                                    </p>
+                                    </div>
                                 )}
-
-                                {/* PRICE TIERS */}
-                                <div className="mt-8 grid grid-cols-3 gap-4">
-                                    {standard && (
-                                        <div className="rounded-xl bg-white py-3 text-center shadow-sm">
-                                            <p className="text-xs text-gray-500">
-                                                Standard
-                                            </p>
-                                            <p className="font-medium text-gray-900">
-                                                £{standard / 100}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {large && (
-                                        <div className="rounded-xl bg-white py-3 text-center shadow-sm">
-                                            <p className="text-xs text-gray-500">
-                                                Large
-                                            </p>
-                                            <p className="font-medium text-gray-900">
-                                                £{large / 100}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {xl && (
-                                        <div className="rounded-xl bg-white py-3 text-center shadow-sm">
-                                            <p className="text-xs text-gray-500">
-                                                XL
-                                            </p>
-                                            <p className="font-medium text-gray-900">
-                                                £{xl / 100}
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* IMAGE SECTION (COMMENTED) */}
-                                {/*
-                                <div className="mt-8">
-                                    <BeforeAfterSlider
-                                        before={service.imageBefore}
-                                        after={service.imageAfter}
-                                        alt={service.name}
-                                    />
-                                </div>
-                                */}
                             </div>
                         );
                     })}

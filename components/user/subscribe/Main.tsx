@@ -42,8 +42,16 @@ export default function SubscribeClient({
         timeFrom: null,
         timeTo: null,
 
-        serviceable: null,
+        /* NEW */
+        name: null,
+        email: null,
+        phone: null,
+        make: null,
+        model: null,
+        registrationNumber: null,
+        parkingInstructions: null,
 
+        serviceable: null,
         pricePerClean: undefined,
     });
 
@@ -86,6 +94,7 @@ export default function SubscribeClient({
                     <Elements stripe={stripePromise}>
                         <PaymentStep
                             draft={draft}
+                            setDraft={setDraft}
                             onBack={() => setCurrentStep(1)}
                             onSubscribe={handleSubscribe}
                         />

@@ -23,6 +23,8 @@ export type SubscriptionService = {
     description?: string | null;
     durationMin: number;
     prices: SubscriptionPrice[];
+    icon: string;
+    isPopular: boolean;
 };
 
 type PublicSubscriptionResponse = {

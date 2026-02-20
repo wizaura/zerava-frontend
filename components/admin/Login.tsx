@@ -20,13 +20,19 @@ export default function AdminLoginPage() {
         e.preventDefault();
         setLoading(true);
 
-        await adminRequestOtp(email);
+        try {
+            await adminRequestOtp(email);
 
-        setLoading(false);
+            setStep(2);
+            setTimeLeft(120);
+            setCanResend(false);
 
-        setStep(2);
-        setTimeLeft(120);
-        setCanResend(false);
+        } catch (error: any) {
+            console.error(error);
+            // toast.error(error?.response?.data?.message || "Failed to send OTP");
+        } finally {
+            setLoading(false);
+        }
     }
 
     /* ---------------- STEP 2: VERIFY OTP ---------------- */
@@ -35,22 +41,36 @@ export default function AdminLoginPage() {
         e.preventDefault();
         setLoading(true);
 
-        const res = await adminVerifyOtp(email, otp);
+        try {
+            await adminVerifyOtp(email, otp);
 
-        setLoading(false);
+            router.push("/admin");
 
-        router.push("/admin");
+        } catch (error: any) {
+            console.error(error);
+            // toast.error("Invalid OTP");
+        } finally {
+            setLoading(false);
+        }
     }
 
     async function resendOtp() {
         if (!canResend) return;
 
         setLoading(true);
-        await adminRequestOtp(email);
-        setLoading(false);
 
-        setTimeLeft(120);
-        setCanResend(false);
+        try {
+            await adminRequestOtp(email);
+
+            setTimeLeft(120);
+            setCanResend(false);
+
+        } catch (error: any) {
+            console.error(error);
+            // toast.error("Failed to resend OTP");
+        } finally {
+            setLoading(false);
+        }
     }
 
 

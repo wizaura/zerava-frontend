@@ -79,6 +79,11 @@ export type BookingDraft = {
 
     /* ================= CONTACT ================= */
 
+    make: string | null;
+    model: string | null;
+    registrationNumber: string | null;
+    parkingInstructions: string | null;
+
     address: string | null;
     notes: string | null;
     name: string | null;
@@ -112,6 +117,11 @@ export default function BookingClient({
 
         postcode: null,
         date: null,
+
+        make: null,
+        model: null,
+        registrationNumber:  null,
+        parkingInstructions:  null,
 
         timeFrom: null,
         timeTo: null,

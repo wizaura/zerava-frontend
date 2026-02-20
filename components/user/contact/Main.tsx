@@ -25,9 +25,10 @@ export default function ContactMain() {
 
                         <div className="overflow-hidden rounded-xl">
                             <iframe
-                                src="https://www.google.com/maps?q=Southampton,UK&output=embed"
+                                src="https://www.google.com/maps?q=50.9354268,-1.4164072&hl=en&z=14&output=embed"
                                 className="w-full h-[280px] border-0"
                                 loading="lazy"
+                                allowFullScreen
                             />
                         </div>
                     </div>

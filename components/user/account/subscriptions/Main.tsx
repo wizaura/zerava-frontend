@@ -12,6 +12,7 @@ import {
     RefreshCcw,
 } from "lucide-react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 /* ---------- TYPES ---------- */
 
@@ -30,6 +31,7 @@ type Subscription = {
     weekday: number;
     timeFrom: string;
     timeTo: string;
+    isPaused: boolean;
     postcode: string;
     address: string;
     nextBillingDate: string;
@@ -44,7 +46,7 @@ export default function Subscription() {
     const [loading, setLoading] = useState(true);
 
     const [confirmType, setConfirmType] =
-        useState<"pause" | "cancel" | null>(null);
+        useState<"pause" | "cancel" | "resume" | null>(null);
 
     const [actionLoading, setActionLoading] = useState(false);
 
@@ -53,6 +55,8 @@ export default function Subscription() {
             .then((res) => setSubscription(res.data))
             .finally(() => setLoading(false));
     }, []);
+
+    console.log(subscription, 'sub');
 
     if (loading) return null;
     if (!subscription) return null;
@@ -71,10 +75,11 @@ export default function Subscription() {
 
         setActionLoading(true);
         try {
-            await api.post(
+            const res = await api.post(
                 `/subscriptions/${subscription.id}/${confirmType}`
             );
             setConfirmType(null);
+            toast.success(res.data.message);
         } finally {
             setActionLoading(false);
         }
@@ -146,13 +151,19 @@ export default function Subscription() {
                             Reschedule Subscription
                         </Link>
                         <div className="flex gap-8 flex-wrap">
-                            <button
-                                onClick={() => setConfirmType("pause")}
-                                className="flex items-center gap-2 text-yellow-600 text-sm hover:underline"
-                            >
-                                <RefreshCcw size={16} />
-                                Pause Subscription
-                            </button>
+                            {subscription.status === "active" && (
+                                <button
+                                    onClick={() =>
+                                        setConfirmType(subscription.isPaused ? "resume" : "pause")
+                                    }
+                                    className={`flex items-center gap-2 ${subscription.isPaused ? "text-green-600" : "text-yellow-600"} text-sm hover:underline`}
+                                >
+                                    <RefreshCcw size={16} />
+                                    {subscription.isPaused
+                                        ? "Resume Subscription"
+                                        : "Pause Subscription"}
+                                </button>
+                            )}
                             <button
                                 onClick={() => setConfirmType("cancel")}
                                 className="flex items-center gap-2 text-red-600 text-sm hover:underline"
@@ -191,15 +202,23 @@ export default function Subscription() {
                 title={
                     confirmType === "cancel"
                         ? "Cancel Subscription?"
-                        : "Pause Subscription?"
+                        : confirmType === "resume"
+                            ? "Resume Subscription?"
+                            : "Pause Subscription?"
                 }
                 description={
                     confirmType === "cancel"
                         ? "This will permanently stop your subscription and future bookings."
-                        : "Your subscription will be paused until you reactivate it."
+                        : confirmType === "resume"
+                            ? "Your subscription will resume and future visits will continue as scheduled."
+                            : "Your subscription will be paused until you reactivate it."
                 }
                 confirmText={
-                    confirmType === "cancel" ? "Cancel Subscription" : "Pause"
+                    confirmType === "cancel"
+                        ? "Cancel Subscription"
+                        : confirmType === "resume"
+                            ? "Resume Subscription"
+                            : "Pause Subscription"
                 }
                 onConfirm={handleConfirm}
                 onCancel={() => setConfirmType(null)}

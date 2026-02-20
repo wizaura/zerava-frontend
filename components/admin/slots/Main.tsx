@@ -76,7 +76,8 @@ export default function SlotTemplatePage() {
         <div className="space-y-8">
 
             {/* Header */}
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                {/* Title Section */}
                 <div>
                     <h2 className="text-2xl font-semibold">
                         Weekly Slot Templates
@@ -86,7 +87,8 @@ export default function SlotTemplatePage() {
                     </p>
                 </div>
 
-                <div className="flex gap-3">
+                {/* Buttons Section */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <button
                         onClick={() => setShowOperatorModal(true)}
                         className="rounded-full border px-5 py-2 text-sm font-medium hover:bg-gray-200"
@@ -99,7 +101,7 @@ export default function SlotTemplatePage() {
                             setEditingTemplate(null);
                             setShowForm(true);
                         }}
-                        className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-medium text-black"
+                        className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-medium text-black hover:bg-emerald-600 transition"
                     >
                         + Add Template
                     </button>

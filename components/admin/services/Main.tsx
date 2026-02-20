@@ -37,7 +37,8 @@ export default function ServicePricingPage() {
     return (
         <div className="space-y-8">
             {/* 🔥 Header Section */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                {/* Title Section */}
                 <div>
                     <h2 className="text-2xl font-semibold">
                         Service & Pricing
@@ -47,17 +48,18 @@ export default function ServicePricingPage() {
                     </p>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-3">
+                {/* Buttons Section */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                     <button
                         onClick={() => setOpenCategory(true)}
-                        className="rounded-full hover:bg-gray-200 border px-5 py-2 text-sm font-medium"
+                        className="rounded-full border px-5 py-2 text-sm font-medium hover:bg-gray-200"
                     >
                         + Add Category
                     </button>
 
                     <button
                         onClick={() => setOpenService(true)}
-                        className="rounded-full bg-emerald-500 hover:bg-emerald-600 border px-5 py-2 text-sm font-medium"
+                        className="rounded-full bg-emerald-500 hover:bg-emerald-600 px-5 py-2 text-sm font-medium text-black"
                     >
                         + Add Service
                     </button>

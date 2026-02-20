@@ -15,6 +15,17 @@
   }
 }
 
+/* Hide scrollbar but keep scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+
 /* FullCalendar polish */
 .fc {
   font-family: inherit;
@@ -23,6 +34,12 @@
 .fc-toolbar-title {
   font-size: 1.25rem;
   font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .fc .fc-toolbar-title {
+    font-size: 0.9rem; /* smaller on mobile */
+  }
 }
 
 .fc-button {

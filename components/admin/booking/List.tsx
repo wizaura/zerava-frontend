@@ -85,11 +85,6 @@ export default function BookingsTable({
                             <option value="COMPLETED">Completed</option>
                             <option value="CANCELLED">Cancelled</option>
                         </select>
-
-                        <button className="flex items-center gap-2 rounded-md border px-4 py-2 text-sm">
-                            <Filter size={16} />
-                            Filter
-                        </button>
                     </div>
                 </div>
 

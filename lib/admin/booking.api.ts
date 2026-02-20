@@ -20,6 +20,10 @@ export type AdminBooking = {
     timeTo: string;
     subscriptionId: string;
     postcode: string;
+    make: string;
+    model: string;
+    registrationNumber: string;
+    parkingInstructions: string;
     address: string;
     price: number;
     status: BookingStatus;

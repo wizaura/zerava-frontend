@@ -30,7 +30,7 @@ export default function ServicesAndPricing() {
             <ServicesList />
             <AddOnsSection />
             <PricingSection />
-            <WhySubscribe />
+            {/* <WhySubscribe /> */}
             <OurPromiseSection />
             <FinalCTA
                 title="Questions about pricing?"
