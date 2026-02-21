@@ -136,15 +136,15 @@ export default function Navbar() {
                 <div className="flex items-center gap-1 sm:gap-3">
 
                     {/* Book Now */}
-                    {/* <Link
+                    <Link
                         href="/booking"
                         className="rounded-full bg-electric-teal px-5 py-2 text-sm font-semibold text-eco-black transition hover:brightness-110"
                     >
                         Book Now
-                    </Link> */}
+                    </Link>
 
                     {/* Account */}
-                    {/* <Link
+                    <Link
                         href={isAuthenticated ? "/account" : "/login"}
                         className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
                             ${isHome
@@ -158,7 +158,7 @@ export default function Navbar() {
                         <span className="hidden sm:inline">
                             {isAuthenticated ? "Account" : "Login"}
                         </span>
-                    </Link> */}
+                    </Link>
 
                     {/* Mobile Menu Toggle */}
                     <button
