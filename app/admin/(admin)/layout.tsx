@@ -10,7 +10,7 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     return (
-        <Protected>
+        <Protected requiredRole="ADMIN">
         <AdminUIProvider>
             <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
                 <AdminHeader />

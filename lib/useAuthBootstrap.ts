@@ -15,13 +15,17 @@ export const useAuthBootstrap = () => {
     useEffect(() => {
         const initAuth = async () => {
             try {
-                const endpoint = pathname.startsWith("/admin")
-                    ? "/admin/me"
-                    : "/user/me";
+                let res;
 
-                const res = await api.get(endpoint);
+                try {
+                    // Try admin first
+                    res = await api.get("/admin/me");
+                } catch {
+                    // If admin fails, try user
+                    res = await api.get("/user/me");
+                }
 
-                dispatch(setUser(res.data.user));
+                dispatch(setUser(res.data.user ?? res.data));
             } catch {
                 dispatch(clearAuth());
             } finally {

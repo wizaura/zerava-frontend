@@ -18,6 +18,9 @@ import {
     UserCog,
     Package,
 } from "lucide-react";
+import adminApi from "@/lib/admin/axios";
+import { useDispatch } from "react-redux";
+import { clearAuth } from "@/store/slices/authSlice";
 
 const tabs = [
     { label: "Overview", href: "/admin", icon: LayoutGrid },
@@ -35,6 +38,7 @@ const tabs = [
 export default function AdminHeader() {
     const router = useRouter();
     const pathname = usePathname();
+    const dispatch = useDispatch();
     const { openZones } = useAdminUI();
 
     useEffect(() => {
@@ -43,6 +47,17 @@ export default function AdminHeader() {
             if (!ok) router.push("/admin/login");
         })();
     }, [router]);
+
+    const handleLogout = async () => {
+            try {
+                await adminApi.post("/admin/auth/logout");
+            } catch {
+    
+            } finally {
+                dispatch(clearAuth());
+                router.replace("/admin/login");
+            }
+        };
 
     return (
         <>
@@ -70,10 +85,7 @@ export default function AdminHeader() {
                             </button>
 
                             <button
-                                onClick={() => {
-                                    localStorage.removeItem("admin_token");
-                                    router.push("/admin/login");
-                                }}
+                                onClick={handleLogout}
                                 className="rounded-full border border-gray-600 px-4 py-2 text-sm hover:bg-gray-800 transition"
                             >
                                 Logout

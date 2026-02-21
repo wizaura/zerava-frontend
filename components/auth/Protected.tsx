@@ -1,20 +1,33 @@
-"use client";
+"use client"
 
-import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-export default function Protected({ children }: { children: React.ReactNode }) {
-    const { isAuthenticated, bootstrapped } = useSelector((s: any) => s.auth);
+export default function Protected({
+    children,
+    requiredRole,
+}: {
+    children: React.ReactNode;
+    requiredRole?: "ADMIN" | "USER";
+}) {
+    const { isAuthenticated, bootstrapped, role } = useSelector((s: any) => s.auth);
     const router = useRouter();
 
+    console.log(role,'roler');
+
     useEffect(() => {
-        if(!bootstrapped) return;
+        if (!bootstrapped) return;
 
         if (!isAuthenticated) {
             router.replace("/login");
+            return;
         }
-    }, [bootstrapped, isAuthenticated, router]);
+
+        if (requiredRole && role !== requiredRole) {
+            router.replace("/");
+        }
+    }, [bootstrapped, isAuthenticated, role, requiredRole, router]);
 
     if (!bootstrapped) return null;
 
