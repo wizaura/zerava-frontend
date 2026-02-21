@@ -59,7 +59,37 @@ export default function SubscriptionPage() {
     }, []);
 
     if (loading) return null;
-    if (!subscription) return null;
+
+    if (!subscription) {
+        return (
+            <div className="min-h-screen bg-gray-50 px-6 py-20 flex items-center justify-center">
+                <div className="max-w-xl w-full bg-white rounded-3xl border border-gray-200 shadow-lg p-12 text-center">
+
+                    {/* Icon Circle */}
+                    <div className="mx-auto w-16 h-16 rounded-full bg-[#0B2E28]/10 flex items-center justify-center mb-6">
+                        <RefreshCcw className="w-7 h-7 text-[#0B2E28]" />
+                    </div>
+
+                    <h2 className="text-2xl font-semibold text-gray-900">
+                        No Active Subscription
+                    </h2>
+
+                    <p className="mt-3 text-gray-600 leading-relaxed">
+                        You’re not currently subscribed to Zerava Care.
+                        Start a subscription to enjoy regular eco-friendly vehicle care
+                        with exclusive savings.
+                    </p>
+
+                    <Link
+                        href="/subscribe"
+                        className="mt-8 inline-flex items-center justify-center rounded-full bg-[#0B2E28] px-8 py-3 text-sm font-medium text-white hover:opacity-90 transition"
+                    >
+                        Start Subscription
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     const handleConfirm = async () => {
         if (!confirmType) return;
@@ -134,7 +164,7 @@ export default function SubscriptionPage() {
                         </div>
 
                         {/* Divider */}
-                        <div className="my-8 h-px bg-white/10"></div>
+                        <div className="my-4 h-px bg-white/10"></div>
 
                         {/* DETAILS */}
                         <div className="grid md:grid-cols-2 gap-8 text-sm">

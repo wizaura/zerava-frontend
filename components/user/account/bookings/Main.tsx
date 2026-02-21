@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ShieldCheck, MapPin, CreditCard, CalendarClock } from "lucide-react";
+import { ShieldCheck, MapPin, CreditCard, CalendarClock, Calendar } from "lucide-react";
 import { getUserBookings } from "@/lib/user/booking.api";
 import { useRouter } from "next/navigation";
 import api from "@/lib/user/axios";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import Link from "next/link";
 
 const STATUS_STYLE: Record<
     "confirmed" | "pending" | "cancelled" | "completed",
@@ -136,115 +137,140 @@ export default function UserBookingsSection() {
     return (
         <div className="mt-6 rounded-xl max-w-6xl mx-auto border bg-white p-6">
             <h2 className="mb-4 text-lg font-semibold">All Bookings</h2>
+            {bookings.length === 0 ? (
+                /* ---------- EMPTY STATE ---------- */
+                <div className="py-16 text-center">
 
-            <div className="space-y-3">
-                {bookings.map((b) => (
-                    <div
-                        key={b.id}
-                        className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-xl bg-gray-50 p-4 gap-4"
+                    <div className="mx-auto w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-5">
+                        <Calendar className="w-6 h-6 text-gray-500" />
+                    </div>
+
+                    <h3 className="text-lg font-medium text-gray-900">
+                        No bookings yet
+                    </h3>
+
+                    <p className="mt-2 text-sm text-gray-500">
+                        You haven’t scheduled any Zerava services.
+                        Book your first eco-friendly vehicle care today.
+                    </p>
+
+                    <Link
+                        href="/booking"
+                        className="mt-6 inline-flex items-center justify-center rounded-full bg-[#0B2E28] px-6 py-2.5 text-sm font-medium text-white hover:opacity-90 transition"
                     >
-                        {/* LEFT SIDE */}
-                        <div className="flex items-start gap-4">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-200 shrink-0">
-                                <ShieldCheck size={22} />
-                            </div>
-
-                            <div className="flex-1">
-                                {/* Top row */}
-                                <div className="flex items-center justify-between sm:justify-start gap-2">
-                                    <p className="font-medium">{b.service}</p>
-
-                                    <span
-                                        className={`sm:hidden rounded-md px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[b.status]}`}
-                                    >
-                                        {b.status}
-                                    </span>
+                        Book a Service
+                    </Link>
+                </div>
+            ) : (
+                <div className="space-y-3">
+                    {bookings.map((b) => (
+                        <div
+                            key={b.id}
+                            className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-xl bg-gray-50 p-4 gap-4"
+                        >
+                            {/* LEFT SIDE */}
+                            <div className="flex items-start gap-4">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-200 shrink-0">
+                                    <ShieldCheck size={22} />
                                 </div>
 
-                                {b.subscriptionId && (
-                                    <span className="mt-1 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                                        Subscription
-                                    </span>
-                                )}
+                                <div className="flex-1">
+                                    {/* Top row */}
+                                    <div className="flex items-center justify-between sm:justify-start gap-2">
+                                        <p className="font-medium">{b.service}</p>
 
-                                <p className="mt-1 text-sm text-gray-500">
-                                    {formatDateTime(b.date, b.timeFrom, b.timeTo)}
-                                </p>
-
-                                <p className="flex items-center gap-1 text-sm text-gray-500">
-                                    <MapPin size={14} />
-                                    {b.location}
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* RIGHT SIDE */}
-                        <div className="flex flex-col sm:items-end gap-2 w-full sm:w-auto">
-                            {/* Status (desktop only) */}
-                            <span
-                                className={`hidden sm:inline rounded-md px-3 py-1 text-xs font-medium ${STATUS_STYLE[b.status]}`}
-                            >
-                                {b.status}
-                            </span>
-
-                            <p className="font-semibold text-sm sm:text-base">
-                                {b.price}
-                            </p>
-
-                            {/* ACTIONS */}
-                            <div className="flex flex-col items-start sm:items-end gap-2 w-full sm:w-auto">
-                                {b.status === "pending" && (
-                                    <button
-                                        onClick={() => goToStripe(b.id)}
-                                        className="text-sm font-medium text-electric-teal hover:underline"
-                                    >
-                                        Complete payment
-                                    </button>
-                                )}
-
-                                {b.status === "confirmed" &&
-                                    canReschedule(b.date, b.timeFrom) &&
-                                    b.rescheduleCount < 1 && (
-                                        <button
-                                            onClick={() =>
-                                                router.push(`/account/bookings/${b.id}/reschedule`)
-                                            }
-                                            className="flex items-center gap-1 text-sm font-medium text-electric-teal hover:underline"
+                                        <span
+                                            className={`sm:hidden rounded-md px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[b.status]}`}
                                         >
-                                            <CalendarClock size={14} />
-                                            Reschedule
+                                            {b.status}
+                                        </span>
+                                    </div>
+
+                                    {b.subscriptionId && (
+                                        <span className="mt-1 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                                            Subscription
+                                        </span>
+                                    )}
+
+                                    <p className="mt-1 text-sm text-gray-500">
+                                        {formatDateTime(b.date, b.timeFrom, b.timeTo)}
+                                    </p>
+
+                                    <p className="flex items-center gap-1 text-sm text-gray-500">
+                                        <MapPin size={14} />
+                                        {b.location}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* RIGHT SIDE */}
+                            <div className="flex flex-col sm:items-end gap-2 w-full sm:w-auto">
+                                {/* Status (desktop only) */}
+                                <span
+                                    className={`hidden sm:inline rounded-md px-3 py-1 text-xs font-medium ${STATUS_STYLE[b.status]}`}
+                                >
+                                    {b.status}
+                                </span>
+
+                                <p className="font-semibold text-sm sm:text-base">
+                                    {b.price}
+                                </p>
+
+                                {/* ACTIONS */}
+                                <div className="flex flex-col items-start sm:items-end gap-2 w-full sm:w-auto">
+                                    {b.status === "pending" && (
+                                        <button
+                                            onClick={() => goToStripe(b.id)}
+                                            className="text-sm font-medium text-electric-teal hover:underline"
+                                        >
+                                            Complete payment
                                         </button>
                                     )}
 
-                                {b.status === "confirmed" &&
-                                    canReschedule(b.date, b.timeFrom) && (
-                                        <button
-                                            onClick={() => setCancelTarget(b)}
-                                            className="text-sm font-semibold text-red-600 hover:underline"
-                                        >
-                                            Cancel Booking
-                                        </button>
-                                    )}
+                                    {b.status === "confirmed" &&
+                                        canReschedule(b.date, b.timeFrom) &&
+                                        b.rescheduleCount < 1 && (
+                                            <button
+                                                onClick={() =>
+                                                    router.push(`/account/bookings/${b.id}/reschedule`)
+                                                }
+                                                className="flex items-center gap-1 text-sm font-medium text-electric-teal hover:underline"
+                                            >
+                                                <CalendarClock size={14} />
+                                                Reschedule
+                                            </button>
+                                        )}
 
-                                {b.status === "confirmed" &&
-                                    canReschedule(b.date, b.timeFrom) &&
-                                    b.rescheduleCount >= 1 && (
-                                        <p className="text-xs text-gray-400">
-                                            Reschedule limit reached
-                                        </p>
-                                    )}
+                                    {b.status === "confirmed" &&
+                                        canReschedule(b.date, b.timeFrom) && (
+                                            <button
+                                                onClick={() => setCancelTarget(b)}
+                                                className="text-sm font-semibold text-red-600 hover:underline"
+                                            >
+                                                Cancel Booking
+                                            </button>
+                                        )}
 
-                                {b.status === "confirmed" &&
-                                    !canReschedule(b.date, b.timeFrom) && (
-                                        <p className="text-xs text-gray-400">
-                                            Changes locked (within 24h)
-                                        </p>
-                                    )}
+                                    {b.status === "confirmed" &&
+                                        canReschedule(b.date, b.timeFrom) &&
+                                        b.rescheduleCount >= 1 && (
+                                            <p className="text-xs text-gray-400">
+                                                Reschedule limit reached
+                                            </p>
+                                        )}
+
+                                    {b.status === "confirmed" &&
+                                        !canReschedule(b.date, b.timeFrom) && (
+                                            <p className="text-xs text-gray-400">
+                                                Changes locked (within 24h)
+                                            </p>
+                                        )}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
             <ConfirmModal
                 open={!!cancelTarget}
                 title="Cancel Booking"
