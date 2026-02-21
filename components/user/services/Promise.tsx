@@ -4,8 +4,8 @@ import { ArrowRight } from "lucide-react";
 
 export default function OurPromiseSection() {
     return (
-        <section className="bg-white px-6 py-20">
-            <div className="mx-auto grid max-w-6xl gap-14 md:grid-cols-2 md:items-center">
+        <section className="bg-white py-20">
+            <div className="mx-auto max-w-6xl px-6 grid gap-14 md:grid-cols-2 md:items-center">
 
                 {/* Text Content */}
                 <div>
@@ -44,7 +44,7 @@ export default function OurPromiseSection() {
                         without harming the environment.
                     </p>
 
-                    {/* CTA BUTTON */}
+                    {/* CTA */}
                     <div
                         data-aos="fade-right"
                         data-aos-delay="500"
@@ -64,14 +64,14 @@ export default function OurPromiseSection() {
                 <div
                     data-aos="fade-left"
                     data-aos-delay="300"
-                    className="relative overflow-hidden rounded-2xl"
+                    className="relative"
                 >
-                    <div className="relative h-[420px] w-full">
+                    <div className="relative h-[420px] w-full overflow-hidden rounded-2xl">
                         <Image
                             src="/service-2.png"
                             alt="A modern vehicle parked on a calm urban street, reflecting premium care as part of everyday city life"
                             fill
-                            className="object-cover transition-transform duration-700 ease-out hover:scale-[1.08]"
+                            className="object-cover transition-transform duration-700 ease-out hover:scale-[1.05]"
                             priority
                         />
                     </div>

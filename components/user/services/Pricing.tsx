@@ -49,6 +49,26 @@ type PricingMatrix = {
     };
 };
 
+const subscriptionBenefits: Record<
+    "monthly" | "fortnightly",
+    string[]
+> = {
+    monthly: [
+        "1 scheduled visit per month",
+        "Fixed day & time window",
+        "One reschedule per month",
+        "Same service as one-off",
+        "Cancel anytime",
+    ],
+    fortnightly: [
+        "2 scheduled visits per month",
+        "Fixed day & time window",
+        "One reschedule per month",
+        "Priority booking slots",
+        "Cancel anytime",
+    ],
+};
+
 export default function PricingSection() {
     const [data, setData] = useState<PricingMatrix | null>(null);
 
@@ -319,8 +339,22 @@ export default function PricingSection() {
 
                                     {/* Features */}
                                     <ul className="space-y-3 text-sm text-gray-700">
-                                        {plan.features?.map((feature: string, i: number) => (
-                                            <li key={i} className="flex items-start gap-2">
+
+                                        {/* Subscription Benefits */}
+                                        {planType === "subscription" && plan.billing &&
+                                            subscriptionBenefits[plan.billing as "monthly" | "fortnightly"]?.map(
+                                                (benefit, i) => (
+                                                    <li key={`benefit-${i}`} className="flex items-start gap-2">
+                                                        <Check className="h-4 w-4 text-electric-teal mt-0.5" />
+                                                        {benefit}
+                                                    </li>
+                                                )
+                                            )
+                                        }
+
+                                        {/* Core Service Features */}
+                                        {planType === "oneoff" && plan.features?.map((feature: string, i: number) => (
+                                            <li key={`feature-${i}`} className="flex items-start gap-2">
                                                 <Check className="h-4 w-4 text-electric-teal mt-0.5" />
                                                 {feature}
                                             </li>

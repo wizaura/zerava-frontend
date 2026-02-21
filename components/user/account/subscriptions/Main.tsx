@@ -8,7 +8,6 @@ import {
     Calendar,
     MapPin,
     CreditCard,
-    AlertTriangle,
     RefreshCcw,
 } from "lucide-react";
 import Link from "next/link";
@@ -38,7 +37,7 @@ type Subscription = {
     upcomingBookings: UpcomingBooking[];
 };
 
-export default function Subscription() {
+export default function SubscriptionPage() {
     const router = useRouter();
 
     const [subscription, setSubscription] =
@@ -50,25 +49,17 @@ export default function Subscription() {
 
     const [actionLoading, setActionLoading] = useState(false);
 
-    useEffect(() => {
-        api.get("/subscriptions/me")
-            .then((res) => setSubscription(res.data))
-            .finally(() => setLoading(false));
-    }, []);
+    const fetchSubscription = async () => {
+        const res = await api.get("/subscriptions/me");
+        setSubscription(res.data);
+    };
 
-    console.log(subscription, 'sub');
+    useEffect(() => {
+        fetchSubscription().finally(() => setLoading(false));
+    }, []);
 
     if (loading) return null;
     if (!subscription) return null;
-
-    const statusStyles = {
-        active:
-            "bg-electric-teal/10 text-electric-teal border border-electric-teal/30",
-        past_due:
-            "bg-yellow-100 text-yellow-700 border border-yellow-300",
-        canceled:
-            "bg-red-100 text-red-700 border border-red-300",
-    };
 
     const handleConfirm = async () => {
         if (!confirmType) return;
@@ -78,19 +69,20 @@ export default function Subscription() {
             const res = await api.post(
                 `/subscriptions/${subscription.id}/${confirmType}`
             );
-            setConfirmType(null);
             toast.success(res.data.message);
+            setConfirmType(null);
+            await fetchSubscription();
         } finally {
             setActionLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen px-6 py-16">
-            <div className="mx-auto max-w-5xl space-y-12">
+        <div className="min-h-screen bg-gray-50 px-6 py-16">
+            <div className="mx-auto max-w-5xl space-y-14">
 
                 {/* HEADER */}
-                <div>
+                <div className="max-w-3xl mx-auto">
                     <h1 className="text-4xl font-light tracking-tight text-gray-900">
                         Your Subscription
                     </h1>
@@ -99,85 +91,123 @@ export default function Subscription() {
                     </p>
                 </div>
 
-                {/* MAIN CARD */}
-                <div className="rounded-3xl max-w-3xl mx-auto border border-gray-200 bg-white p-10 shadow-lg">
+                {/* CREDIT CARD STYLE PANEL */}
+                <div className="relative max-w-3xl mx-auto rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
 
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <h2 className="text-2xl font-medium text-gray-900">
-                                {subscription.planName}
-                            </h2>
-                            <p className="mt-1 font-medium text-electric-teal">
-                                {subscription.price}
-                            </p>
+                    {/* Base Gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-eco-black via-mobility-green to-eco-black"></div>
+
+                    {/* Top Light Reflection */}
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.15),transparent_40%)]"></div>
+
+                    {/* Bottom Glow Accent */}
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(56,214,196,0.25),transparent_45%)]"></div>
+
+                    {/* Inner Soft Border */}
+                    <div className="absolute inset-0 rounded-3xl border border-white/10"></div>
+
+                    <div className="relative p-10 text-white">
+
+                        {/* HEADER */}
+                        <div className="flex justify-between items-start">
+
+                            <div>
+                                <p className="text-xs uppercase tracking-widest text-white/60 mb-1">
+                                    Zerava Subscription
+                                </p>
+                                <h2 className="text-2xl font-semibold tracking-wide">
+                                    {subscription.planName}
+                                </h2>
+                                <p className="mt-2 text-[#38D6C4] text-lg font-medium">
+                                    {subscription.price}
+                                </p>
+                            </div>
+
+                            <span className={`px-4 py-1 rounded-full text-xs font-medium backdrop-blur ${subscription.status === "active"
+                                ? "bg-[#38D6C4]/20 text-[#38D6C4] border border-[#38D6C4]/40"
+                                : subscription.status === "past_due"
+                                    ? "bg-yellow-400/20 text-yellow-300 border border-yellow-300/40"
+                                    : "bg-red-500/20 text-red-300 border border-red-400/40"
+                                }`}>
+                                {subscription.isPaused ? "Paused" : subscription.status}
+                            </span>
                         </div>
 
-                        <span
-                            className={`px-4 py-1 rounded-full text-sm font-medium ${statusStyles[subscription.status]}`}
-                        >
-                            {subscription.status}
-                        </span>
-                    </div>
+                        {/* Divider */}
+                        <div className="my-8 h-px bg-white/10"></div>
 
-                    {/* DETAILS */}
-                    <div className="mt-10 grid md:grid-cols-2 gap-10 text-sm">
+                        {/* DETAILS */}
+                        <div className="grid md:grid-cols-2 gap-8 text-sm">
 
-                        <DetailItem
-                            icon={<Calendar />}
-                            title={formatWeekday(subscription.weekday)}
-                            subtitle={`${formatTime(subscription.timeFrom)} – ${formatTime(subscription.timeTo)}`}
-                        />
+                            <DetailItemCard
+                                icon={<Calendar size={18} />}
+                                title={formatWeekday(subscription.weekday)}
+                                subtitle={`${formatTime(subscription.timeFrom)} – ${formatTime(subscription.timeTo)}`}
+                            />
 
-                        <DetailItem
-                            icon={<MapPin />}
-                            title={subscription.postcode}
-                            subtitle={subscription.address}
-                        />
+                            <DetailItemCard
+                                icon={<MapPin size={18} />}
+                                title={subscription.postcode}
+                                subtitle={subscription.address}
+                            />
 
-                        <DetailItem
-                            icon={<CreditCard />}
-                            title="Next billing"
-                            subtitle={formatDate(subscription.nextBillingDate)}
-                        />
-                    </div>
+                            <DetailItemCard
+                                icon={<CreditCard size={18} />}
+                                title="Next billing"
+                                subtitle={formatDate(subscription.nextBillingDate)}
+                            />
 
-                    {/* ACTIONS */}
-                    <div className="mt-12 pt-8 border-t border-gray-200 flex flex-wrap gap-4 justify-between items-center">
+                            <DetailItemCard
+                                icon={<RefreshCcw size={18} />}
+                                title="Subscription ID"
+                                subtitle={subscription.id.slice(0, 12)}
+                            />
+                        </div>
 
-                        <Link
-                            href={`/account/subscriptions/${subscription.id}/reschedule`}
-                            className="rounded-full bg-electric-teal px-6 py-2 text-sm font-medium text-white hover:opacity-90 transition inline-block"
-                        >
-                            Reschedule Subscription
-                        </Link>
-                        <div className="flex gap-8 flex-wrap">
-                            {subscription.status === "active" && (
-                                <button
-                                    onClick={() =>
-                                        setConfirmType(subscription.isPaused ? "resume" : "pause")
-                                    }
-                                    className={`flex items-center gap-2 ${subscription.isPaused ? "text-green-600" : "text-yellow-600"} text-sm hover:underline`}
-                                >
-                                    <RefreshCcw size={16} />
-                                    {subscription.isPaused
-                                        ? "Resume Subscription"
-                                        : "Pause Subscription"}
-                                </button>
-                            )}
-                            <button
-                                onClick={() => setConfirmType("cancel")}
-                                className="flex items-center gap-2 text-red-600 text-sm hover:underline"
+                        {/* ACTIONS */}
+                        <div className="mt-10 flex flex-wrap gap-4 justify-between items-center">
+
+                            <Link
+                                href={`/account/subscriptions/${subscription.id}/reschedule`}
+                                className="rounded-full bg-white text-[#0B2E28] px-6 py-2 text-sm font-medium hover:opacity-90 transition"
                             >
-                                <AlertTriangle size={16} />
-                                Cancel Subscription
-                            </button>
-                        </div>
+                                Reschedule Plan
+                            </Link>
 
+                            <div className="flex gap-6 text-sm">
+
+                                {subscription.status === "active" && (
+                                    <button
+                                        onClick={() =>
+                                            setConfirmType(
+                                                subscription.isPaused
+                                                    ? "resume"
+                                                    : "pause"
+                                            )
+                                        }
+                                        className="text-yellow-300 hover:underline"
+                                    >
+                                        {subscription.isPaused
+                                            ? "Resume"
+                                            : "Pause"}
+                                    </button>
+                                )}
+
+                                {subscription.status !== "canceled" && (
+                                    <button
+                                        onClick={() => setConfirmType("cancel")}
+                                        className="text-red-300 hover:underline"
+                                    >
+                                        Cancel
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 {/* UPCOMING BOOKINGS */}
-                <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
+                <div className="rounded-3xl max-w-3xl mx-auto border border-gray-200 bg-white p-8 shadow-sm">
                     <h3 className="text-xl font-medium text-gray-900 mb-6">
                         Upcoming Visits
                     </h3>
@@ -188,7 +218,9 @@ export default function Subscription() {
                                 key={booking.id}
                                 booking={booking}
                                 onReschedule={() =>
-                                    router.push(`/reschedule/${booking.id}`)
+                                    router.push(
+                                        `/account/bookings/${booking.id}/reschedule`
+                                    )
                                 }
                             />
                         ))}
@@ -210,7 +242,7 @@ export default function Subscription() {
                     confirmType === "cancel"
                         ? "This will permanently stop your subscription and future bookings."
                         : confirmType === "resume"
-                            ? "Your subscription will resume and future visits will continue as scheduled."
+                            ? "Your subscription will resume and future visits will continue."
                             : "Your subscription will be paused until you reactivate it."
                 }
                 confirmText={
@@ -231,7 +263,7 @@ export default function Subscription() {
 
 /* ---------- DETAIL ITEM ---------- */
 
-function DetailItem({
+function DetailItemCard({
     icon,
     title,
     subtitle,
@@ -242,10 +274,10 @@ function DetailItem({
 }) {
     return (
         <div className="flex gap-4">
-            <div className="text-electric-teal">{icon}</div>
+            <div className="text-[#38D6C4]">{icon}</div>
             <div>
-                <p className="font-medium text-gray-900">{title}</p>
-                <p className="text-gray-500">{subtitle}</p>
+                <p className="font-medium">{title}</p>
+                <p className="text-white/60">{subtitle}</p>
             </div>
         </div>
     );
@@ -261,7 +293,7 @@ function VisitItem({
     onReschedule: () => void;
 }) {
     return (
-        <div className="flex justify-between items-center rounded-2xl border border-gray-200 p-5 hover:border-electric-teal transition">
+        <div className="flex justify-between items-center rounded-2xl border border-gray-200 bg-gray-50 p-5 hover:border-[#0B2E28]/40 transition">
 
             <div>
                 <p className="font-medium text-gray-900">
@@ -275,7 +307,7 @@ function VisitItem({
 
             <button
                 onClick={onReschedule}
-                className="rounded-full border border-electric-teal px-5 py-2 text-sm font-medium text-electric-teal hover:bg-electric-teal hover:text-white transition"
+                className="rounded-full border border-[#0B2E28] px-5 py-2 text-sm font-medium text-[#0B2E28] hover:bg-[#0B2E28] hover:text-white transition"
             >
                 Reschedule
             </button>
@@ -287,7 +319,8 @@ function VisitItem({
 
 function formatWeekday(day: number) {
     const days = [
-        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+        "Monday", "Tuesday", "Wednesday", "Thursday",
+        "Friday", "Saturday", "Sunday"
     ];
     return days[day - 1] ?? "";
 }
