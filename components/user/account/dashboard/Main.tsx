@@ -17,12 +17,13 @@ type DashboardData = {
     ecoLevel: {
         level: string;
         totalCleans: number;
+        nextLevel: string;
         nextLevelAt: number;
         progressPercent: number;
     };
     environment: {
         waterSavedLitres: number;
-        co2SavedKg: number;
+        co2AvoidKg: number;
         treesPlanted: number;
         nextTreeAtLitres: number;
     };
@@ -113,7 +114,7 @@ function EcoLevelCard({
 
             <div className="mb-2 flex justify-between text-sm text-gray-500">
                 <span>{eco.totalCleans} cleans</span>
-                <span>{eco.nextLevelAt - eco.totalCleans} to Tree</span>
+                <span>{eco.nextLevelAt - eco.totalCleans} to {eco.nextLevel}</span>
             </div>
 
             <div className="mb-6 h-3 w-full rounded-full bg-gray-100">
@@ -136,8 +137,8 @@ function EcoLevelCard({
                 />
                 <StatMini
                     icon={<Wind className="text-emerald-600" />}
-                    value={`${env.co2SavedKg.toFixed(1)}kg`}
-                    label="CO₂ Saved"
+                    value={`${env.co2AvoidKg.toFixed(1)}kg`}
+                    label="CO₂ Avoided"
                 />
             </div>
         </div>

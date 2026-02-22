@@ -12,13 +12,13 @@ export default function Home() {
   return (
     <div>
       <Hero />
-      <WhyZerava />
       <HowItWorks />
+      <WhyZerava />
       <ServiceHighlights />
       <TestimonialsSection />
       <FleetPreview />
       <FAQsPreview />
-      <GalleryPreview />
+      {/* <GalleryPreview /> */}
       <FinalCTA
         title="Ready for a cleaner drive?"
         description="Professional vehicle care delivered where your car is parked — without water waste or 

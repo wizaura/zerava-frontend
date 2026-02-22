@@ -30,7 +30,7 @@ export default function ServicesAndPricing() {
             <ServicesList />
             <AddOnsSection />
             <PricingSection />
-            {/* <OurPromiseSection /> */}
+            <OurPromiseSection />
             <FinalCTA
                 title="Questions about pricing?"
                 description="Get in touch and we'll help you find the perfect package for your needs."

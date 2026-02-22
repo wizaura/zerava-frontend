@@ -323,7 +323,7 @@ export default function PricingSection() {
 
                                         {planType === "subscription" && (
                                             <p className="mt-2 text-sm text-gray-500">
-                                                {plan.name === "fortnightly" ? 2 : 1} visit per month
+                                                {plan.name === "Fortnightly" ? 2 : 1} visit per month
                                             </p>
                                         )}
                                         {plan.durationMin && (

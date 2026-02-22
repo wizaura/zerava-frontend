@@ -51,7 +51,7 @@ const services = [
 
 export default function ServiceHighlights() {
     return (
-        <section id="services" className="bg-eco-black py-20">
+        <section id="services" className="bg-gray-100 py-20">
             <div className="mx-auto max-w-7xl px-6">
 
                 {/* Heading */}
@@ -66,7 +66,7 @@ export default function ServiceHighlights() {
                     <h2
                         data-aos="fade-up"
                         data-aos-delay="100"
-                        className="text-4xl font-light text-gray-200 sm:text-5xl"
+                        className="text-4xl font-light text-gray-800 sm:text-5xl"
                     >
                         Premium services, minimal effort
                     </h2>
@@ -74,7 +74,7 @@ export default function ServiceHighlights() {
                     <p
                         data-aos="fade-up"
                         data-aos-delay="200"
-                        className="mx-auto mt-5 max-w-2xl text-base text-gray-400"
+                        className="mx-auto mt-5 max-w-2xl text-base text-gray-600"
                     >
                         Carefully designed services to keep your vehicle clean,
                         protected, and future-ready.
@@ -166,8 +166,8 @@ export default function ServiceHighlights() {
                     <Link
                         href="#services"
                         className="inline-flex items-center gap-2 rounded-full
-                            border border-gray-300 px-8 py-4
-                            text-sm font-semibold text-gray-200
+                            border border-gray-700 px-8 py-4
+                            text-sm font-semibold text-gray-800
                             transition-all hover:scale-105
                             hover:border-electric-teal hover:bg-electric-teal
                             hover:text-eco-black"

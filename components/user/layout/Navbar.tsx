@@ -6,6 +6,7 @@ import { Menu, X, User } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
 import { useRef } from "react";
+import Image from "next/image";
 
 const mainNavItems = [
     { label: "Home", href: "/" },
@@ -19,6 +20,7 @@ const moreNavItems = [
     { label: "Pricing", href: "/services#pricing" },
     { label: "Our Works", href: "/gallery" },
     { label: "FAQs", href: "/FAQs" },
+    { label: "Eco Method", href: "/eco-method" },
 ];
 
 // Mobile keeps full list
@@ -69,13 +71,15 @@ export default function Navbar() {
             <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
 
                 {/* Logo */}
-                <Link href="/" className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-electric-teal/20">
-                        <span className="font-bold text-electric-teal">Z</span>
-                    </div>
-                    <span className="font-semibold tracking-wide">
-                        Zerava
-                    </span>
+                <Link href="/" className="flex items-center justify-start">
+                    <Image
+                        src="/wordmark_black.svg"
+                        alt="Zerava Logo"
+                        width={100}
+                        height={32}
+                        className="object-contain"
+                        priority
+                    />
                 </Link>
 
                 {/* Desktop Nav */}
