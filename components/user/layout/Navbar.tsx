@@ -148,7 +148,7 @@ export default function Navbar() {
                     </Link>
 
                     {/* Account */}
-                    <Link
+                    {/* <Link
                         href={isAuthenticated ? "/account" : "/login"}
                         className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
                             ${isHome
@@ -162,7 +162,7 @@ export default function Navbar() {
                         <span className="hidden sm:inline">
                             {isAuthenticated ? "Account" : "Login"}
                         </span>
-                    </Link>
+                    </Link> */}
 
                     {/* Mobile Menu Toggle */}
                     <button

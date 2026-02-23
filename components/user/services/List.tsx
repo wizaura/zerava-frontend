@@ -135,9 +135,6 @@ export default function ServicesList() {
                                 {service.highlightNote && (
                                     <div className="mt-6 rounded-xl bg-electric-teal/10 shadow-md p-4 text-sm text-gray-700">
                                         {service.highlightNote}
-                                        {service.waterSavedLitres
-                                            ? ` Saves ${service.waterSavedLitres}L of water per wash.`
-                                            : ""}
                                     </div>
                                 )}
                             </div>
