@@ -140,12 +140,12 @@ export default function Navbar() {
                 <div className="flex items-center gap-1 sm:gap-3">
 
                     {/* Book Now */}
-                    <Link
+                    {/* <Link
                         href="/booking"
                         className="rounded-full bg-electric-teal px-5 py-2 text-sm font-semibold text-eco-black transition hover:brightness-110"
                     >
                         Book Now
-                    </Link>
+                    </Link> */}
 
                     {/* Account */}
                     {/* <Link
