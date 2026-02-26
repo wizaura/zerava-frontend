@@ -49,11 +49,7 @@ export async function createGalleryItem(data: {
     formData.append("beforeImage", data.beforeImage);
     formData.append("afterImage", data.afterImage);
 
-    const res = await adminApi.post("/admin/gallery", formData, {
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
-    });
+    const res = await adminApi.post("/admin/gallery", formData);
 
     return res.data;
 }
