@@ -7,6 +7,7 @@ import AOSProvider from "@/components/ui/AOSProvider";
 
 import { Cormorant_Garamond } from "next/font/google";
 import Providers from "./providers";
+import Script from "next/script";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -88,6 +89,10 @@ export default function RootLayout({
           <AOSProvider />
           {children}
           <Toaster position="top-right" />
+          <Script
+            src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_KEY}&libraries=places`}
+            strategy="afterInteractive"
+          />
         </Providers>
       </body>
     </html>

@@ -6,17 +6,25 @@ export type UserBooking = {
 
     status: "CONFIRMED" | "PENDING_PAYMENT" | "CANCELLED" | "COMPLETED";
 
-    price: number;          // already converted to £ in backend
+    price: number;
+    originalPrice: number | null;
+    discountAmount: number;
+
     createdAt: string;
 
-    date: string;           // YYYY-MM-DD
-    timeFrom: string;       // "10:00"
-    timeTo: string;         // "10:50"
-    subscriptionId: string;
+    date: string;
+    timeFrom: string;
+    timeTo: string;
+
+    subscriptionId: string | null;
 
     address: string;
     postcode: string;
     rescheduleCount: number;
+
+    make: string | null;
+    model: string | null;
+    registrationNumber: string | null;
 
     service: {
         name: string;

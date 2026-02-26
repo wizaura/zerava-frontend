@@ -10,6 +10,8 @@ import { loadStripe } from "@stripe/stripe-js";
 import { SubscriptionService } from "./Call";
 import Stepper from "@/components/ui/Stepper";
 import FlowHero from "@/components/ui/FlowHero";
+import SubscriptionScheduleStep from "./ScheduleDetails/ScheduleStep";
+import SubscriptionFinalDetailsStep from "./PaymentDetails/FinalDetailsStep";
 
 const stripePromise = loadStripe(
     process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -38,6 +40,7 @@ export default function SubscribeClient({
         address: null,
 
         preferredDay: null,
+        firstServiceDate: null,
         templateId: null,
         timeFrom: null,
         timeTo: null,
@@ -82,7 +85,7 @@ export default function SubscribeClient({
                 )}
 
                 {currentStep === 1 && (
-                    <ScheduleStep
+                    <SubscriptionScheduleStep
                         draft={draft}
                         setDraft={setDraft}
                         onContinue={() => setCurrentStep(2)}
@@ -92,7 +95,7 @@ export default function SubscribeClient({
 
                 {currentStep === 2 && (
                     <Elements stripe={stripePromise}>
-                        <PaymentStep
+                        <SubscriptionFinalDetailsStep
                             draft={draft}
                             setDraft={setDraft}
                             onBack={() => setCurrentStep(1)}

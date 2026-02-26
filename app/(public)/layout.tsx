@@ -1,5 +1,6 @@
 import Navbar from "@/components/user/layout/Navbar";
 import Footer from "@/components/user/layout/Footer";
+import LoginModal from "@/components/auth/LoginModal";
 
 export default function PublicLayout({
     children,
@@ -9,6 +10,7 @@ export default function PublicLayout({
     return (
         <>
             <Navbar />
+            <LoginModal />
             {children}
             <Footer />
         </>

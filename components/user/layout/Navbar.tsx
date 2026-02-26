@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X, User } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRef } from "react";
 import Image from "next/image";
+import { openLoginModal } from "@/store/slices/authSlice";
 
 const mainNavItems = [
     { label: "Home", href: "/" },
@@ -42,6 +43,7 @@ export default function Navbar() {
     const [openDropdown, setOpenDropdown] = useState(false);
     const pathname = usePathname();
     const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
+    const dispatch = useDispatch();
 
     const isHome = pathname === "/";
 
@@ -140,29 +142,44 @@ export default function Navbar() {
                 <div className="flex items-center gap-1 sm:gap-3">
 
                     {/* Book Now */}
-                    {/* <Link
+                    <Link
                         href="/booking"
                         className="rounded-full bg-electric-teal px-5 py-2 text-sm font-semibold text-eco-black transition hover:brightness-110"
                     >
                         Book Now
-                    </Link> */}
+                    </Link>
 
                     {/* Account */}
-                    {/* <Link
-                        href={isAuthenticated ? "/account" : "/login"}
-                        className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
-                            ${isHome
-                                ? scrolled
-                                    ? "text-eco-black hover:bg-black/5"
-                                    : "text-gray-300 hover:bg-white/10"
-                                : "text-eco-black hover:bg-black/5"
-                            }`}
-                    >
-                        <User size={16} />
-                        <span className="hidden sm:inline">
-                            {isAuthenticated ? "Account" : "Login"}
-                        </span>
-                    </Link> */}
+                    {isAuthenticated ? (
+                        <Link
+                            href="/account"
+                            className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
+            ${isHome
+                                    ? scrolled
+                                        ? "text-eco-black hover:bg-black/5"
+                                        : "text-gray-300 hover:bg-white/10"
+                                    : "text-eco-black hover:bg-black/5"
+                                }`}
+                        >
+                            <User size={16} />
+                            <span className="hidden sm:inline">Account</span>
+                        </Link>
+                    ) : (
+                        <button
+                            onClick={() => dispatch(openLoginModal())}
+                            className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
+            ${isHome
+                                    ? scrolled
+                                        ? "text-eco-black hover:bg-black/5"
+                                        : "text-gray-300 hover:bg-white/10"
+                                    : "text-eco-black hover:bg-black/5"
+                                }`}
+                        >
+                            <User size={16} />
+                            <span className="hidden sm:inline">Login</span>
+                        </button>
+                    )}
+
 
                     {/* Mobile Menu Toggle */}
                     <button

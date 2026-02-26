@@ -25,6 +25,7 @@ export type SubscriptionDraft = {
    address: string | null;
 
    preferredDay: number | null;   // 0–6 (Sunday–Saturday)
+   firstServiceDate: string | null;
    templateId: string | null;
 
    timeFrom: string | null;

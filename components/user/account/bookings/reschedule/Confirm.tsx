@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import api from "@/lib/user/axios";
+import toast from "react-hot-toast";
 import { ClockIcon, MapPinIcon } from "@heroicons/react/24/outline";
 
 export default function ConfirmRescheduleStep({
@@ -10,23 +12,97 @@ export default function ConfirmRescheduleStep({
     draft: any;
     onBack: () => void;
 }) {
+
+    const [loading, setLoading] = useState(false);
+
     async function submit() {
-        await api.patch(`/bookings/${draft.bookingId}/reschedule`, {
-            postcode: draft.postcode,
-            date: draft.date,
+        try {
+            setLoading(true);
 
-            serviceSlotId: draft.serviceSlotId,
-            templateId: draft.templateId,
-            isTemplate: draft.isTemplate,
-            operatorId: draft.operatorId,
+            /* ===========================
+               1️⃣ CHECK RULES
+            =========================== */
 
-            timeFrom: draft.timeFrom,
-            timeTo: draft.timeTo,
-            address: draft.address,
-        });
+            const check = await api.post(
+                `/bookings/${draft.bookingId}/reschedule-check`,
+                {
+                    serviceSlotId: draft.serviceSlotId,
+                    templateId: draft.templateId,
+                    isTemplate: draft.isTemplate,
+                    postcode: draft.postcode,
+                    date: draft.date,
+                    timeFrom: draft.timeFrom,
+                    timeTo: draft.timeTo,
+                    address: draft.address,
+                }
+            );
 
-        window.location.href = `/account/bookings`;
+            if (!check.data.allowed) {
+                toast.error(check.data.reason);
+                return;
+            }
+
+            /* ===========================
+               2️⃣ FREE RESCHEDULE (>24h)
+            =========================== */
+
+            if (!check.data.requiresPayment) {
+
+                await api.post(
+                    `/bookings/${draft.bookingId}/confirm-reschedule`,
+                    {
+                        serviceSlotId: draft.serviceSlotId,
+                        templateId: draft.templateId,
+                        isTemplate: draft.isTemplate,
+                        postcode: draft.postcode,
+                        date: draft.date,
+                        timeFrom: draft.timeFrom,
+                        timeTo: draft.timeTo,
+                        address: draft.address,
+                    }
+                );
+
+                toast.success("Rescheduled successfully");
+
+                window.location.href = "/account/bookings";
+                return;
+            }
+
+            /* ===========================
+               3️⃣ £5 ROUTE ADJUSTMENT FEE
+            =========================== */
+
+            const session = await api.post(
+                "/payments/create-reschedule-session",
+                {
+                    bookingId: draft.bookingId,
+
+                    serviceSlotId: draft.serviceSlotId,
+                    templateId: draft.templateId,
+                    isTemplate: draft.isTemplate,
+                    postcode: draft.postcode,
+                    date: draft.date,
+                    timeFrom: draft.timeFrom,
+                    timeTo: draft.timeTo,
+                    address: draft.address,
+                }
+            );
+
+            window.location.href = session.data.url;
+
+        } catch (err: any) {
+            toast.error(
+                err?.response?.data?.message ||
+                "Something went wrong"
+            );
+        } finally {
+            setLoading(false);
+        }
     }
+
+    /* ===========================
+       FORMAT HELPERS
+    =========================== */
 
     function formatTime12h(time: string | null) {
         if (!time) return "";
@@ -54,13 +130,31 @@ export default function ConfirmRescheduleStep({
         });
     }
 
+    /* ===========================
+       UI
+    =========================== */
+
     return (
         <div className="max-w-3xl mx-auto space-y-8">
+
             <h2 className="text-2xl font-medium text-gray-900">
                 Review your new schedule
             </h2>
 
+            {/* 🔥 RESCHEDULING POLICY */}
+            <div className="rounded-xl bg-gray-50 border p-5 text-sm space-y-2">
+                <p className="font-medium text-gray-900">
+                    Rescheduling Policy
+                </p>
+                <ul className="space-y-1 text-gray-600 list-disc list-inside">
+                    <li>Free change up to 24 hours before your visit</li>
+                    <li>24–12 hours: £5 route adjustment fee</li>
+                    <li>Within 12 hours: Not allowed (50% retained)</li>
+                </ul>
+            </div>
+
             <div className="rounded-2xl border bg-white p-6 shadow-sm space-y-6">
+
                 <SummaryRow
                     label="Service"
                     value={draft.service}
@@ -70,6 +164,7 @@ export default function ConfirmRescheduleStep({
                     label="Vehicle"
                     value={draft.vehicleCategory}
                 />
+
                 <SummaryRow
                     label="Postcode"
                     value={draft.postcode}
@@ -107,6 +202,7 @@ export default function ConfirmRescheduleStep({
                     label="Total Price"
                     value={`£${(draft.price / 100).toFixed(2)}`}
                 />
+
             </div>
 
             <div className="flex justify-between pt-4">
@@ -119,9 +215,10 @@ export default function ConfirmRescheduleStep({
 
                 <button
                     onClick={submit}
-                    className="rounded-full bg-black px-8 py-2 text-sm text-white hover:bg-gray-800"
+                    disabled={loading}
+                    className="rounded-full bg-black px-8 py-2 text-sm text-white hover:bg-gray-800 disabled:opacity-50"
                 >
-                    Confirm Reschedule
+                    {loading ? "Processing..." : "Confirm Reschedule"}
                 </button>
             </div>
         </div>

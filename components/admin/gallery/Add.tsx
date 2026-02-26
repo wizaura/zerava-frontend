@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createGalleryItem, GalleryItem } from "@/lib/admin/gallery.api";
 import UploadBox from "@/components/ui/UploadBox";
 import TextInput from "@/components/ui/TextInput";
@@ -8,6 +8,7 @@ import TextArea from "@/components/ui/TextArea";
 import SelectInput from "@/components/ui/SelectInput";
 import toast from "react-hot-toast";
 import { getApiError } from "@/lib/utils";
+import ImageCropModal from "@/components/ui/ImageCropModal";
 
 type Props = {
     onSuccess: (item: GalleryItem) => void;
@@ -17,6 +18,12 @@ type Props = {
 export default function GalleryAdd({ onSuccess, onCancel }: Props) {
     const [before, setBefore] = useState<File | null>(null);
     const [after, setAfter] = useState<File | null>(null);
+    const [beforePreview, setBeforePreview] = useState<string | null>(null);
+    const [afterPreview, setAfterPreview] = useState<string | null>(null);
+
+    const [cropImage, setCropImage] = useState<string | null>(null);
+    const [activeField, setActiveField] = useState<"before" | "after" | null>(null);
+    const [rawFile, setRawFile] = useState<File | null>(null);
 
     const [title, setTitle] = useState("");
     const [serviceType, setServiceType] = useState("Exterior");
@@ -69,6 +76,52 @@ export default function GalleryAdd({ onSuccess, onCancel }: Props) {
         return true;
     }
 
+    function handleFileSelect(
+        e: React.ChangeEvent<HTMLInputElement>,
+        type: "before" | "after"
+    ) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setRawFile(file);
+        setActiveField(type);
+        setCropImage(URL.createObjectURL(file));
+    }
+
+    function handleSelect(file: File, type: "before" | "after") {
+        setActiveField(type);
+        setCropImage(URL.createObjectURL(file));
+    }
+
+    useEffect(() => {
+        if (!before) {
+            setBeforePreview(null);
+            return;
+        }
+
+        const url = URL.createObjectURL(before);
+        setBeforePreview(url);
+
+        return () => {
+            URL.revokeObjectURL(url);
+        };
+    }, [before]);
+
+
+    useEffect(() => {
+        if (!after) {
+            setAfterPreview(null);
+            return;
+        }
+
+        const url = URL.createObjectURL(after);
+        setAfterPreview(url);
+
+        return () => {
+            URL.revokeObjectURL(url);
+        };
+    }, [after]);
+
 
     async function submit() {
 
@@ -104,8 +157,8 @@ export default function GalleryAdd({ onSuccess, onCancel }: Props) {
                     </label>
                     <UploadBox
                         label="Click to upload"
-                        onChange={(e) => setBefore(e.target.files?.[0] ?? null)}
-                        preview={before ? URL.createObjectURL(before) : null}
+                        onChange={(e) => handleFileSelect(e, "after")}
+                        preview={afterPreview}
                     />
                 </div>
 
@@ -115,8 +168,8 @@ export default function GalleryAdd({ onSuccess, onCancel }: Props) {
                     </label>
                     <UploadBox
                         label="Click to upload"
-                        onChange={(e) => setAfter(e.target.files?.[0] ?? null)}
-                        preview={after ? URL.createObjectURL(after) : null}
+                        onChange={(e) => handleFileSelect(e, "before")}
+                        preview={beforePreview}
                     />
                 </div>
             </div>
@@ -185,6 +238,23 @@ export default function GalleryAdd({ onSuccess, onCancel }: Props) {
                     {loading ? "Uploading..." : "Add to Gallery"}
                 </button>
             </div>
+            {cropImage && rawFile && (
+                <ImageCropModal
+                    image={cropImage}
+                    aspect={4 / 3} // change ratio if you want
+                    onClose={() => {
+                        setCropImage(null);
+                        setRawFile(null);
+                    }}
+                    onCropComplete={(croppedFile) => {
+                        if (activeField === "before") setBefore(croppedFile);
+                        if (activeField === "after") setAfter(croppedFile);
+
+                        setCropImage(null);
+                        setRawFile(null);
+                    }}
+                />
+            )}
         </div>
     );
 }

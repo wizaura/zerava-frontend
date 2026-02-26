@@ -20,7 +20,7 @@ export default function Protected({
         if (!bootstrapped) return;
 
         if (!isAuthenticated) {
-            router.replace("/login");
+            router.replace("/");
             return;
         }
 

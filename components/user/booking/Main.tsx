@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import ServiceStep from "./Service";
-import ScheduleStep from "./Schedule";
 import ConfirmStep from "./Confirm";
 import ProcessingStep from "./Processing";
 import Stepper from "@/components/ui/Stepper";
 import FlowHero from "@/components/ui/FlowHero";
+import FinalDetailsStep from "./FinalDetails/FinalDetailsStep";
+import ScheduleStep from "./ScheduleDetails/ScheduleStep";
 
 /* ---------- TYPES ---------- */
 
@@ -73,6 +74,8 @@ export type BookingDraft = {
     /* Real Slot OR Template Slot */
 
     serviceSlotId: string | null;   // if real slot
+    serviceDays: string | null;
+    lockId: string | null;
     templateId: string | null;      // if template slot
     isTemplate: boolean;            // true if template used
     operatorId: string | null;      // assigned operator
@@ -127,6 +130,8 @@ export default function BookingClient({
         timeTo: null,
 
         serviceSlotId: null,
+        serviceDays: null,
+        lockId: null,
         templateId: null,
         isTemplate: false,
         operatorId: null,
@@ -203,7 +208,7 @@ export default function BookingClient({
                 )} */}
 
                 {currentStep === 2 && (
-                    <ConfirmStep
+                    <FinalDetailsStep
                         bookingDraft={bookingDraft}
                         setBookingDraft={setBookingDraft}
                         onBack={() => setCurrentStep(1)}

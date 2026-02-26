@@ -1,10 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import api from "@/lib/user/axios";
 import { BookingDraft } from "./Main";
-import { Leaf } from "lucide-react";
+import { ChevronDown, Leaf, Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
+import toast from "react-hot-toast";
+
+declare global {
+    interface Window {
+        google: any;
+    }
+}
 
 type Props = {
     bookingDraft: BookingDraft;
@@ -19,9 +26,85 @@ export default function FinalDetailsStep({
     onBack,
     onSuccess,
 }: Props) {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+
     const { isAuthenticated } = useSelector((s: any) => s.auth);
+
+    const [loading, setLoading] = useState(false);
+    const [regLoading, setRegLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const addressRef = useRef<HTMLInputElement | null>(null);
+
+    const [openSection, setOpenSection] = useState<string | null>("service");
+
+    const toggle = (section: string) => {
+        setOpenSection(prev => (prev === section ? null : section));
+    };
+
+    /* ================= GOOGLE AUTOCOMPLETE ================= */
+
+    useEffect(() => {
+        if (!window.google || !addressRef.current) return;
+
+        const autocomplete = new window.google.maps.places.Autocomplete(
+            addressRef.current,
+            {
+                types: ["address"],
+                componentRestrictions: { country: "gb" },
+            }
+        );
+
+        autocomplete.addListener("place_changed", () => {
+            const place = autocomplete.getPlace();
+            if (!place.formatted_address) return;
+
+            const postcodeComp = place.address_components?.find((c: any) =>
+                c.types.includes("postal_code")
+            );
+
+            setBookingDraft((d) => ({
+                ...d,
+                address: place.formatted_address,
+                postcode: postcodeComp?.long_name ?? d.postcode,
+            }));
+        });
+
+    }, []);
+
+    /* ================= VEHICLE LOOKUP ================= */
+
+    function isValidUKReg(reg: string) {
+        const cleaned = reg.toUpperCase().replace(/\s/g, "");
+        return /^[A-Z]{2}[0-9]{2}[A-Z]{3}$/.test(cleaned);
+    }
+
+    async function lookupVehicle(reg: string) {
+        if (!isValidUKReg(reg)) return;
+
+        try {
+            setRegLoading(true);
+
+            const res = await api.post("/vehicle/lookup", {
+                registrationNumber: reg,
+            });
+
+            setBookingDraft((d) => ({
+                ...d,
+                make: res.data.make,
+                model: res.data.model,
+            }));
+
+        } catch {
+            // silent fail
+        } finally {
+            setRegLoading(false);
+        }
+    }
+
+    const hasValidReg =
+        bookingDraft.registrationNumber
+            ? isValidUKReg(bookingDraft.registrationNumber)
+            : false;
 
     const addOnsTotal = bookingDraft.addOns.reduce(
         (sum, a) => sum + a.price,
@@ -30,19 +113,6 @@ export default function FinalDetailsStep({
 
     const total =
         (bookingDraft.basePrice ?? 0) + addOnsTotal;
-
-    function isValidUKReg(reg: string) {
-        const cleaned = reg.toUpperCase().replace(/\s/g, "");
-
-        const ukRegRegex = /^[A-Z]{2}[0-9]{2}[A-Z]{3}$/;
-
-        return ukRegRegex.test(cleaned);
-    }
-
-    const hasValidReg =
-        bookingDraft.registrationNumber
-            ? isValidUKReg(bookingDraft.registrationNumber)
-            : false;
 
     const canSubmit =
         isAuthenticated &&
@@ -56,51 +126,107 @@ export default function FinalDetailsStep({
         Boolean(bookingDraft.postcode?.trim()) &&
         hasValidReg;
 
-    async function submitBooking() {
-        if (!canSubmit) return;
+    /* ================= SUBMIT ================= */
 
-        setLoading(true);
-        setError(null);
+    async function submitBooking() {
+        if (loading) return;
+
+        // 🔥 BASIC VALIDATION
+
+        if (!isAuthenticated) {
+            toast.error("Please login to continue");
+            return;
+        }
+
+        if (!bookingDraft) {
+            toast.error("Booking data missing");
+            return;
+        }
+
+        if (!bookingDraft.date) {
+            toast.error("Please select a date");
+            return;
+        }
+
+        if (!bookingDraft.serviceSlotId) {
+            toast.error("Please select a time slot");
+            return;
+        }
+
+        if (!bookingDraft.vehicleCategory) {
+            toast.error("Please select vehicle type");
+            return;
+        }
+
+        if (!bookingDraft.address) {
+            toast.error("Please select service address");
+            return;
+        }
+
+        if (!bookingDraft.basePrice || bookingDraft.basePrice <= 0) {
+            toast.error("Invalid pricing configuration");
+            return;
+        }
+
+        if (!Array.isArray(bookingDraft.addOns)) {
+            toast.error("Invalid add-on selection");
+            return;
+        }
+
+        const invalidAddon = bookingDraft.addOns.find(a => !a.id);
+        if (invalidAddon) {
+            toast.error("One of the selected add-ons is invalid");
+            return;
+        }
+
+        if (!canSubmit) {
+            toast.error("Please complete all required fields");
+            return;
+        }
 
         try {
+            setLoading(true);
+            setError(null);
+
+            // 🔥 Create booking
             const bookingRes = await api.post("/bookings", {
-                servicePriceId: bookingDraft.servicePriceId,
-                serviceSlotId: bookingDraft.serviceSlotId ?? null,
-                templateId: bookingDraft.templateId ?? null,
-                isTemplate: bookingDraft.isTemplate ?? false,
-                operatorId: bookingDraft.operatorId,
-                date: bookingDraft.date,
-                timeFrom: bookingDraft.timeFrom,
-                timeTo: bookingDraft.timeTo,
-                address: bookingDraft.address,
-                postcode: bookingDraft.postcode,
-                make: bookingDraft.make,
-                model: bookingDraft.model,
-                registrationNumber: bookingDraft.registrationNumber,
-                parkingInstructions: bookingDraft.parkingInstructions,
-                notes: bookingDraft.notes,
-                name: bookingDraft.name,
-                email: bookingDraft.email,
-                phone: bookingDraft.phone,
+                ...bookingDraft,
                 addOnIds: bookingDraft.addOns.map(a => a.id),
             });
 
-            const session = await api.post(
-                "/payments/create-session",
-                { bookingId: bookingRes.data.id },
-            );
+            if (!bookingRes?.data?.id) {
+                toast.error("Booking creation failed");
+                return;
+            }
 
+            // 🔥 Create payment session
+            const session = await api.post("/payments/create-session", {
+                bookingId: bookingRes.data.id,
+            });
+
+            if (!session?.data?.url) {
+                toast.error("Failed to initiate payment");
+                return;
+            }
+
+            toast.success("Redirecting to secure payment...");
             window.location.href = session.data.url;
+
             onSuccess();
+
         } catch (err: any) {
-            setError(
+            const message =
                 err?.response?.data?.message ||
-                "Failed to create booking",
-            );
+                "Something went wrong. Please try again.";
+
+            toast.error(message);
+            setError(message);
         } finally {
             setLoading(false);
         }
     }
+
+    /* ================= UI ================= */
 
     return (
         <div className="max-w-4xl mx-auto space-y-10">
@@ -109,7 +235,7 @@ export default function FinalDetailsStep({
                 Final details
             </h2>
 
-            {/* CONTACT + ADDRESS */}
+            {/* CONTACT + VEHICLE + ADDRESS */}
             <div className="rounded-2xl border bg-white p-6 shadow-sm space-y-6">
 
                 {/* Personal Info */}
@@ -138,8 +264,35 @@ export default function FinalDetailsStep({
                     />
                 </div>
 
-                {/* Vehicle Details */}
+                {/* Vehicle */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="relative">
+                        <Input
+                            label="Registration number"
+                            value={bookingDraft.registrationNumber || ""}
+                            onChange={(v: string) => {
+                                const val = v.toUpperCase();
+                                setBookingDraft(d => ({
+                                    ...d,
+                                    registrationNumber: val,
+                                }));
+
+                                if (isValidUKReg(val)) {
+                                    lookupVehicle(val);
+                                }
+                            }}
+                        />
+                        {regLoading && (
+                            <Loader2 className="absolute right-3 top-9 animate-spin" size={18} />
+                        )}
+                        {bookingDraft.registrationNumber &&
+                            !hasValidReg && (
+                                <p className="text-sm text-red-500 mt-1">
+                                    Enter valid UK registration (AB12 CDE)
+                                </p>
+                            )}
+                    </div>
+
                     <Input
                         label="Make"
                         value={bookingDraft.make || ""}
@@ -147,6 +300,7 @@ export default function FinalDetailsStep({
                             setBookingDraft(d => ({ ...d, make: v }))
                         }
                     />
+
                     <Input
                         label="Model"
                         value={bookingDraft.model || ""}
@@ -154,21 +308,6 @@ export default function FinalDetailsStep({
                             setBookingDraft(d => ({ ...d, model: v }))
                         }
                     />
-                    <div>
-                        <Input
-                            label="Registration number"
-                            value={bookingDraft.registrationNumber || ""}
-                            onChange={(v: string) =>
-                                setBookingDraft(d => ({ ...d, registrationNumber: v }))
-                            }
-                        />
-                        {bookingDraft.registrationNumber &&
-                            !isValidUKReg(bookingDraft.registrationNumber) && (
-                                <p className="text-sm text-red-500 mt-1">
-                                    Please enter a valid UK registration (Eg: AB12 CDE)
-                                </p>
-                            )}
-                    </div>
                 </div>
 
                 {/* Address */}
@@ -177,6 +316,7 @@ export default function FinalDetailsStep({
                         Full address
                     </label>
                     <input
+                        ref={addressRef}
                         value={bookingDraft.address || ""}
                         onChange={(e) =>
                             setBookingDraft(d => ({
@@ -185,7 +325,7 @@ export default function FinalDetailsStep({
                             }))
                         }
                         className="w-full rounded-xl border px-4 py-3 text-sm"
-                        placeholder="House number, street, city"
+                        placeholder="Start typing your address..."
                     />
                 </div>
 
@@ -222,31 +362,82 @@ export default function FinalDetailsStep({
                     Booking Summary
                 </h3>
 
-                <SummaryRow label="Service" value={bookingDraft.serviceName} />
-                <SummaryRow label="Vehicle" value={bookingDraft.vehicleCategory} />
-                <SummaryRow
-                    label="Date & Time"
-                    value={`${formatDate(bookingDraft.date)} · ${formatTimeRange(
-                        bookingDraft.timeFrom,
-                        bookingDraft.timeTo,
-                    )}`}
-                />
+                {/* SERVICE */}
+                <AccordionSection
+                    title="Service Details"
+                    isOpen={openSection === "service"}
+                    onClick={() => toggle("service")}
+                >
+                    <SummaryRow label="Service" value={bookingDraft.serviceName} />
+                    <SummaryRow label="Vehicle category" value={bookingDraft.vehicleCategory} />
+                    <SummaryRow
+                        label="Date & Time"
+                        value={`${formatDate(bookingDraft.date)} · ${formatTimeRange(
+                            bookingDraft.timeFrom,
+                            bookingDraft.timeTo,
+                        )}`}
+                    />
+                </AccordionSection>
 
-                <div className="border-t border-white/20 pt-4 space-y-2">
+                {/* CONTACT */}
+                <AccordionSection
+                    title="Contact Details"
+                    isOpen={openSection === "contact"}
+                    onClick={() => toggle("contact")}
+                >
+                    <SummaryRow label="Name" value={bookingDraft.name} />
+                    <SummaryRow label="Email" value={bookingDraft.email} />
+                    <SummaryRow label="Phone" value={bookingDraft.phone} />
+                </AccordionSection>
+
+                {/* VEHICLE */}
+                <AccordionSection
+                    title="Vehicle Details"
+                    isOpen={openSection === "vehicle"}
+                    onClick={() => toggle("vehicle")}
+                >
+                    <SummaryRow label="Registration" value={bookingDraft.registrationNumber} />
+                    <SummaryRow label="Make" value={bookingDraft.make} />
+                    <SummaryRow label="Model" value={bookingDraft.model} />
+                </AccordionSection>
+
+                {/* ADDRESS */}
+                <AccordionSection
+                    title="Service Address"
+                    isOpen={openSection === "address"}
+                    onClick={() => toggle("address")}
+                >
+                    <SummaryRow label="Address" value={bookingDraft.address} />
+                    <SummaryRow label="Postcode" value={bookingDraft.postcode} />
+                    {bookingDraft.parkingInstructions && (
+                        <SummaryRow
+                            label="Parking"
+                            value={bookingDraft.parkingInstructions}
+                        />
+                    )}
+                </AccordionSection>
+
+                {/* PRICE */}
+                <AccordionSection
+                    title="Pricing"
+                    isOpen={openSection === "price"}
+                    onClick={() => toggle("price")}
+                >
                     <SummaryRow
                         label="Base price"
                         value={`£${(bookingDraft.basePrice ?? 0) / 100}`}
                     />
 
-                    {bookingDraft.addOns.map(a => (
+                    {bookingDraft.addOns.map((a: any) => (
                         <SummaryRow
                             key={a.id}
                             label={a.name}
                             value={`+£${a.price / 100}`}
                         />
                     ))}
-                </div>
+                </AccordionSection>
 
+                {/* TOTAL (Always Visible) */}
                 <div className="border-t border-white/20 pt-4 flex justify-between text-xl font-semibold">
                     <span>Total</span>
                     <span>£{total / 100}</span>
@@ -269,12 +460,7 @@ export default function FinalDetailsStep({
                 <button
                     disabled={!canSubmit || loading}
                     onClick={submitBooking}
-                    className={[
-                        "rounded-full px-8 py-2 text-sm text-white",
-                        canSubmit
-                            ? "bg-black hover:bg-gray-800"
-                            : "bg-gray-300 cursor-not-allowed",
-                    ].join(" ")}
+                    className="rounded-full px-8 py-2 text-sm text-white bg-black hover:bg-gray-800"
                 >
                     {loading
                         ? "Processing…"
@@ -283,10 +469,41 @@ export default function FinalDetailsStep({
                             : "Confirm & Pay"}
                 </button>
             </div>
+
         </div>
     );
 }
-/* ---------- Helpers ---------- */
+
+/* ================= HELPERS ================= */
+
+function AccordionSection({
+    title,
+    isOpen,
+    onClick,
+    children,
+}: any) {
+    return (
+        <div className="border border-white/10 rounded-xl">
+            <button
+                onClick={onClick}
+                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium hover:bg-white/5 transition"
+            >
+                <span>{title}</span>
+                <ChevronDown
+                    size={16}
+                    className={`transition-transform ${isOpen ? "rotate-180" : ""
+                        }`}
+                />
+            </button>
+
+            {isOpen && (
+                <div className="px-4 pb-4 space-y-2 text-sm text-gray-300">
+                    {children}
+                </div>
+            )}
+        </div>
+    );
+}
 
 function Input({
     label,
@@ -321,9 +538,7 @@ function SummaryRow({
     return (
         <div className="flex justify-between">
             <p className="text-gray-400">{label}</p>
-            <p className="font-medium">
-                {value || "—"}
-            </p>
+            <p className="font-medium">{value || "—"}</p>
         </div>
     );
 }
@@ -342,16 +557,16 @@ function formatTimeRange(
     to?: string | null,
 ) {
     if (!from || !to) return "—";
+
     const f = new Date(`1970-01-01T${from}`);
     const t = new Date(`1970-01-01T${to}`);
 
     const fmt = (d: Date) =>
-        d
-            .toLocaleTimeString("en-GB", {
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: true,
-            })
+        d.toLocaleTimeString("en-GB", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+        })
             .replace("am", "AM")
             .replace("pm", "PM");
 

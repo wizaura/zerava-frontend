@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/user/axios";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import Link from "next/link";
+import BookingManageModal from "./BookingManageModule";
 
 const STATUS_STYLE: Record<
     "confirmed" | "pending" | "cancelled" | "completed",
@@ -21,15 +22,28 @@ const STATUS_STYLE: Record<
 
 type UIBooking = {
     id: string;
+    referenceCode: string | null;
+
     service: string;
-    date: string;        // YYYY-MM-DD
-    timeFrom: string;    // "10:00"
-    timeTo: string;      // "10:50"
+
+    date: string;
+    timeFrom: string;
+    timeTo: string;
+
     location: string;
+
+    vehicle: string | null;
+
     rescheduleCount: number;
-    subscriptionId: string;
+    subscriptionId: string | null;
+
     status: "confirmed" | "pending" | "cancelled" | "completed";
-    price: string;
+
+    price: number;
+    originalPrice: number | null;
+    discountAmount: number;
+
+    operatorName: string | null;
 };
 
 
@@ -39,6 +53,7 @@ export default function UserBookingsSection() {
     const [loading, setLoading] = useState(true);
     const [cancelTarget, setCancelTarget] = useState<UIBooking | null>(null);
     const [cancelLoading, setCancelLoading] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState<UIBooking | null>(null);
 
     const router = useRouter();
 
@@ -90,18 +105,32 @@ export default function UserBookingsSection() {
             setBookings(
                 data.map((b) => ({
                     id: b.id,
+                    referenceCode: b.referenceCode,
+
                     service: b.service.name,
+
                     date: b.date,
                     timeFrom: b.timeFrom,
                     timeTo: b.timeTo,
+
                     location: `${b.address}, ${b.postcode}`,
+
+                    vehicle: b.make
+                        ? `${b.make} ${b.model} (${b.registrationNumber})`
+                        : null,
+
                     subscriptionId: b.subscriptionId,
                     rescheduleCount: b.rescheduleCount,
+
                     status: mapStatus(b.status),
-                    price: `£${b.price}`,
+
+                    price: b.price,
+                    originalPrice: b.originalPrice,
+                    discountAmount: b.discountAmount,
+
+                    operatorName: b.operator?.name ?? null,
                 }))
             );
-
         } finally {
             setLoading(false);
         }
@@ -217,60 +246,29 @@ export default function UserBookingsSection() {
                                 </p>
 
                                 {/* ACTIONS */}
-                                <div className="flex flex-col items-start sm:items-end gap-2 w-full sm:w-auto">
-                                    {b.status === "pending" && (
-                                        <button
-                                            onClick={() => goToStripe(b.id)}
-                                            className="text-sm font-medium text-electric-teal hover:underline"
-                                        >
-                                            Complete payment
-                                        </button>
-                                    )}
-
-                                    {b.status === "confirmed" &&
-                                        canReschedule(b.date, b.timeFrom) &&
-                                        b.rescheduleCount < 1 && (
-                                            <button
-                                                onClick={() =>
-                                                    router.push(`/account/bookings/${b.id}/reschedule`)
-                                                }
-                                                className="flex items-center gap-1 text-sm font-medium text-electric-teal hover:underline"
-                                            >
-                                                <CalendarClock size={14} />
-                                                Reschedule
-                                            </button>
-                                        )}
-
-                                    {b.status === "confirmed" &&
-                                        canReschedule(b.date, b.timeFrom) && (
-                                            <button
-                                                onClick={() => setCancelTarget(b)}
-                                                className="text-sm font-semibold text-red-600 hover:underline"
-                                            >
-                                                Cancel Booking
-                                            </button>
-                                        )}
-
-                                    {b.status === "confirmed" &&
-                                        canReschedule(b.date, b.timeFrom) &&
-                                        b.rescheduleCount >= 1 && (
-                                            <p className="text-xs text-gray-400">
-                                                Reschedule limit reached
-                                            </p>
-                                        )}
-
-                                    {b.status === "confirmed" &&
-                                        !canReschedule(b.date, b.timeFrom) && (
-                                            <p className="text-xs text-gray-400">
-                                                Changes locked (within 24h)
-                                            </p>
-                                        )}
-                                </div>
+                                <button
+                                    onClick={() => setSelectedBooking(b)}
+                                    className="rounded-full border border-[#0B2E28] px-4 py-1.5 text-sm font-medium text-[#0B2E28] hover:bg-[#0B2E28] hover:text-white transition"
+                                >
+                                    Manage
+                                </button>
                             </div>
                         </div>
                     ))}
                 </div>
             )}
+            <BookingManageModal
+                booking={selectedBooking}
+                onClose={() => setSelectedBooking(null)}
+                onCancelClick={() => {
+                    if (selectedBooking) {
+                        setCancelTarget(selectedBooking);
+                        setSelectedBooking(null);
+                    }
+                }}
+                canReschedule={canReschedule}
+                goToStripe={goToStripe}
+            />
             <ConfirmModal
                 open={!!cancelTarget}
                 title="Cancel Booking"

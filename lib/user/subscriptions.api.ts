@@ -19,19 +19,19 @@ export const SubscriptionsAPI = {
     createSubscription: async (payload: {
         paymentMethodId: string;
         subscriptionData: {
-            servicePriceId: string;
-            stripePriceId: string;
-            postcode: string;
-            address: string;
-            preferredDay: number;
-            templateId: string;
-            timeFrom: string;
-            timeTo: string;
+            servicePriceId: string | null;
+            stripePriceId: string | null;
+            postcode: string | null;
+            address: string | null;
+            preferredDay: number | null;
+            templateId: string | null;
+            timeFrom: string | null;
+            timeTo: string | null;
 
             /* NEW SNAPSHOT FIELDS */
-            name: string;
-            email: string;
-            phone: string;
+            name: string | null;
+            email: string | null;
+            phone: string | null;
             make?: string | null;
             model?: string | null;
             registrationNumber?: string | null;

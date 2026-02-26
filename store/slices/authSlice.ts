@@ -5,6 +5,7 @@ const initialState = {
     role: null,
     isAuthenticated: false,
     bootstrapped: false,
+    loginModalOpen: false,
 };
 
 const authSlice = createSlice({
@@ -26,8 +27,14 @@ const authSlice = createSlice({
         setBootstrapped: (state) => {
             state.bootstrapped = true;
         },
+        openLoginModal: (state) => {
+            state.loginModalOpen = true;
+        },
+        closeLoginModal: (state) => {
+            state.loginModalOpen = false;
+        },
     },
 });
 
-export const { setUser, clearAuth, setBootstrapped } = authSlice.actions;
+export const { setUser, clearAuth, setBootstrapped, openLoginModal, closeLoginModal } = authSlice.actions;
 export default authSlice.reducer;

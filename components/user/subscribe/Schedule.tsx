@@ -1,24 +1,28 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { CheckCircle, Clock, MapPin, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { SubscriptionDraft } from "./types";
 import api from "@/lib/user/axios";
+import toast from "react-hot-toast";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
 
-const UK_POSTCODE_REGEX_OUTWARD = /^[A-Z]{1,2}\d{2}$/i;
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d{2}$/;
 const UK_POSTCODE_REGEX_FULL = /^[A-Z]{1,2}\d{2}\s?\d[A-Z]{2}$/i;
 
-type Props = {
-    draft: SubscriptionDraft;
-    setDraft: Dispatch<SetStateAction<SubscriptionDraft>>;
-    onBack: () => void;
-    onContinue: () => void;
-};
-
-type TemplateSlot = {
+type Slot = {
     templateId: string;
     startTime: string;
     endTime: string;
+};
+
+type Props = {
+    draft: SubscriptionDraft;
+    setDraft: React.Dispatch<React.SetStateAction<SubscriptionDraft>>;
+    onBack: () => void;
+    onContinue: () => void;
 };
 
 export default function ScheduleStep({
@@ -27,323 +31,334 @@ export default function ScheduleStep({
     onBack,
     onContinue,
 }: Props) {
-    const [checking, setChecking] = useState(false);
     const [postcode, setPostcode] = useState(draft.postcode || "");
-    const [availableTemplates, setAvailableTemplates] = useState<TemplateSlot[]>([]);
-    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+    const [serviceDays, setServiceDays] = useState<number[] | null>(null);
+    const [zoneChecked, setZoneChecked] = useState(false);
+    const [selectedDate, setSelectedDate] = useState<string | null>(
+        draft.firstServiceDate || null
+    );
+    const [slots, setSlots] = useState<Slot[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const prevOutwardRef = useRef<string | null>(null);
+
+    const outwardCode = postcode.toUpperCase().trim().split(" ")[0];
 
     /* =========================================================
-       AUTO POSTCODE CHECK (LIKE BOOKING)
-    ========================================================== */
-
-    const outwardCode = postcode
-        .toUpperCase()
-        .trim()
-        .split(" ")[0];
+       1️⃣ ZONE CHECK (POSTCODE)
+    ========================================================= */
 
     useEffect(() => {
+        if (!UK_POSTCODE_REGEX.test(outwardCode)) return;
 
-        if (!UK_POSTCODE_REGEX_OUTWARD.test(outwardCode)) return;
+        if (prevOutwardRef.current === outwardCode) return;
+        prevOutwardRef.current = outwardCode;
 
-        const timeout = setTimeout(() => {
-            checkPostcode(outwardCode);
-        }, 500);
+        const timeout = setTimeout(async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const res = await api.get(
+                    `/service-zones/check/${outwardCode}`
+                );
+
+                if (!res.data.available) {
+                    setError("We don’t serve this postcode yet.");
+                    setZoneChecked(false);
+                    setServiceDays(null);
+                    return;
+                }
+
+                setZoneChecked(true);
+                setServiceDays(res.data.serviceDays);
+
+                setDraft((d) => ({
+                    ...d,
+                    postcode: postcode.trim().toUpperCase(),
+                }));
+            } catch {
+                setError("Failed to check postcode.");
+            } finally {
+                setLoading(false);
+            }
+        }, 600);
 
         return () => clearTimeout(timeout);
     }, [outwardCode]);
 
-    const matchesFirstStage =
-        outwardCode && UK_POSTCODE_REGEX_OUTWARD.test(outwardCode);
+    /* =========================================================
+       2️⃣ DATE SELECT
+    ========================================================= */
 
-    const matchesFullPostcode =
-        draft.postcode && UK_POSTCODE_REGEX_FULL.test(draft.postcode.trim());
-
-    const showPostcodeError =
-        matchesFirstStage && !matchesFullPostcode;
-
-    const checkPostcode = async (postcode: string) => {
-        try {
-            setChecking(true);
-
-            const res = await api.post("/availability/subscription-check", {
-                postcode,
-                serviceDuration: draft.durationMin,
-                plan: draft.plan,
-            });
-
-            const data = res.data;
-
-            if (!data.serviceable) {
-                resetSchedule(false);
-                setAvailableTemplates([]);
-                setSelectedIndex(null);
-                return;
-            }
-
-            // Reset previous selection
-            setSelectedIndex(null);
-
-            setDraft((d) => ({
-                ...d,
-                serviceable: true,
-                preferredDay: data.subscriptionDay,
-                templateId: null,
-                timeFrom: null,
-                timeTo: null,
-            }));
-
-            setAvailableTemplates(data.slots || []);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setChecking(false);
-        }
-    };
-
-    useEffect(() => {
-        const full = postcode.trim().toUpperCase();
-
-        if (!UK_POSTCODE_REGEX_FULL.test(full)) return;
+    function selectDate(localDate: string) {
+        setSelectedDate(localDate);
 
         setDraft((d) => ({
             ...d,
-            postcode: full,
-        }));
-    }, [postcode]);
-
-    const resetSchedule = (serviceable: boolean) => {
-        setDraft((d) => ({
-            ...d,
-            serviceable,
-            preferredDay: null,
+            firstServiceDate: localDate,
             templateId: null,
             timeFrom: null,
             timeTo: null,
         }));
-    };
+    }
 
     /* =========================================================
-       TEMPLATE SELECTION
-    ========================================================== */
+       3️⃣ FETCH AVAILABILITY
+    ========================================================= */
 
-    const handleSelectTemplate = (template: TemplateSlot, index: number) => {
+    async function fetchAvailability(date: string) {
+        try {
+            setLoading(true);
+            setError(null);
 
-        console.log(template, 'temp')
-        if (selectedIndex === index) {
-            // Deselect
-            setSelectedIndex(null);
-            setDraft((d) => ({
-                ...d,
-                templateId: null,
-                timeFrom: null,
-                timeTo: null,
-            }));
-            return;
+            const res = await api.post(
+                "/availability/subscription-check-date",
+                {
+                    date,
+                    postcode: draft.postcode,
+                    serviceDuration: draft.durationMin,
+                    addonDuration: 0,
+                    plan: draft.plan,
+                }
+            );
+
+            setSlots(res.data.slots || []);
+        } catch {
+            setError("Failed to load time slots.");
+            setSlots([]);
+        } finally {
+            setLoading(false);
         }
+    }
 
-        // Select
-        setSelectedIndex(index);
+    useEffect(() => {
+        if (!selectedDate) return;
+        if (!zoneChecked) return;
 
+        fetchAvailability(selectedDate);
+    }, [selectedDate]);
+
+    /* =========================================================
+       4️⃣ SLOT SELECT
+    ========================================================= */
+
+    function selectSlot(slot: Slot) {
         setDraft((d) => ({
             ...d,
-            templateId: template.templateId,
-            timeFrom: template.startTime,
-            timeTo: template.endTime,
+            templateId: slot.templateId,
+            timeFrom: slot.startTime,
+            timeTo: slot.endTime,
         }));
-    };
+    }
 
     /* =========================================================
-       CONTINUE VALIDATION
-    ========================================================== */
+       VALIDATION
+    ========================================================= */
+
+    const matchesFirstStage =
+        /^[A-Z]{1,2}\d{2}$/i.test(outwardCode);
+
+    const matchesFullPostcode =
+        /^[A-Z]{1,2}\d{2}\s?\d[A-Z]{2}$/i.test(postcode.trim());
+
+    const showPostcodeError =
+        matchesFirstStage && !matchesFullPostcode;
 
     const canContinue =
+        zoneChecked &&
         matchesFullPostcode &&
-        draft.serviceable &&
-        !!draft.templateId &&
-        !!draft.timeFrom &&
-        !!draft.timeTo;
+        !!selectedDate;
+        // !!draft.templateId;
 
     /* =========================================================
        UI
-    ========================================================== */
+    ========================================================= */
 
     return (
-        <div className="max-w-3xl mx-auto space-y-10">
+        <div className="space-y-8 max-w-5xl mx-auto bg-white">
+
             <h2 className="text-2xl font-medium text-gray-900">
-                Schedule your subscription
+                Choose your first service
             </h2>
 
-            {/* POSTCODE */}
+            {/* ================= POSTCODE ================= */}
             <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Your postcode
+                <label className="block text-sm font-medium mb-2">
+                    Postcode
                 </label>
 
-                <div className="relative">
-                    <MapPin
-                        size={18}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                    />
-                    <input
-                        value={postcode}
-                        onChange={(e) =>
-                            setPostcode(e.target.value.toUpperCase())
-                        }
-                        placeholder="SO15 4ER"
-                        className="w-full rounded-xl border border-gray-300 pl-10 pr-4 py-3 text-sm
-                        focus:border-electric-teal focus:ring-electric-teal"
-                    />
-                </div>
+                <input
+                    value={postcode}
+                    onChange={(e) =>
+                        setPostcode(e.target.value.toUpperCase())
+                    }
+                    placeholder="SO15 4ER"
+                    className="w-full border rounded-xl px-4 py-3"
+                />
+
                 {showPostcodeError && (
-                    <p className="mt-2 text-sm text-red-500">
-                        Please enter full postcode to continue (Eg: SO16 4ER)
+                    <p className="text-sm text-red-500 mt-2">
+                        Please enter full postcode (Eg: SO16 4ER)
+                    </p>
+                )}
+
+                {error && (
+                    <p className="text-sm text-red-500 mt-2">
+                        {error}
                     </p>
                 )}
             </div>
 
-            {/* LOADER */}
-            {/* LOADER */}
-            {checking && (
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <Loader2 className="animate-spin" size={16} />
-                    Checking availability…
+            {/* ================= SERVICE DAYS INFO ================= */}
+            {zoneChecked && serviceDays && (
+                <div className="bg-electric-teal/10 border border-electric-teal rounded-xl p-4">
+                    <p className="text-sm">
+                        We service your area on:
+                        <span className="font-medium ml-2">
+                            {serviceDays
+                                .map((d) =>
+                                    WEEKDAYS[d === 7 ? 0 : d]
+                                )
+                                .join(", ")}
+                        </span>
+                    </p>
                 </div>
             )}
 
-            {/* NOT SERVICEABLE */}
-            {draft.serviceable === false && !checking && (
-                <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100">
-                        <MapPin size={16} className="text-red-600" />
-                    </div>
-
-                    <div>
-                        <p className="font-medium text-red-700">
-                            Sorry, we don't serve this area yet
-                        </p>
-                        <p className="text-sm text-red-600">
-                            Try a different postcode or contact support.
-                        </p>
-                    </div>
-                </div>
-            )}
-
-            {/* SERVICEABLE */}
-            {draft.serviceable && draft.preferredDay !== null && (
-                <div className="flex items-start gap-3 rounded-xl border border-electric-teal bg-electric-teal/10 p-4">
-                    <CheckCircle className="text-electric-teal" />
-                    <div>
-                        <p className="font-medium text-gray-900">
-                            Great! We serve your area
-                        </p>
-                        <p className="text-sm text-gray-600">
-                            Your recurring service day{" "}
-                            <span className="font-medium text-electric-teal">
-                                {formatWeekday(draft.preferredDay as number)}
-                            </span>
-                        </p>
-                    </div>
-                </div>
-            )}
-
-            {/* TEMPLATE GRID */}
-            {draft.serviceable && availableTemplates.length > 0 && (
+            {/* ================= CALENDAR ================= */}
+            {serviceDays && (
                 <div>
-                    <p className="mb-4 text-sm font-medium text-gray-700">
-                        Choose your recurring time window
+                    <p className="mb-4 font-medium">
+                        Select your first service date
                     </p>
 
+                    <div className="rounded-2xl border p-8 flex justify-center">
+                        <DayPicker
+                            mode="single"
+                            selected={
+                                selectedDate
+                                    ? new Date(selectedDate)
+                                    : undefined
+                            }
+                            onSelect={(date) => {
+                                if (!date) return;
+
+                                const localDate = [
+                                    date.getFullYear(),
+                                    String(date.getMonth() + 1).padStart(2, "0"),
+                                    String(date.getDate()).padStart(2, "0"),
+                                ].join("-");
+
+                                selectDate(localDate);
+                            }}
+                            disabled={[
+                                { before: new Date() },
+                                {
+                                    after: (() => {
+                                        const d = new Date();
+                                        d.setDate(d.getDate() + 30);
+                                        return d;
+                                    })(),
+                                },
+                                (date) => {
+                                    const jsDay = date.getDay();
+                                    const dbDay = jsDay === 0 ? 7 : jsDay;
+                                    return !serviceDays.includes(dbDay);
+                                },
+                            ]}
+                            modifiers={{
+                                active: (date) => {
+                                    const jsDay = date.getDay();
+                                    const dbDay = jsDay === 0 ? 7 : jsDay;
+                                    return serviceDays.includes(dbDay);
+                                },
+                            }}
+                            modifiersClassNames={{
+                                selected:
+                                    "bg-black text-white font-bold mx-auto",
+                                active:
+                                    "text-electric-teal font-bold",
+                                today:
+                                    "bg-electric-teal/20 text-electric-teal font-bold",
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* ================= TIME SLOTS ================= */}
+            {selectedDate && (
+                <div>
+                    <p className="mb-4 font-medium">
+                        Available time slots
+                    </p>
+
+                    {loading && <p>Loading slots...</p>}
+
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {availableTemplates.map((template, index) => {
-                            const selected = selectedIndex === index;
+                        {slots.map((slot, i) => {
+                            const selected =
+                                draft.templateId === slot.templateId &&
+                                draft.timeFrom === slot.startTime;
 
                             return (
                                 <button
+                                    key={i}
                                     type="button"
-                                    key={`${template.templateId}_${template.startTime}_${template.endTime}_${index}`}
-                                    onClick={() =>
-                                        handleSelectTemplate(template, index)
-                                    }
+                                    onClick={() => selectSlot(slot)}
                                     className={[
-                                        "rounded-2xl border px-5 py-5 transition text-left",
+                                        "rounded-xl border px-4 py-3 text-left",
                                         selected
-                                            ? "border-electric-teal bg-electric-teal/10"
-                                            : "border-gray-200 bg-white hover:border-gray-300",
+                                            ? "bg-black text-white border-black"
+                                            : "bg-white hover:border-gray-400",
                                     ].join(" ")}
                                 >
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Clock size={16} />
-                                        <span className="font-medium">
-                                            {formatTime(template.startTime)} –{" "}
-                                            {formatTime(template.endTime)}
-                                        </span>
-                                    </div>
-
-                                    {selected && (
-                                        <p className="text-xs text-electric-teal">
-                                            Selected
-                                        </p>
-                                    )}
+                                    {slot.startTime} – {slot.endTime}
                                 </button>
                             );
                         })}
                     </div>
+
+                    {!loading && slots.length === 0 && (
+                        <p className="text-sm text-gray-500 mt-3">
+                            No slots available for this date.
+                        </p>
+                    )}
                 </div>
             )}
 
-            {/* FOOTER */}
+            {/* ================= FOOTER ================= */}
             <div className="flex justify-between pt-6">
                 <button
-                    type="button"
                     onClick={onBack}
-                    className="rounded-full border border-gray-300 bg-white px-6 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    className="border rounded-full px-6 py-2"
                 >
-                    ← Back
+                    Back
                 </button>
 
                 <button
-                    type="button"
                     disabled={!canContinue}
-                    onClick={onContinue}
+                    onClick={() => {
+                        if (!canContinue) {
+                            toast.error(
+                                "Please complete schedule selection."
+                            );
+                            return;
+                        }
+                        onContinue();
+                    }}
                     className={[
-                        "rounded-full px-8 py-2 text-sm text-white transition",
+                        "rounded-full px-8 py-2 text-white transition",
                         canContinue
                             ? "bg-black hover:bg-gray-800"
                             : "bg-gray-300 cursor-not-allowed",
                     ].join(" ")}
                 >
-                    Continue →
+                    Continue
                 </button>
             </div>
         </div>
     );
-}
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function formatWeekday(day: number) {
-    const days = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-    ];
-    return days[day - 1] ?? "";
-}
-
-function formatTime(time: string) {
-    const d = new Date(`1970-01-01T${time}`);
-    return d
-        .toLocaleTimeString("en-GB", {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-        })
-        .replace("am", "AM")
-        .replace("pm", "PM");
 }
