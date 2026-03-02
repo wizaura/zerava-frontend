@@ -7,7 +7,6 @@ import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 import { SubscriptionDraft } from "../types";
 import { SubscriptionsAPI } from "@/lib/user/subscriptions.api";
-import { useGoogleAutocomplete } from "@/hooks/useGoogleAutocomplete";
 import SubscriptionSummary from "./SubscriptionSummary";
 import { openLoginModal } from "@/store/slices/authSlice";
 
@@ -33,11 +32,6 @@ export default function SubscriptionFinalDetailsStep({
     const [pendingSubmit, setPendingSubmit] = useState(false);
 
     const addressRef = useRef<HTMLInputElement | null>(null);
-
-    useGoogleAutocomplete({
-        inputRef: addressRef,
-        setBookingDraft: setDraft,
-    });
 
     function isValidUKReg(reg: string) {
         const cleaned = reg.toUpperCase().replace(/\s/g, "");
