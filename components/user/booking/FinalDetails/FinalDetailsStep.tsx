@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 import api from "@/lib/user/axios";
 
 import FinalDetailsForm from "./FinalDetailsForm";
-import { useGoogleAutocomplete } from "@/hooks/useGoogleAutocomplete";
 import BookingSummary from "./BookingSummary";
 import { openLoginModal } from "@/store/slices/authSlice";
 import { useDispatch } from "react-redux";

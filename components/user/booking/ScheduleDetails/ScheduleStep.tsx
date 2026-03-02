@@ -9,7 +9,6 @@ import { ScheduleFooter } from "./ScheduleFooter";
 import { useDispatch, useSelector } from "react-redux";
 import { openLoginModal } from "@/store/slices/authSlice";
 import toast from "react-hot-toast";
-import { useGoogleAutocomplete } from "@/hooks/useGoogleAutocomplete";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d{2}$/;
@@ -126,14 +125,6 @@ export default function ScheduleStep({
             setLoading(false);
         }
     }
-
-    useGoogleAutocomplete({
-        inputRef: addressRef,
-        postcode,
-        setPostcode,
-        setBookingDraft,
-        setError,
-    });
 
     useEffect(() => {
         if (bookingDraft.date) {
