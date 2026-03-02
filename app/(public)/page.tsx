@@ -26,12 +26,12 @@ inconvenience."
         buttons={[
           {
             label: "Book Now",
-            href: "/",
+            href: "/booking",
             variant: "primary",
           },
           {
             label: "View Services",
-            href: "/",
+            href: "/services",
             variant: "secondary",
           },
         ]}

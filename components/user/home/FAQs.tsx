@@ -13,7 +13,7 @@ const faqs = [
     {
         question: "Do you clean vehicles in the rain?",
         answer:
-            "Light rain is not an issue. In extreme weather, we’ll reschedule at no extra cost.",
+            "Light rain is not an issue. In extreme weather, we'll reschedule at no extra cost.",
     },
     {
         question: "What areas do you currently cover?",
@@ -23,7 +23,7 @@ const faqs = [
     {
         question: "How long does a clean take?",
         answer:
-            "Most cleans take around 30–40 minutes depending on the service selected.",
+            "Most cleans take around 40 - 90 minutes, depending on the vehicle size and the service selected.",
     },
 ];
 
@@ -101,7 +101,7 @@ export default function FAQsPreview() {
                 {/* CTA */}
                 <div className="mt-8 text-center">
                     <Link
-                        href="/"
+                        href="/FAQs"
                         className="inline-flex items-center rounded-full border border-gray-300 px-6 py-3 
               text-sm font-semibold text-gray-900 transition-all
               hover:bg-gray-200 hover:scale-105"

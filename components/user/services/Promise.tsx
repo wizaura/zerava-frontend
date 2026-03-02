@@ -38,10 +38,10 @@ export default function OurPromiseSection() {
                         data-aos-delay="400"
                         className="mt-6 text-md leading-relaxed text-gray-600 sm:text-lg"
                     >
-                        Every Zerava service is designed with sustainability at its core.
-                        Our waterless technology saves over 150 litres of water per wash,
-                        while our 99.78% readily biodegradable products break down naturally
-                        without harming the environment.
+                        Every Zerava service is designed with sustainability at its core. Our waterless 
+                        technology saves over 150 litres of water per wash, while our 99.78% 
+                        readily biodegradable formulations
+                        are designed to break down naturally and minimise environmental impact.
                     </p>
 
                     {/* CTA */}

@@ -10,44 +10,49 @@ declare global {
 
 type Params = {
     inputRef: React.RefObject<HTMLInputElement | null>;
+    postcode: string;
+    setPostcode: (value: string) => void;
     setBookingDraft: React.Dispatch<React.SetStateAction<any>>;
+    setError: (value: string) => void;
 };
 
 export function useGoogleAutocomplete({
     inputRef,
+    postcode,
+    setPostcode,
     setBookingDraft,
+    setError,
 }: Params) {
     useEffect(() => {
-        if (!window.google || !inputRef.current) return;
+        if (!inputRef.current) return;
 
-        const autocomplete = new window.google.maps.places.Autocomplete(
-            inputRef.current,
-            {
-                types: ["geocode"],
-                componentRestrictions: { country: "gb" },
-                fields: ["formatted_address", "address_components"],
+        const initAutocomplete = () => {
+            if (!window.google?.maps?.places) {
+                setTimeout(initAutocomplete, 300);
+                return;
             }
-        );
 
-        autocomplete.addListener("place_changed", () => {
-            const place = autocomplete.getPlace();
-
-            if (!place.formatted_address) return;
-
-            const postcodeComp = place.address_components?.find(
-                (c: any) => c.types.includes("postal_code")
+            const autocomplete = new window.google.maps.places.Autocomplete(
+                inputRef.current!,
+                {
+                    types: ["address"],
+                    componentRestrictions: { country: "gb" },
+                    fields: ["formatted_address", "address_components"],
+                }
             );
 
-            setBookingDraft((d: any) => ({
-                ...d,
-                address: place.formatted_address,
-            }));
-        });
+            autocomplete.addListener("place_changed", () => {
+                const place = autocomplete.getPlace();
 
-        return () => {
-            window.google.maps.event.clearInstanceListeners(
-                autocomplete
-            );
+                if (!place.formatted_address) return;
+
+                setBookingDraft((d: any) => ({
+                    ...d,
+                    address: place.formatted_address,
+                }));
+            });
         };
-    }, [inputRef, setBookingDraft]);
+
+        initAutocomplete();
+    }, [inputRef]);
 }

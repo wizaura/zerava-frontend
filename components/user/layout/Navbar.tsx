@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRef } from "react";
 import Image from "next/image";
 import { openLoginModal } from "@/store/slices/authSlice";
+import PromoBanner from "./PromoBanner";
 
 const mainNavItems = [
     { label: "Home", href: "/" },
@@ -20,20 +21,21 @@ const mainNavItems = [
 const moreNavItems = [
     { label: "Pricing", href: "/services#pricing" },
     { label: "Our Works", href: "/gallery" },
-    { label: "FAQs", href: "/FAQs" },
     { label: "Eco Method", href: "/eco-method" },
+    { label: "FAQs", href: "/FAQs" },
 ];
 
 // Mobile keeps full list
 const mobileNavItems = [
     { label: "Home", href: "/" },
     { label: "Services", href: "/services" },
-    { label: "Pricing", href: "/services#pricing" },
-    { label: "Our Works", href: "/gallery" },
     { label: "Fleet", href: "/fleet" },
     { label: "About", href: "/about" },
-    { label: "FAQs", href: "/FAQs" },
     { label: "Contact", href: "/contact" },
+    { label: "Pricing", href: "/services#pricing" },
+    { label: "Our Works", href: "/gallery" },
+    { label: "Eco Method", href: "/eco-method" },
+    { label: "FAQs", href: "/FAQs" },
 ];
 
 export default function Navbar() {
@@ -60,6 +62,14 @@ export default function Navbar() {
         return pathname === href;
     };
 
+    useEffect(() => {
+        if (open) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "auto";
+        }
+    }, [open]);
+
     return (
         <header
             className={`fixed top-0 z-50 w-full transition-all duration-300
@@ -70,18 +80,27 @@ export default function Navbar() {
                     : "bg-white text-eco-black border-b border-black/10"
                 }`}
         >
+            <PromoBanner />
             <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
 
                 {/* Logo */}
-                <Link href="/" className="flex items-center justify-start">
-                    <Image
-                        src="/wordmark_black.svg"
-                        alt="Zerava Logo"
-                        width={100}
-                        height={32}
-                        className="object-contain"
-                        priority
-                    />
+                <Link href="/" className="flex items-center">
+                    <div className="relative h-8 w-[120px] sm:h-9 sm:w-[100px]">
+                        <Image
+                            src={
+                                isHome
+                                    ? scrolled
+                                        ? "/wordmark_black.svg"
+                                        : "/wordmark_white.png"
+                                    : "/wordmark_black.svg"
+                            }
+                            alt="Zerava Logo"
+                            fill
+                            sizes="(max-width: 640px) 120px, 140px"
+                            className="object-contain transition duration-300"
+                            priority
+                        />
+                    </div>
                 </Link>
 
                 {/* Desktop Nav */}
@@ -194,17 +213,32 @@ export default function Navbar() {
 
             {/* Mobile Menu */}
             {open && (
-                <div className="md:hidden bg-white border-t border-black/10">
-                    <nav className="flex flex-col gap-4 px-6 py-6 text-sm font-medium text-eco-black">
+                <div className="fixed inset-0 z-50 bg-white flex flex-col">
+                    {/* Top Bar */}
+                    <div className="flex items-center justify-between h-16 px-6 border-b border-black/10">
+                        <Link href="/" onClick={() => setOpen(false)}>
+                            <Image
+                                src="/wordmark_black.svg"
+                                alt="Zerava Logo"
+                                width={100}
+                                height={32}
+                                className="object-contain"
+                            />
+                        </Link>
+
+                        <button onClick={() => setOpen(false)}>
+                            <X size={22} />
+                        </button>
+                    </div>
+
+                    {/* Full Screen Nav */}
+                    <nav className="flex flex-col gap-6 px-6 py-10 text-lg font-medium text-eco-black">
                         {mobileNavItems.map((item) => (
                             <Link
                                 key={item.label}
                                 href={item.href}
                                 onClick={() => setOpen(false)}
-                                className={`transition ${isActive(item.href)
-                                    ? "text-electric-teal"
-                                    : "hover:text-electric-teal"
-                                    }`}
+                                className="transition hover:text-electric-teal"
                             >
                                 {item.label}
                             </Link>

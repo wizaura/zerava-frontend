@@ -9,6 +9,7 @@ import {
     Leaf,
     Clock,
     Check,
+    ArrowRight,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, any> = {
@@ -137,6 +138,18 @@ export default function ServicesList() {
                                         {service.highlightNote}
                                     </div>
                                 )}
+                                <div className="mt-8">
+                                    <a
+                                        href="/booking"
+                                        className="group inline-flex items-center gap-2 text-sm font-semibold text-eco-black transition hover:text-electric-teal"
+                                    >
+                                        Book now
+                                        <ArrowRight
+                                            size={16}
+                                            className="transition-transform duration-300 group-hover:translate-x-1"
+                                        />
+                                    </a>
+                                </div>
                             </div>
                         );
                     })}

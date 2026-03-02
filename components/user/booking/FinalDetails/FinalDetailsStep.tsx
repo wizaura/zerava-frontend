@@ -34,11 +34,6 @@ export default function FinalDetailsStep({
     const addressRef = useRef<HTMLInputElement | null>(null);
     const dispatch = useDispatch();
 
-    useGoogleAutocomplete({
-        inputRef: addressRef,
-        setBookingDraft,
-    });
-
     function isValidUKReg(reg: string) {
         const cleaned = reg.toUpperCase().replace(/\s/g, "");
         return /^[A-Z]{2}[0-9]{2}[A-Z]{3}$/.test(cleaned);

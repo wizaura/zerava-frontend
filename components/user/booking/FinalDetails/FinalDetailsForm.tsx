@@ -15,7 +15,6 @@ type Props = {
 export default function FinalDetailsForm({
     bookingDraft,
     setBookingDraft,
-    addressRef,
     regLoading,
     isValidUKReg,
     lookupVehicle,
@@ -100,23 +99,6 @@ export default function FinalDetailsForm({
                     onChange={(v: string) =>
                         setBookingDraft((d: any) => ({ ...d, model: v }))
                     }
-                />
-            </div>
-
-            {/* Address */}
-            <div className="space-y-2">
-                <label className="text-sm font-medium">Full address</label>
-                <input
-                    ref={addressRef}
-                    value={bookingDraft.address || ""}
-                    onChange={(e) =>
-                        setBookingDraft((d: any) => ({
-                            ...d,
-                            address: e.target.value,
-                        }))
-                    }
-                    className="w-full rounded-xl border px-4 py-3 text-sm"
-                    placeholder="Start typing your address..."
                 />
             </div>
 

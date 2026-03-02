@@ -50,10 +50,10 @@ export default function EnvironmentalImpactSection() {
 
                     <div>
                         <p className="text-5xl font-light">
-                            28 <span className="text-electric-teal text-2xl">days</span>
+                            ~1kg<span className="text-electric-teal text-2xl">CO2</span>
                         </p>
                         <p className="mt-3 text-sm text-gray-400">
-                            breakdown time
+                            Avoided per wash
                         </p>
                     </div>
 
@@ -71,7 +71,10 @@ export default function EnvironmentalImpactSection() {
                             </h3>
 
                             <p className="mt-6 text-gray-400 leading-relaxed">
-                                Our products meet the highest environmental standards. We continuously work to improve our formulations and reduce our impact.
+                                Our products meet the highest environmental standards 
+                                and are manufactured in the UK under ISO 9001:2015 
+                                certified quality management systems. We continuously 
+                                work to improve our formulations and reduce our impact.
                             </p>
                         </div>
 

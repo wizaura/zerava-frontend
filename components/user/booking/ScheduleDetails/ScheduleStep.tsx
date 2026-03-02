@@ -9,6 +9,7 @@ import { ScheduleFooter } from "./ScheduleFooter";
 import { useDispatch, useSelector } from "react-redux";
 import { openLoginModal } from "@/store/slices/authSlice";
 import toast from "react-hot-toast";
+import { useGoogleAutocomplete } from "@/hooks/useGoogleAutocomplete";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d{2}$/;
@@ -53,6 +54,7 @@ export default function ScheduleStep({
     const [error, setError] = useState<string | null>(null);
     const { isAuthenticated } = useSelector((s: any) => s.auth);
     const prevOutwardRef = useRef<string | null>(null);
+    const addressRef = useRef<HTMLInputElement | null>(null);
     const dispatch = useDispatch();
 
     const outwardCode = postcode.toUpperCase().trim().split(" ")[0];
@@ -124,6 +126,14 @@ export default function ScheduleStep({
             setLoading(false);
         }
     }
+
+    useGoogleAutocomplete({
+        inputRef: addressRef,
+        postcode,
+        setPostcode,
+        setBookingDraft,
+        setError,
+    });
 
     useEffect(() => {
         if (bookingDraft.date) {
@@ -315,7 +325,14 @@ export default function ScheduleStep({
 
             <PostcodeSection
                 postcode={postcode}
+                address={bookingDraft.address}
                 setPostcode={setPostcode}
+                setAddress={(value: string) =>
+                    setBookingDraft((d: any) => ({
+                        ...d,
+                        address: value,
+                    }))
+                }
                 loading={loading}
                 error={error}
             />

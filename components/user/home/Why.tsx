@@ -19,7 +19,7 @@ const features = [
     {
         title: "Biodegradable Formulations",
         description:
-            "Formulated with 99.78% biodegradable ingredients, designed to breakdown naturally and reduce environmental impacted without compromising vehicle care standard.",
+            "Formulated with 99.78% biodegradable ingredients, designed to break down naturally and reduce environmental impact without compromising vehicle care standard.",
         icon: Leaf,
     },
     {

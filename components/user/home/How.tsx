@@ -74,6 +74,7 @@ export default function HowItWorks() {
                 <div className="mx-auto mt-14 grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
                     {steps.map((step, i) => {
                         const Icon = step.icon;
+                        const [subheading, ...restPoints] = step.points;
 
                         return (
                             <div
@@ -82,44 +83,44 @@ export default function HowItWorks() {
                                 data-aos-delay={300 + i * 150}
                                 data-aos-duration="900"
                                 data-aos-easing="ease-out-cubic"
-                                className="group relative rounded-xl bg-gray-50 p-4 md:p-8 text-left
-                                    transition-all duration-400 ease-out
-                                    hover:scale-[1.06] hover:-translate-y-1.5 hover:shadow-xl hover:bg-gray-100"
+                                className="group relative flex flex-col justify-between
+        rounded-xl bg-gray-50 p-6 md:p-8 text-left
+        transition-all duration-300 ease-out
+        hover:scale-[1.04] hover:-translate-y-1 hover:shadow-xl hover:bg-gray-100"
                             >
-                                {/* Icon + Number */}
-                                <div className="mb-6 flex items-center gap-3">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-md bg-gray-900 text-white transition group-hover:bg-electric-teal">
-                                        <Icon size={18} />
+                                {/* Top Section */}
+                                <div>
+                                    {/* Icon + Number */}
+                                    <div className="mb-6 flex items-center gap-3">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-gray-900 text-white transition group-hover:bg-electric-teal">
+                                            <Icon size={18} />
+                                        </div>
+
+                                        <span className="text-4xl font-medium text-gray-200">
+                                            {step.number}
+                                        </span>
                                     </div>
 
-                                    <span className="text-4xl font-medium text-gray-200">
-                                        {step.number}
-                                    </span>
+                                    {/* Title */}
+                                    <h3 className="text-lg font-semibold text-gray-900">
+                                        {step.title}
+                                    </h3>
+
+                                    {/* Subheading (first point) */}
+                                    <p className="mt-2 text-sm font-medium text-electric-teal">
+                                        {subheading}
+                                    </p>
+
+                                    {/* Remaining Points */}
+                                    <ul className="mt-4 space-y-3 text-sm text-gray-600">
+                                        {restPoints.map((point, idx) => (
+                                            <li key={idx} className="flex items-start gap-3">
+                                                <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-electric-teal" />
+                                                <span className="leading-relaxed">{point}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
-
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                    {step.title}
-                                </h3>
-
-                                {/* Point-based description */}
-                                <ul className="mt-3 space-y-2 text-md text-gray-600">
-                                    {step.points.map((point, idx) => (
-                                        <li
-                                            key={idx}
-                                            className="flex items-start gap-3"
-                                        >
-                                            {/* Dot */}
-                                            <span
-                                                className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-electric-teal"
-                                            />
-
-                                            {/* Text */}
-                                            <span className="leading-relaxed">
-                                                {point}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
                             </div>
                         );
                     })}

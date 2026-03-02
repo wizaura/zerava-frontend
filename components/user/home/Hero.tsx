@@ -151,7 +151,7 @@ export default function HeroSlideshow() {
                     className="mt-8 flex flex-col items-center gap-4 sm:flex-row"
                 >
                     <Link
-                        href="/"
+                        href="/booking"
                         className="flex items-center gap-2 rounded-full
               bg-electric-teal px-6 py-3
               text-sm font-semibold text-eco-black
@@ -164,7 +164,7 @@ export default function HeroSlideshow() {
                     <div className="relative inline-flex">
                         <div className="absolute inset-0 -z-10 rounded-full bg-black/40 blur-lg" />
                         <Link
-                            href="#services"
+                            href="/services"
                             className="relative z-10 rounded-full
               border border-white/70 px-8 py-3
               text-sm font-semibold text-gray-200

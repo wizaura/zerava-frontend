@@ -22,7 +22,7 @@ const cardsLeft = [
 const cardsRight = [
     {
         title: "Public & Healthcare",
-        desc: "Supporting NHS trusts, councils, and essential services while meeting sustainability targets and simplifying procurement.",
+        desc: "Designed to support public and healthcare organisations with sustainable vehicle care solutions while meeting sustainability targets and simplifying procurement.",
         icon: UserGroupIcon,
     },
     {

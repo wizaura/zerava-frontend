@@ -16,13 +16,13 @@ export default function ServicesAndPricing() {
                 description="From quick exterior refreshes to complete valet packages, every service uses our signature waterless, biodegradable formula — with simple, transparent pricing and no hidden fees."
                 buttons={[
                     {
-                        label: "View Packages",
-                        href: "#pricing",
+                        label: "Book Now",
+                        href: "/booking",
                         variant: "primary",
                     },
                     {
-                        label: "Book Now",
-                        href: "/booking",
+                        label: "View Packages",
+                        href: "/services#pricing",
                         variant: "secondary",
                     },
                 ]}

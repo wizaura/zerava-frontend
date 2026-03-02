@@ -135,7 +135,7 @@ export default function ServiceAndAddOnsStep({
                                 <p className="font-medium text-gray-900">
                                     {c.name}
                                 </p>
-                                <p className="mt-1 text-sm text-gray-500">
+                                <p className="mt-1 text-xs font-semibold text-gray-500">
                                     {c.description}
                                 </p>
                             </button>
