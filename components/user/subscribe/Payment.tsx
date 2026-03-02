@@ -6,7 +6,6 @@ import { useRef, useState } from "react";
 import { SubscriptionsAPI } from "@/lib/user/subscriptions.api";
 import toast from "react-hot-toast";
 import { Leaf } from "lucide-react";
-import { useGoogleAutocomplete } from "@/hooks/useGoogleAutocomplete";
 
 type Props = {
     draft: SubscriptionDraft;
@@ -25,11 +24,6 @@ export default function PaymentStep({
     const elements = useElements();
     const [loading, setLoading] = useState(false);
     const addressRef = useRef<HTMLInputElement | null>(null);
-
-    useGoogleAutocomplete({
-        inputRef: addressRef,
-        setBookingDraft: setDraft,
-    });
 
     function isValidUKReg(reg: string) {
         const cleaned = reg.toUpperCase().replace(/\s/g, "");
