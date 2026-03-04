@@ -2,28 +2,33 @@
 
 import { useRouter, useParams } from "next/navigation";
 import { useState } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
+import api from "@/lib/user/axios";
+import { AlertTriangle, CalendarClock, ArrowLeft } from "lucide-react";
+
+type CancelPreview = {
+    type: "full" | "partial" | "none";
+    paid: number;
+    refund: number;
+    retained: number;
+};
 
 export default function CancelFlowPage() {
     const router = useRouter();
-    const params = useParams();
-    const bookingId = params.id as string;
+    const { bookingId } = useParams<{ bookingId: string }>();
 
     const [step, setStep] = useState<"redirect" | "confirm">("redirect");
     const [loading, setLoading] = useState(false);
-    const [preview, setPreview] = useState<any>(null);
-
-    /* ===============================
-       STEP 1 — PREVIEW CANCELLATION
-    =============================== */
+    const [preview, setPreview] = useState<CancelPreview | null>(null);
 
     async function handleContinue() {
         try {
             setLoading(true);
 
-            const res = await axios.post(
-                `/api/bookings/${bookingId}/cancel-preview`
+            const res = await api.patch(
+                `/bookings/${bookingId}/cancel`,
+                {},
+                { params: { preview: true } }
             );
 
             setPreview(res.data);
@@ -31,128 +36,187 @@ export default function CancelFlowPage() {
 
         } catch (err) {
             console.error(err);
-            toast.error("Unable to process cancellation preview.");
+            toast.error("Unable to calculate cancellation policy.");
         } finally {
             setLoading(false);
         }
     }
-
-    /* ===============================
-       STEP 2 — CONFIRM CANCELLATION
-    =============================== */
 
     async function handleConfirmCancel() {
         try {
             setLoading(true);
 
-            await axios.post(
-                `/api/bookings/${bookingId}/cancel-confirm`
-            );
+            await api.patch(`/bookings/${bookingId}/cancel`);
 
-            toast.success("Booking cancelled successfully.");
+            toast.success("Booking cancelled successfully");
             router.push("/account/bookings");
 
         } catch (err) {
             console.error(err);
-            toast.error("Cancellation failed.");
+            toast.error("Cancellation failed");
         } finally {
             setLoading(false);
         }
     }
 
-    /* ===============================
-       UI
-    =============================== */
+    function formatPrice(amount: number) {
+        return new Intl.NumberFormat("en-GB", {
+            style: "currency",
+            currency: "GBP",
+        }).format(amount / 100);
+    }
 
     return (
-        <div className="max-w-xl mx-auto py-20 px-6">
+        <div className="min-h-screen bg-gray-50 py-16 px-4">
 
-            {/* STEP 1 — REDIRECT SCREEN */}
-            {step === "redirect" && (
-                <div className="text-center space-y-6">
+            <div className="max-w-xl mx-auto">
 
-                    <h1 className="text-2xl font-semibold">
-                        Need to change time instead?
-                    </h1>
+                <button
+                    onClick={() => router.back()}
+                    className="flex items-center gap-2 text-sm text-gray-500 mb-6 hover:text-black"
+                >
+                    <ArrowLeft size={16} />
+                    Back
+                </button>
 
-                    <p className="text-gray-500">
-                        Rescheduling keeps your service secured and may avoid adjustment fees.
-                    </p>
+                <div className="bg-white rounded-3xl shadow-lg p-8">
 
-                    <div className="space-y-3">
-                        <button
-                            onClick={() => router.push(`/account/bookings/${bookingId}/reschedule`)}
-                            className="w-full bg-emerald-600 text-white py-3 rounded-full font-semibold hover:bg-emerald-700 transition"
-                        >
-                            Reschedule Instead
-                        </button>
+                    {/* STEP 1 */}
+                    {step === "redirect" && (
+                        <div className="text-center space-y-6">
 
-                        <button
-                            onClick={handleContinue}
-                            disabled={loading}
-                            className="text-sm text-gray-500 underline"
-                        >
-                            {loading ? "Checking policy..." : "Continue cancellation"}
-                        </button>
-                    </div>
-                </div>
-            )}
+                            <div className="flex justify-center">
+                                <div className="h-14 w-14 rounded-full bg-emerald-100 flex items-center justify-center">
+                                    <CalendarClock className="text-emerald-600" size={24} />
+                                </div>
+                            </div>
 
-            {/* STEP 2 — CONFIRMATION SCREEN */}
-            {step === "confirm" && preview && (
-                <div className="space-y-6">
+                            <h1 className="text-2xl font-semibold">
+                                Need to change time instead?
+                            </h1>
 
-                    <h1 className="text-2xl font-semibold">
-                        Confirm cancellation
-                    </h1>
-
-                    {preview.type === "full" && (
-                        <p className="text-gray-600">
-                            You will receive a full refund of £{preview.refund}.
-                        </p>
-                    )}
-
-                    {preview.type === "partial" && (
-                        <>
-                            <p className="text-gray-600">
-                                This appointment falls within our late change window.
-                                50% of the service fee will be retained.
+                            <p className="text-gray-500">
+                                Rescheduling keeps your service secured and may avoid adjustment fees.
                             </p>
 
-                            <div className="bg-gray-50 rounded-xl p-6 space-y-2">
-                                <p>Paid: £{preview.paid}</p>
-                                <p>Refund: £{preview.refund}</p>
-                                <p>Retained: £{preview.retained}</p>
+                            <div className="space-y-3 pt-4">
+
+                                <button
+                                    onClick={() =>
+                                        router.push(`/account/bookings/${bookingId}/reschedule`)
+                                    }
+                                    className="w-full bg-emerald-600 text-white py-3 rounded-full font-semibold hover:bg-emerald-700 transition"
+                                >
+                                    Reschedule Instead
+                                </button>
+
+                                <button
+                                    onClick={handleContinue}
+                                    disabled={loading}
+                                    className="text-sm text-gray-500 underline"
+                                >
+                                    {loading
+                                        ? "Checking cancellation policy..."
+                                        : "Continue cancellation"}
+                                </button>
+
                             </div>
-                        </>
+                        </div>
                     )}
 
-                    {preview.type === "none" && (
-                        <p className="text-gray-600">
-                            This appointment has already begun. The service fee is non-refundable.
-                        </p>
+                    {/* STEP 2 */}
+                    {step === "confirm" && preview && (
+                        <div className="space-y-6">
+
+                            <h1 className="text-2xl font-semibold text-center">
+                                Confirm cancellation
+                            </h1>
+
+                            {/* FULL REFUND */}
+                            {preview.type === "full" && (
+                                <div className="bg-green-50 border border-green-200 rounded-xl p-5 text-green-800 text-center">
+                                    You will receive a full refund of
+                                    <div className="text-xl font-semibold mt-1">
+                                        {formatPrice(preview.refund)}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* PARTIAL REFUND */}
+                            {preview.type === "partial" && (
+                                <>
+                                    <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-700">
+                                        <AlertTriangle size={18} className="mt-0.5" />
+                                        <p className="text-sm">
+                                            This appointment falls within our late change window.
+                                            50% of the service fee will be retained.
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-gray-50 rounded-xl p-6 space-y-3">
+
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Paid</span>
+                                            <span className="font-medium">
+                                                {formatPrice(preview.paid)}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex justify-between text-green-600">
+                                            <span>Refund</span>
+                                            <span className="font-semibold">
+                                                {formatPrice(preview.refund)}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex justify-between text-red-500">
+                                            <span>Retained</span>
+                                            <span className="font-medium">
+                                                {formatPrice(preview.retained)}
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                </>
+                            )}
+
+                            {/* NO REFUND */}
+                            {preview.type === "none" && (
+                                <div className="bg-red-50 border border-red-200 rounded-xl p-5 text-red-700 text-center">
+                                    This appointment has already begun.
+                                    <br />
+                                    The service fee is non-refundable.
+                                </div>
+                            )}
+
+                            <div className="space-y-3 pt-4">
+
+                                {preview.type !== "none" && (
+                                    <button
+                                        onClick={handleConfirmCancel}
+                                        disabled={loading}
+                                        className="w-full bg-red-600 text-white py-3 rounded-full font-semibold hover:bg-red-700 transition"
+                                    >
+                                        {loading
+                                            ? "Processing cancellation..."
+                                            : "Confirm Cancellation"}
+                                    </button>
+                                )}
+
+                                <button
+                                    onClick={() => setStep("redirect")}
+                                    className="text-sm text-gray-500 underline w-full text-center"
+                                >
+                                    Go Back
+                                </button>
+
+                            </div>
+
+                        </div>
                     )}
 
-                    <div className="space-y-3">
-                        {preview.type !== "none" && (
-                            <button
-                                onClick={handleConfirmCancel}
-                                disabled={loading}
-                                className="w-full bg-red-600 text-white py-3 rounded-full font-semibold hover:bg-red-700 transition"
-                            >
-                                {loading ? "Processing..." : "Confirm Cancellation"}
-                            </button>
-                        )}
-
-                        <button
-                            onClick={() => setStep("redirect")}
-                            className="text-sm text-gray-500 underline"
-                        >
-                            Go Back
-                        </button>
-                    </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 }

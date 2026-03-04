@@ -251,6 +251,8 @@ export default function ScheduleStep({
             setLocking(true);
             setError(null);
 
+            console.log("kkkks", bookingDraft)
+
             const res = await api.post("/booking/lock", {
                 serviceSlotId: bookingDraft.serviceSlotId,
                 templateId: bookingDraft.templateId,

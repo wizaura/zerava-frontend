@@ -4,11 +4,11 @@ import { ArrowRight } from "lucide-react";
 
 export default function OurPromiseSection() {
     return (
-        <section className="bg-white py-20">
-            <div className="mx-auto max-w-6xl px-6 grid gap-14 md:grid-cols-2 md:items-center">
+        <section className="bg-white py-20 overflow-x-hidden">
+            <div className="mx-auto max-w-6xl px-6 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
 
                 {/* Text Content */}
-                <div>
+                <div className="max-w-xl">
                     <p
                         data-aos="fade-right"
                         data-aos-delay="100"
@@ -20,7 +20,7 @@ export default function OurPromiseSection() {
                     <h2
                         data-aos="fade-right"
                         data-aos-delay="200"
-                        className="text-4xl font-normal leading-tight text-eco-black sm:text-5xl"
+                        className="text-4xl sm:text-5xl font-normal leading-tight text-eco-black"
                     >
                         Clean Car,
                         <br />
@@ -36,12 +36,12 @@ export default function OurPromiseSection() {
                     <p
                         data-aos="fade-right"
                         data-aos-delay="400"
-                        className="mt-6 text-md leading-relaxed text-gray-600 sm:text-lg"
+                        className="mt-6 text-base sm:text-lg leading-relaxed text-gray-600"
                     >
-                        Every Zerava service is designed with sustainability at its core. Our waterless 
-                        technology saves over 150 litres of water per wash, while our 99.78% 
-                        readily biodegradable formulations
-                        are designed to break down naturally and minimise environmental impact.
+                        Every Zerava service is designed with sustainability at its core.
+                        Our waterless technology saves over 150 litres of water per wash,
+                        while our 99.78% readily biodegradable formulations are designed
+                        to break down naturally and minimise environmental impact.
                     </p>
 
                     {/* CTA */}
@@ -64,13 +64,14 @@ export default function OurPromiseSection() {
                 <div
                     data-aos="fade-left"
                     data-aos-delay="300"
-                    className="relative"
+                    className="relative w-full"
                 >
-                    <div className="relative h-[420px] w-full overflow-hidden rounded-2xl">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
                         <Image
                             src="/service-2.png"
                             alt="A modern vehicle parked on a calm urban street, reflecting premium care as part of everyday city life"
                             fill
+                            sizes="(max-width: 1024px) 100vw, 50vw"
                             className="object-cover transition-transform duration-700 ease-out hover:scale-[1.05]"
                             priority
                         />

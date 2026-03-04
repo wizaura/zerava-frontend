@@ -30,7 +30,7 @@ export default function UserHeader() {
 
         } finally {
             dispatch(clearAuth());
-            router.replace("/login");
+            router.replace("/");
         }
     };
 

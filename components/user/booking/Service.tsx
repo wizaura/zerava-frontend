@@ -43,7 +43,15 @@ export default function ServiceAndAddOnsStep({
 }: Props) {
 
     const [selectedCategory, setSelectedCategory] =
-        useState<VehicleCategory | null>(null);
+    useState<VehicleCategory | null>(() => {
+        if (!bookingDraft.vehicleCategory) return null;
+
+        const match = services
+            .flatMap((s) => s.prices.map((p) => p.vehicleCategory))
+            .find((c) => c.name === bookingDraft.vehicleCategory);
+
+        return match ?? null;
+    });
 
     const canContinue = Boolean(bookingDraft.servicePriceId);
 

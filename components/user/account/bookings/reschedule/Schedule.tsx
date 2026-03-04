@@ -7,6 +7,8 @@ import api from "@/lib/user/axios";
 import { CheckCircleIcon, ClockIcon } from "@heroicons/react/20/solid";
 import { RescheduleDraft } from "./Main";
 import { Clock } from "lucide-react";
+import { usePostcodeAddressSuggestions } from "@/hooks/useGoogleAutocomplete";
+import { MapPin } from "lucide-react";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d{2}$/;
@@ -111,6 +113,71 @@ export default function ScheduleStep({
 
         return () => clearTimeout(timeout);
     }, [outwardCode]);
+
+    const suggestions = usePostcodeAddressSuggestions(postcode);
+    const [showSuggestions, setShowSuggestions] = useState(true);
+
+    function handleAddressSelect(placeId: string) {
+        const service =
+            new window.google.maps.places.PlacesService(
+                document.createElement("div")
+            );
+
+        service.getDetails(
+            {
+                placeId,
+                fields: ["formatted_address", "address_components"],
+            },
+            (place: any) => {
+                if (!place) return;
+
+                if (place.formatted_address) {
+                    setAddress(place.formatted_address);
+
+                    setDraft((d) => ({
+                        ...d,
+                        address: place.formatted_address,
+                    }));
+                }
+
+                const postcodeComponent =
+                    place.address_components?.find((c: any) =>
+                        c.types.includes("postal_code")
+                    );
+
+                if (postcodeComponent) {
+                    const fullPostcode =
+                        postcodeComponent.long_name.toUpperCase();
+
+                    setPostcode(fullPostcode);
+
+                    setDraft((d) => ({
+                        ...d,
+                        postcode: fullPostcode,
+                    }));
+                }
+
+                setShowSuggestions(false);
+            }
+        );
+    }
+
+    function highlightPostcode(text: string) {
+        const match = text.match(/[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}/i);
+
+        if (!match) return text;
+
+        const postcode = match[0];
+        const parts = text.split(postcode);
+
+        return (
+            <>
+                {parts[0]}
+                <strong className="font-semibold">{postcode}</strong>
+                {parts[1]}
+            </>
+        );
+    }
 
     /* ---------------- AVAILABILITY ---------------- */
 
@@ -285,19 +352,40 @@ export default function ScheduleStep({
 
 
             {/* POSTCODE */}
-            <div className="rounded-2xl border p-6 space-y-4">
+            <div className="rounded-2xl border p-6 space-y-4 relative">
+
                 <label className="text-sm font-medium text-gray-600">
                     Your Postcode
                 </label>
 
                 <input
                     value={postcode}
-                    onChange={(e) =>
-                        setPostcode(e.target.value.toUpperCase())
-                    }
-                    placeholder="SO16"
+                    onChange={(e) => {
+                        setPostcode(e.target.value.toUpperCase());
+                        setShowSuggestions(true);
+                    }}
+                    placeholder="SO16 or SO16 0YS"
                     className="w-full rounded-xl border px-4 py-3 text-sm focus:border-electric-teal focus:outline-none"
                 />
+
+                {/* ADDRESS DROPDOWN */}
+                {showSuggestions && suggestions.length > 0 && (
+                    <div className="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-lg max-h-60 overflow-auto">
+
+                        {suggestions.map((item) => (
+                            <div
+                                key={item.place_id}
+                                onClick={() => handleAddressSelect(item.place_id)}
+                                className="px-4 py-3 text-sm cursor-pointer hover:bg-gray-100 flex items-start gap-2"
+                            >
+                                <MapPin size={14} className="mt-1 text-gray-400" />
+
+                                <span>{highlightPostcode(item.description)}</span>
+                            </div>
+                        ))}
+
+                    </div>
+                )}
 
                 {showPostcodeError && (
                     <p className="mt-2 text-sm text-red-500">
@@ -314,6 +402,7 @@ export default function ScheduleStep({
                 {error && (
                     <p className="text-sm text-red-600">{error}</p>
                 )}
+
             </div>
 
             {/* CALENDAR */}

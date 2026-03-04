@@ -8,33 +8,41 @@ declare global {
     }
 }
 
-export function usePostcodeAddressSuggestions(postcode: string) {
+export function usePostcodeAddressSuggestions(input: string) {
     const [suggestions, setSuggestions] = useState<any[]>([]);
 
     useEffect(() => {
-        if (!window.google || !postcode) {
+        if (!window.google || !input || input.length < 3) {
             setSuggestions([]);
             return;
         }
 
-        const service =
-            new window.google.maps.places.AutocompleteService();
+        const debounce = setTimeout(() => {
 
-        service.getPlacePredictions(
-            {
-                input: postcode,
-                types: ["address"],
-                componentRestrictions: { country: "gb" },
-            },
-            (predictions: any[]) => {
-                if (predictions) {
-                    setSuggestions(predictions);
-                } else {
-                    setSuggestions([]);
+            const service =
+                new window.google.maps.places.AutocompleteService();
+
+            service.getPlacePredictions(
+                {
+                    input,
+                    componentRestrictions: { country: "gb" },
+                },
+                (predictions: any[]) => {
+
+                    if (predictions) {
+                        setSuggestions(predictions.slice(0, 6));
+                    } else {
+                        setSuggestions([]);
+                    }
+
                 }
-            }
-        );
-    }, [postcode]);
+            );
+
+        }, 300);
+
+        return () => clearTimeout(debounce);
+
+    }, [input]);
 
     return suggestions;
 }

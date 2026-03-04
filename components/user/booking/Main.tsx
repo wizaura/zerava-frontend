@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import ServiceStep from "./Service";
-import ConfirmStep from "./Confirm";
 import ProcessingStep from "./Processing";
 import Stepper from "@/components/ui/Stepper";
 import FlowHero from "@/components/ui/FlowHero";
