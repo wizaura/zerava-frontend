@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import BeforeAfterSlider from "../../ui/BeforeAfterSlider";
-import { Droplets, Sparkles, Plus, Shield, Leaf, ArrowRight } from "lucide-react";
+import { Droplets, Sparkles, Plus, Shield, Leaf, ArrowRight, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import api from "@/lib/user/axios";
 
@@ -103,12 +103,12 @@ export default function ServiceHighlights() {
                                 {/* Learn More */}
                                 <Link
                                     href="/services"
-                                    className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-eco-black group-hover:text-electric-teal transition"
+                                    className="mt-6 inline-flex items-center gap-2 rounded-full border border-electric-teal px-4 py-2 text-sm font-medium text-electric-teal transition-all hover:bg-electric-teal hover:text-white"
                                 >
                                     Learn more
                                     <ArrowRight
                                         size={16}
-                                        className="transition group-hover:translate-x-1"
+                                        className="transition-transform duration-300 group-hover:translate-x-1"
                                     />
                                 </Link>
                             </div>
@@ -128,7 +128,7 @@ export default function ServiceHighlights() {
                             Elevate your clean
                         </p>
 
-                        <p className="mt-3 text-sm text-gray-600 leading-relaxed">
+                        <p className="mt-3 text-md text-gray-600 leading-relaxed">
                             Optional enhancements designed to complement your selected
                             service package.
                         </p>
@@ -136,18 +136,21 @@ export default function ServiceHighlights() {
                         {/* Add-on titles */}
                         <ul className="mt-4 space-y-2 text-sm text-gray-700">
                             {addons.slice(0, 4).map((addon) => (
-                                <li key={addon.id}>{addon.name}</li>
+                                <li key={addon.id} className="flex items-center gap-2">
+                                    <Check className="w-4 h-4 text-electric-teal" />
+                                    {addon.name}
+                                </li>
                             ))}
                         </ul>
 
                         <Link
                             href="/services"
-                            className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-eco-black group-hover:text-electric-teal transition"
+                            className="mt-6 inline-flex items-center gap-2 rounded-full border border-electric-teal px-4 py-2 text-sm font-medium text-electric-teal transition-all hover:bg-electric-teal hover:text-white"
                         >
                             Explore add-ons
                             <ArrowRight
                                 size={16}
-                                className="transition group-hover:translate-x-1"
+                                className="transition-transform duration-300 group-hover:translate-x-1"
                             />
                         </Link>
                     </div>

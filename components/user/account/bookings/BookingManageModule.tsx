@@ -22,8 +22,18 @@ export default function BookingManageModal({
             ? getHoursBefore(booking.date, booking.timeFrom)
             : 0;
 
+    const alreadyRescheduled = booking.rescheduleCount > 0;
     const isLockedReschedule = hoursBefore < 12;
+
     const canModify = booking.status === "confirmed";
+
+    const disableReschedule = alreadyRescheduled || isLockedReschedule;
+
+    function getRescheduleLabel() {
+        if (alreadyRescheduled) return "Already Rescheduled";
+        if (isLockedReschedule) return "Reschedule Unavailable (<12h)";
+        return "Reschedule Visit";
+    }
 
     return (
         <div
@@ -85,23 +95,21 @@ export default function BookingManageModal({
                 {canModify && (
                     <div className="border-t px-8 py-6 bg-white space-y-3">
 
-                        {/* PRIMARY BUTTON */}
+                        {/* RESCHEDULE */}
                         <button
-                            disabled={isLockedReschedule}
+                            disabled={disableReschedule}
                             onClick={() =>
                                 router.push(`/account/bookings/${booking.id}/reschedule`)
                             }
-                            className={`w-full rounded-full py-3 font-semibold transition ${isLockedReschedule
+                            className={`w-full rounded-full py-3 font-semibold transition ${disableReschedule
                                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                                     : "bg-emerald-600 text-white hover:bg-emerald-700"
                                 }`}
                         >
-                            {isLockedReschedule
-                                ? "Reschedule Unavailable (<12h)"
-                                : "Reschedule Visit"}
+                            {getRescheduleLabel()}
                         </button>
 
-                        {/* SECONDARY BUTTON */}
+                        {/* CANCEL */}
                         <button
                             onClick={() =>
                                 router.push(`/account/bookings/${booking.id}/cancel`)

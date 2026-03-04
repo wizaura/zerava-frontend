@@ -119,7 +119,7 @@ export default function WhyZerava() {
                                 </h3>
 
                                 {/* Description */}
-                                <p className="mt-3 text-md leading-relaxed text-gray-400">
+                                <p className="mt-3 text-sm md:text-md leading-relaxed text-gray-400">
                                     {item.description}
                                 </p>
                             </div>

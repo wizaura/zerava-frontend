@@ -11,6 +11,7 @@ import {
     Check,
     ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
 
 const ICON_MAP: Record<string, any> = {
     sparkles: Sparkles,
@@ -139,16 +140,16 @@ export default function ServicesList() {
                                     </div>
                                 )}
                                 <div className="mt-8">
-                                    <a
+                                    <Link
                                         href="/booking"
-                                        className="group inline-flex items-center gap-2 text-sm font-semibold text-eco-black transition hover:text-electric-teal"
+                                        className="group inline-flex items-center gap-2 rounded-xl bg-electric-teal px-6 py-3 text-sm font-semibold text-white shadow-md transition-all duration-300 hover:bg-eco-black hover:shadow-lg"
                                     >
                                         Book now
                                         <ArrowRight
                                             size={16}
                                             className="transition-transform duration-300 group-hover:translate-x-1"
                                         />
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         );

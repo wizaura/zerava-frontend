@@ -9,6 +9,7 @@ import { RescheduleDraft } from "./Main";
 import { Clock } from "lucide-react";
 import { usePostcodeAddressSuggestions } from "@/hooks/useGoogleAutocomplete";
 import { MapPin } from "lucide-react";
+import { ServiceAvailabilityBanner } from "./ServiceAvailability";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d{2}$/;
@@ -45,6 +46,7 @@ export default function ScheduleStep({
         draft.date
     );
     const [address, setAddress] = useState(draft.address || "");
+    const [zoneChecked, setZoneChecked] = useState(false);
     const [slots, setSlots] = useState<Slot[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -87,10 +89,12 @@ export default function ScheduleStep({
                     setError("Service not available in this postcode");
                     setServiceDays(null);
                     setSelectedDate(null);
+                    setZoneChecked(true);
                     setSlots([]);
                     return;
                 }
 
+                setZoneChecked(true);
                 setServiceDays(res.data.serviceDays);
 
                 setDraft((d) => ({
@@ -401,6 +405,13 @@ export default function ScheduleStep({
 
                 {error && (
                     <p className="text-sm text-red-600">{error}</p>
+                )}
+
+                {zoneChecked && (
+                    <ServiceAvailabilityBanner
+                        postcode={postcode}
+                        serviceDays={serviceDays}
+                    />
                 )}
 
             </div>

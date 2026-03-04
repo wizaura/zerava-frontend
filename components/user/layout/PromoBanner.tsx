@@ -19,10 +19,8 @@ export default function PromoBanner() {
         async function fetchPromo() {
             try {
                 const res = await api.get("/promo/public");
-                if (res.data) {
-                    setPromo(res.data);
-                }
-            } catch (err) {
+                if (res.data) setPromo(res.data);
+            } catch {
                 console.log("No active promo");
             }
         }
@@ -39,35 +37,52 @@ export default function PromoBanner() {
     };
 
     return (
-        <div className="w-full bg-electric-teal text-eco-black text-sm">
-            <div className="max-w-7xl mx-auto px-6 py-3 relative flex items-center justify-center">
+        <div className="w-full relative">
 
-                <div className="flex items-center gap-3 group">
-                    <Sparkles size={16} className="opacity-80" />
+            {/* gradient glow background */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/30 via-green-400/30 to-teal-400/30 blur-2xl"></div>
 
-                    <span className="text-center">
-                        <strong>{promo.name}</strong> — Get{" "}
-                        <strong>{promo.percentage}% OFF</strong> with code
-                    </span>
+            {/* glass container */}
+            <div className="relative backdrop-blur-md bg-white/20 text-eco-black text-sm">
+                <div className="max-w-7xl mx-auto px-6 py-3 relative flex items-center justify-center">
+
+                    <div className="flex items-center gap-3 group">
+
+                        <Sparkles size={16} className="text-white" />
+
+                        <span className="text-center font-medium text-white">
+                            <strong>{promo.name}</strong> — Get{" "}
+                            <strong className="text-emerald-300">
+                                {promo.percentage}% OFF
+                            </strong>{" "}
+                            with code
+                        </span>
+
+                        <button
+                            onClick={handleCopy}
+                            className="flex items-center gap-2 rounded-lg
+                            bg-gradient-to-r from-emerald-500 to-green-500
+                            text-white px-3 py-1.5 font-semibold
+                            shadow-md transition-all
+                            hover:scale-105 hover:shadow-lg"
+                        >
+                            {promo.code}
+
+                            {copied ? (
+                                <Check size={14} />
+                            ) : (
+                                <Copy size={14} />
+                            )}
+                        </button>
+                    </div>
 
                     <button
-                        onClick={handleCopy}
-                        className="relative flex items-center gap-2 bg-eco-black text-white px-3 py-1 rounded-md font-semibold transition hover:opacity-90"
+                        onClick={() => setVisible(false)}
+                        className="absolute right-6 text-eco-black/70 hover:text-eco-black"
                     >
-                        {promo.code}
-
-                        <span className="opacity-0 group-hover:opacity-100 transition">
-                            {copied ? <Check size={14} /> : <Copy size={14} />}
-                        </span>
+                        ✕
                     </button>
                 </div>
-
-                <button
-                    onClick={() => setVisible(false)}
-                    className="absolute right-6 text-eco-black/70 hover:text-eco-black"
-                >
-                    ✕
-                </button>
             </div>
         </div>
     );

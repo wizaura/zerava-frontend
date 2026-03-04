@@ -15,6 +15,7 @@ export function PostcodeSection({
     const [showSuggestions, setShowSuggestions] = useState(true);
 
     const handleSelect = (placeId: string) => {
+
         const service =
             new window.google.maps.places.PlacesService(
                 document.createElement("div")
@@ -26,20 +27,34 @@ export function PostcodeSection({
                 fields: ["formatted_address", "address_components"],
             },
             (place: any) => {
+
                 if (!place) return;
 
-                if (place.formatted_address) {
-                    setAddress(place.formatted_address);
-                }
+                const components = place.address_components || [];
 
-                // extract postcode
-                const postcodeComponent =
-                    place.address_components?.find((c: any) =>
-                        c.types.includes("postal_code")
-                    );
+                const get = (type: string) =>
+                    components.find((c: any) =>
+                        c.types.includes(type)
+                    )?.long_name || "";
 
-                if (postcodeComponent) {
-                    setPostcode(postcodeComponent.long_name.toUpperCase());
+                const houseNumber = get("street_number");
+                const street = get("route");
+                const city = get("postal_town") || get("locality");
+                const postcodeValue = get("postal_code");
+
+                const fullAddress = [
+                    houseNumber,
+                    street,
+                    city,
+                    postcodeValue,
+                ]
+                    .filter(Boolean)
+                    .join(", ");
+
+                setAddress(fullAddress);
+
+                if (postcodeValue) {
+                    setPostcode(postcodeValue.toUpperCase());
                 }
 
                 setShowSuggestions(false);

@@ -27,16 +27,19 @@ export default function Footer() {
                         </p>
 
                         {/* ECOLOGI BADGE */}
-                        <div className="pt-2">
+                        <div className="pt-2 flex items-center gap-3">
                             <Image
-                                src="/ecologi.png"
+                                src="/ecologi-2.png"
                                 alt="Ecologi Climate Positive"
-                                width={120}
-                                height={50}
-                                className="bg-black"
+                                width={72}
+                                height={36}
+                                className="bg-black h-12 w-auto"
                             />
-                        </div>
 
+                            <p className="text-sm text-text-muted leading-tight">
+                                Supporting climate <br /> projects via Ecologi.
+                            </p>
+                        </div>
                     </div>
 
                     {/* SERVICES */}
@@ -94,11 +97,11 @@ export default function Footer() {
                                 </Link>
                             </li>
 
-                            <li className="hover:text-emerald-500">
+                            {/* <li className="hover:text-emerald-500">
                                 <Link href="/blog">
                                     Blog
                                 </Link>
-                            </li>
+                            </li> */}
 
                             <li className="hover:text-emerald-500">
                                 <Link href="/contact">

@@ -112,11 +112,11 @@ export default function HowItWorks() {
                                     </p>
 
                                     {/* Remaining Points */}
-                                    <ul className="mt-4 space-y-3 text-sm text-gray-600">
+                                    <ul className="mt-4 space-y-3 text-gray-600">
                                         {restPoints.map((point, idx) => (
                                             <li key={idx} className="flex items-start gap-3">
                                                 <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-electric-teal" />
-                                                <span className="leading-relaxed">{point}</span>
+                                                <span className="leading-relaxed text-sm md:text-md">{point}</span>
                                             </li>
                                         ))}
                                     </ul>
