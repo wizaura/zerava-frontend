@@ -29,7 +29,7 @@ export default function Footer() {
                         {/* ECOLOGI BADGE */}
                         <div className="pt-2">
                             <Image
-                                src="/ecologi.jpeg"
+                                src="/ecologi.png"
                                 alt="Ecologi Climate Positive"
                                 width={120}
                                 height={50}

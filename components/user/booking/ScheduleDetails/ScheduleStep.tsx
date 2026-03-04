@@ -253,7 +253,7 @@ export default function ScheduleStep({
 
             console.log("kkkks", bookingDraft)
 
-            const res = await api.post("/booking/lock", {
+            const res = await api.post("/bookings/lock", {
                 serviceSlotId: bookingDraft.serviceSlotId,
                 templateId: bookingDraft.templateId,
                 isTemplate: bookingDraft.isTemplate,

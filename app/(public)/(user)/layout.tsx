@@ -29,7 +29,7 @@ export default function UserLayout({
                 .catch(err => {
                     if (err.response?.status === 401) {
                         dispatch(clearAuth());
-                        router.replace("/login");
+                        router.replace("/");
                     }
                 });
         }
