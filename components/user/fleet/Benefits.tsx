@@ -44,7 +44,7 @@ export default function EmployeeBenefitsSection() {
                         <p
                             data-aos="fade-up"
                             data-aos-delay="400"
-                            className="mb-6 max-w-xl text-base leading-relaxed text-gray-600"
+                            className="mb-6 max-w-xl text-md lg:text-lg leading-relaxed text-gray-600"
                         >
                             Offer on-site car cleaning as a premium employee benefit.
                             Staff can return to a spotless car after work, without

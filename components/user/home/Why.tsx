@@ -77,7 +77,7 @@ export default function WhyZerava() {
                     data-aos="fade-up"
                     data-aos-delay="200"
                     data-aos-duration="900"
-                    className="mx-auto mt-5 max-w-2xl text-base text-text-secondary"
+                    className="mx-auto mt-5 max-w-2xl text-md lg:text-lg text-text-secondary"
                 >
                     Every detail is crafted with sustainability, convenience,
                     and premium vehicle care in mind.
@@ -119,7 +119,7 @@ export default function WhyZerava() {
                                 </h3>
 
                                 {/* Description */}
-                                <p className="mt-3 text-sm md:text-md leading-relaxed text-gray-400">
+                                <p className="mt-3 text-md leading-relaxed text-gray-400">
                                     {item.description}
                                 </p>
                             </div>

@@ -14,13 +14,17 @@ export default function Footer() {
                     <div className="space-y-6">
 
                         {/* Logo */}
-                        <Image
-                            src="/wordmark_white.png"
-                            alt="Zerava"
-                            width={150}
-                            height={40}
-                            priority
-                        />
+                        <Link href="/" className="flex items-center">
+                            <div className="relative h-8 w-[110px] sm:h-9 sm:w-[160px]">
+                                <Image
+                                    src={ "/wordmark_white.png"}
+                                    alt="Zerava Logo"
+                                    fill
+                                    className="object-contain transition duration-300"
+                                    priority
+                                />
+                            </div>
+                        </Link>
 
                         <p className="text-sm text-text-muted max-w-xs">
                             A new era of mobility care. Premium, sustainable, convenient.
@@ -33,7 +37,7 @@ export default function Footer() {
                                 alt="Ecologi Climate Positive"
                                 width={72}
                                 height={36}
-                                className="bg-black h-12 w-auto"
+                                className="bg-black h-12 w-auto rounded-full"
                             />
 
                             <p className="text-sm text-text-muted leading-tight">

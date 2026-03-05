@@ -56,7 +56,7 @@ function Card({
             <h3 className="mb-2 text-lg font-medium text-gray-900">
                 {title}
             </h3>
-            <p className="text-sm leading-relaxed text-gray-600">
+            <p className="text-md leading-relaxed text-gray-600">
                 {desc}
             </p>
         </div>
@@ -82,7 +82,7 @@ export default function WhoWeServeSection() {
                         Fleet solutions that scale with you
                     </h2>
 
-                    <p className="mx-auto mt-4 max-w-2xl text-gray-500">
+                    <p className="mx-auto mt-4 max-w-2xl text-md lg:text-lg text-gray-500">
                         From small teams to enterprise operations, we adapt to your needs.
                         Our flexible service starts from just <strong>3 vehicles</strong> and
                         grows with your business.
@@ -112,7 +112,7 @@ export default function WhoWeServeSection() {
                         <div className="flex items-center justify-center">
                             <div className="relative h-[420px] w-[280px] overflow-hidden rounded-3xl shadow-lg">
                                 <img
-                                    src="/fleet-main.jpeg"
+                                    src="/fleet-stock-11.jpg"
                                     alt="Fleet vehicle"
                                     className="h-full w-full object-cover"
                                 />

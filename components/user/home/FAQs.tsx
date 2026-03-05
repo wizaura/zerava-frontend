@@ -48,7 +48,7 @@ export default function FAQsPreview() {
                         Common questions, answered
                     </h2>
 
-                    <p className="mx-auto mt-4 max-w-2xl text-sm text-gray-600 sm:text-base">
+                    <p className="mx-auto mt-4 max-w-2xl text-md lg:text-lg text-gray-600 sm:text-base">
                         Everything you need to know before booking with Zerava.
                     </p>
                 </div>

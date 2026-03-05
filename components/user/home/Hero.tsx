@@ -5,24 +5,28 @@ import Link from "next/link";
 import { ArrowRight, Leaf } from "lucide-react";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import Image from "next/image";
 
 const slides = [
     {
         pill: "New Era of Mobility Care",
         title: "A New Standard of Vehicle Care",
         highlight: "for Modern Mobility",
+        image: "/hero-stock-1.jpg",
         desc: "Premium, on-site vehicle care — delivered where you're parked. Sustainable by design. Built for modern life.",
     },
     {
         pill: "New Era of Mobility Care",
         title: "Zero Water.",
         highlight: "Maximum Quality",
+        image: "/hero-stock-2.jpg",
         desc: "Professional vehicle care without disrupting your day.",
     },
     {
         pill: "New Era of Mobility Care",
         title: "Journey",
         highlight: "That Matters",
+        image: "/hero-stock-3.jpg",
         desc: "Clean vehicles for life's important moments",
     },
 ];
@@ -53,32 +57,21 @@ export default function HeroSlideshow() {
     }, []);
 
     return (
-        <section className="relative isolate min-h-screen overflow-hidden bg-eco-black">
+        <section className="relative isolate h-[80vh] sm:min-h-screen overflow-hidden bg-eco-black">
 
             {/* 🔥 PREMIUM GRADIENT BACKGROUND */}
-            <div className="absolute inset-0 z-0 overflow-hidden">
-                {/* Base – ECO BLACK */}
-                <div className="absolute inset-0 bg-eco-black" />
-
-                {/* Mobility Green Glow (circles, not flat fill) */}
-                <div className="absolute inset-0 mobility-green-circles" />
-
-                {/* Edge Vignette */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
-
-                {/* Grain */}
-                <div
-                    className="absolute inset-0 opacity-[0.05] mix-blend-overlay"
-                    style={{
-                        backgroundImage:
-                            "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 200 200\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"n\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.9\" numOctaves=\"4\"/%3E%3C/filter%3E%3Crect width=\"100%\" height=\"100%\" filter=\"url(%23n)\"/%3E%3C/svg%3E')",
-                    }}
+            <div>
+                <Image
+                    src={"/hero-stock-1.jpg"}
+                    alt="hero stock"
+                    fill 
+                    className="object-cover"
                 />
             </div>
 
 
             {/* CONTENT */}
-            <div className="relative z-10 m-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-6 text-center">
+            <div className="relative z-10 mx-auto text-center flex min-h-screen max-w-5xl flex-col items-center justify-end px-6">
 
                 {/* Pill */}
                 <div className="relative mb-4 inline-flex">
@@ -109,7 +102,7 @@ export default function HeroSlideshow() {
                         <span
                             data-aos="fade-up"
                             data-aos-delay="100"
-                            className="block pb-2 text-4xl font-light
+                            className="block pb-2 text-4xl font-semibold
                 text-gray-200 sm:text-6xl md:text-7xl
                 drop-shadow-lg"
                         >
@@ -119,7 +112,7 @@ export default function HeroSlideshow() {
                         <span
                             data-aos="fade-up"
                             data-aos-delay="200"
-                            className="block text-4xl font-light
+                            className="block text-4xl font-medium
                 text-electric-teal sm:text-6xl md:text-7xl
                 drop-shadow-lg"
                         >
@@ -137,8 +130,8 @@ export default function HeroSlideshow() {
                     <p
                         data-aos="fade-up"
                         data-aos-delay="300"
-                        className="text-sm sm:text-base leading-relaxed
-              text-gray-300 drop-shadow-md"
+                        className="text-md sm:text-lg leading-relaxed
+              text-white drop-shadow-md"
                     >
                         {slides[active].desc}
                     </p>

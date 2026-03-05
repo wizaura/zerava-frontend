@@ -17,7 +17,7 @@ export default function MissionVisionSection() {
                             </span>
                         </h2>
 
-                        <div className="space-y-4 text-sm leading-relaxed text-text-secondary sm:text-lg">
+                        <div className="space-y-4 text-md lg:text-lg leading-relaxed text-text-secondary sm:text-lg">
                             <p>
                                 To deliver sustainable, convenient vehicle care that fits
                                 seamlessly into modern life — proving that premium quality
@@ -55,7 +55,7 @@ export default function MissionVisionSection() {
                             </span>
                         </h2>
 
-                        <div className="space-y-4 text-sm leading-relaxed text-text-secondary sm:text-lg">
+                        <div className="space-y-4 text-md lg:text-lg leading-relaxed text-text-secondary sm:text-lg">
                             <p>
                                 To build a future-ready mobility care ecosystem — where
                                 sustainability, technology, and premium service work

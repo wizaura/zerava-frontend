@@ -20,7 +20,7 @@ export default function FutureVisionSection() {
                         Where we&apos;re heading
                     </h2>
 
-                    <p className="mx-auto mt-4 max-w-2xl text-sm text-gray-400 md:text-base">
+                    <p className="mx-auto mt-4 max-w-2xl text-md lg:text-lg text-gray-400 md:text-base">
                         Zerava is more than car cleaning. We&apos;re building a
                         complete mobility care ecosystem.
                     </p>
@@ -85,7 +85,7 @@ function FeatureCard({
                 {title}
             </h3>
 
-            <p className="text-sm leading-relaxed text-gray-400">
+            <p className="text-md leading-relaxed text-gray-400">
                 {description}
             </p>
         </div>

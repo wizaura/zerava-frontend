@@ -51,7 +51,7 @@ export default function ServiceHighlights() {
                     <p
                         data-aos="fade-up"
                         data-aos-delay="200"
-                        className="mx-auto mt-5 max-w-2xl text-base text-gray-600"
+                        className="mx-auto mt-5 max-w-2xl text-md lg:text-lg text-gray-600"
                     >
                         Carefully designed services to keep your vehicle clean,
                         protected, and future-ready.

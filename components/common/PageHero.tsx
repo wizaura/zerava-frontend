@@ -61,7 +61,7 @@ export default function PageHero({
                     <p
                         data-aos="fade-up"
                         data-aos-delay="400"
-                        className="mx-auto mt-6 max-w-2xl text-sm text-gray-400 sm:text-base"
+                        className="mx-auto mt-6 max-w-2xl text-md text-gray-400 md:text-lg"
                     >
                         {description}
                     </p>

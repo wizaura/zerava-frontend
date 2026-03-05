@@ -68,7 +68,7 @@ export default function OurPromiseSection() {
                 >
                     <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
                         <Image
-                            src="/service-2.png"
+                            src="/service-stock-1.jpg"
                             alt="A modern vehicle parked on a calm urban street, reflecting premium care as part of everyday city life"
                             fill
                             sizes="(max-width: 1024px) 100vw, 50vw"

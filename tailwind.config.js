@@ -15,6 +15,9 @@ module.exports = {
         "text-primary": "#242424",
         "text-secondary": "#B5B5B5",
         "text-muted": "#8A8A8A",
+        "mint-green": "#98FF98",
+        "lime-green": "#32CD32",
+        "bright-lime": "#C7F014"
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

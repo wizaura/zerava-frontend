@@ -78,7 +78,7 @@ export default function Navbar() {
                 <PromoBanner onVisibilityChange={setHasPromo} />
             </div>
             <header
-                className={`fixed ${hasPromo ? "top-14" : "top-0"} z-50 w-full transition-all duration-300
+                className={`fixed ${hasPromo ? "top-12" : "top-0"} z-50 w-full transition-all duration-300
                     ${isHome
                         ? scrolled
                             ? "bg-white text-eco-black border-b border-black/10"
@@ -90,7 +90,7 @@ export default function Navbar() {
 
                     {/* Logo */}
                     <Link href="/" className="flex items-center">
-                        <div className="relative h-8 w-[120px] sm:h-9 sm:w-[100px]">
+                        <div className="relative h-8 w-[110px] sm:h-9 sm:w-[160px]">
                             <Image
                                 src={
                                     isHome
@@ -101,7 +101,6 @@ export default function Navbar() {
                                 }
                                 alt="Zerava Logo"
                                 fill
-                                sizes="(max-width: 640px) 120px, 140px"
                                 className="object-contain transition duration-300"
                                 priority
                             />
@@ -115,9 +114,9 @@ export default function Navbar() {
                             <Link
                                 key={item.label}
                                 href={item.href}
-                                className={`transition ${isActive(item.href)
+                                className={`transition text-base ${isActive(item.href)
                                     ? "text-electric-teal"
-                                    : "hover:text-electric-teal"
+                                    : "hover:text-electric-teal text-white"
                                     }`}
                             >
                                 {item.label}
@@ -139,7 +138,7 @@ export default function Navbar() {
                                 }, 500);
                             }}
                         >
-                            <button className="flex items-center gap-1 transition hover:text-electric-teal">
+                            <button className="flex items-center gap-1 transition hover:text-electric-teal text-base">
                                 More
                                 <span className="text-xs">▾</span>
                             </button>
@@ -168,7 +167,7 @@ export default function Navbar() {
                         {/* Book Now */}
                         <Link
                             href="/booking"
-                            className="rounded-full bg-electric-teal px-5 py-2 text-sm font-semibold text-eco-black transition hover:brightness-110"
+                            className="rounded-full bg-electric-teal px-5 py-2 text-sm sm:text-base font-semibold text-eco-black transition hover:brightness-110"
                         >
                             Book Now
                         </Link>
@@ -186,7 +185,7 @@ export default function Navbar() {
                                     }`}
                             >
                                 <User size={16} />
-                                <span className="hidden sm:inline">Account</span>
+                                <span className="hidden sm:inline text-base">Account</span>
                             </Link>
                         ) : (
                             <button

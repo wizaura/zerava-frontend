@@ -50,17 +50,17 @@ export default function PromoBanner({ onVisibilityChange }: PromoBannerProps) {
 
     return (
         <div className="w-full relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/30 via-green-400/30 to-teal-400/30 blur-2xl"></div>
+            <div className="absolute inset-0 bg-bright-lime"></div>
 
             <div className="relative backdrop-blur-md bg-white/20 text-eco-black text-sm">
-                <div className="max-w-7xl mx-auto px-6 py-3 relative flex items-center justify-center">
+                <div className="max-w-7xl mx-auto px-6 py-2 relative flex items-center justify-center">
 
                     <div className="flex items-center gap-3 group">
-                        <Sparkles size={16} className="text-white" />
+                        <Sparkles size={16} className="text-text-gray-800" />
 
-                        <span className="text-center font-medium text-white">
-                            <strong>{promo.name}</strong> — Get{" "}
-                            <strong className="text-emerald-300">
+                        <span className="text-center font-semibold text-gray-800">
+                            <strong>{promo.name}</strong> - Get{" "}
+                            <strong className="text-black">
                                 {promo.percentage}% OFF
                             </strong>{" "}
                             with code
@@ -69,8 +69,8 @@ export default function PromoBanner({ onVisibilityChange }: PromoBannerProps) {
                         <button
                             onClick={handleCopy}
                             className="flex items-center gap-2 rounded-lg
-                            bg-gradient-to-r from-emerald-500 to-green-500
-                            text-white px-3 py-1.5 font-semibold
+                            bg-white
+                            text-lime-green px-3 py-1.5 font-semibold
                             shadow-md transition-all
                             hover:scale-105 hover:shadow-lg"
                         >
@@ -81,7 +81,7 @@ export default function PromoBanner({ onVisibilityChange }: PromoBannerProps) {
 
                     <button
                         onClick={() => setVisible(false)}
-                        className="absolute right-6 text-eco-black/70 hover:text-eco-black"
+                        className="absolute right-2 md:right-6 text-eco-black/70 hover:text-eco-black"
                     >
                         ✕
                     </button>

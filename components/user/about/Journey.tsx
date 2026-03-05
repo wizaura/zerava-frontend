@@ -2,7 +2,7 @@ import { Check, ArrowRight } from "lucide-react";
 
 export default function JourneySection() {
     const journey = [
-        { year: "2025", title: "Zerava founded in Southampton", status: "done" },
+        { year: "2025", title: "Zerava founded", status: "done" },
         { year: "2025", title: "Early customers served", status: "done" },
         { year: "2026", title: "Fleet care launched", status: "done" },
         { year: "Future", title: "Expanding across the UK", status: "future" },
@@ -50,7 +50,7 @@ export default function JourneySection() {
                                 {/* Node */}
                                 <div className="relative z-10 flex h-10 w-10 items-start justify-center">
                                     {item.status === "done" ? (
-                                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-mobility-green">
+                                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-electric-teal">
                                             <Check className="h-4 w-4 text-white" />
                                         </span>
                                     ) : (

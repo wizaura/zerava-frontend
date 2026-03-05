@@ -51,7 +51,7 @@ export default function FleetPreview() {
 
                         <p
                             data-aos="fade-up"
-                            className="mt-5 max-w-xl text-sm text-gray-600 sm:text-lg"
+                            className="mt-5 max-w-xl text-md lg:text-lg text-gray-600 sm:text-lg"
                         >
                             Keep your fleet spotless while meeting sustainability goals.
                             Designed for organisations managing vehicles at scale.
@@ -108,7 +108,7 @@ export default function FleetPreview() {
                                         {item.title}
                                     </h3>
 
-                                    <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                                    <p className="mt-2 text-md leading-relaxed text-gray-600">
                                         {item.description}
                                     </p>
                                 </div>

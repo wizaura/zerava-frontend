@@ -37,7 +37,7 @@ export function ValuesSection() {
                             Sustainability First
                         </h3>
 
-                        <p className="mt-4 text-sm leading-relaxed text-gray-600">
+                        <p className="mt-4 text-md leading-relaxed text-gray-600">
                             Every decision we make considers environmental impact. From our
                             formulas to our operations, we prioritise the planet.
                         </p>
@@ -57,7 +57,7 @@ export function ValuesSection() {
                             Convenience Redefined
                         </h3>
 
-                        <p className="mt-4 text-sm leading-relaxed text-gray-600">
+                        <p className="mt-4 text-md leading-relaxed text-gray-600">
                             We believe premium vehicle care should fit effortlessly into
                             daily life. We come to you, wherever you are.
                         </p>
@@ -77,7 +77,7 @@ export function ValuesSection() {
                             Quality Without Compromise
                         </h3>
 
-                        <p className="mt-4 text-sm leading-relaxed text-gray-600">
+                        <p className="mt-4 text-md leading-relaxed text-gray-600">
                             Eco-friendly doesn’t mean inferior. Our results match or
                             exceed traditional methods.
                         </p>

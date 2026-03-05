@@ -63,7 +63,7 @@ export default function HowItWorks() {
                     data-aos="fade-up"
                     data-aos-delay="200"
                     data-aos-duration="900"
-                    className="mx-auto mt-4 max-w-2xl text-sm text-gray-600 sm:text-base"
+                    className="mx-auto mt-4 max-w-2xl text-md lg:text-lg text-gray-600 sm:text-base"
                 >
                     Premium vehicle care that comes to you — delivered on-site
                     with precision and care, using a waterless process and
@@ -115,8 +115,8 @@ export default function HowItWorks() {
                                     <ul className="mt-4 space-y-3 text-gray-600">
                                         {restPoints.map((point, idx) => (
                                             <li key={idx} className="flex items-start gap-3">
-                                                <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-electric-teal" />
-                                                <span className="leading-relaxed text-sm md:text-md">{point}</span>
+                                                <span className="mt-2.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-electric-teal" />
+                                                <span className="leading-relaxed text-md">{point}</span>
                                             </li>
                                         ))}
                                     </ul>
