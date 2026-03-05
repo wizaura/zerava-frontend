@@ -17,6 +17,7 @@ import {
     Ban,
     UserCog,
     Package,
+    Settings,
 } from "lucide-react";
 import adminApi from "@/lib/admin/axios";
 import { useDispatch } from "react-redux";
@@ -33,6 +34,7 @@ const tabs = [
     { label: "Customers", href: "/admin/customers", icon: Users },
     { label: "Block Slots", href: "/admin/block-slots", icon: Ban },
     { label: "Operator Slots", href: "/admin/slots", icon: UserCog },
+    { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export default function AdminHeader() {

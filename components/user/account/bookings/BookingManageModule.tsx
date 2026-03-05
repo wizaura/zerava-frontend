@@ -1,6 +1,7 @@
 "use client";
 
-import { X, MapPin, ShieldCheck, Car, User } from "lucide-react";
+import api from "@/lib/user/axios";
+import { X, MapPin, ShieldCheck, Car, User, CreditCard } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function BookingManageModal({
@@ -17,6 +18,20 @@ export default function BookingManageModal({
         return (slotStart.getTime() - Date.now()) / (1000 * 60 * 60);
     }
 
+    async function goToStripe() {
+        try {
+            const session = await api.post("/payments/create-session", {
+                bookingId: booking.id,
+            });
+
+            window.location.href = session.data.url;
+        } catch (err) {
+            console.error("Stripe payment error", err);
+        }
+    }
+
+    const paymentPending = booking.status === "pending";
+
     const hoursBefore =
         booking.status === "confirmed"
             ? getHoursBefore(booking.date, booking.timeFrom)
@@ -29,12 +44,15 @@ export default function BookingManageModal({
 
     const disableReschedule = alreadyRescheduled || isLockedReschedule;
 
+    const isWithin24Hours = hoursBefore < 24 && hoursBefore >= 12;
+
     function getRescheduleLabel() {
         if (alreadyRescheduled) return "Already Rescheduled";
         if (isLockedReschedule) return "Reschedule Unavailable (<12h)";
+        if (isWithin24Hours) return "Reschedule Visit (€5)";
         return "Reschedule Visit";
     }
-
+    
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
@@ -91,6 +109,19 @@ export default function BookingManageModal({
                     </Section>
                 </div>
 
+                {paymentPending && (
+                    <div className="border-t px-8 py-6 bg-white space-y-3">
+                        <button
+                            onClick={goToStripe}
+                            className="w-full rounded-full py-3 font-semibold bg-electric-teal text-eco-black hover:brightness-110 transition flex items-center justify-center gap-2"
+                        >
+                            <CreditCard size={16} />
+                            Complete Payment
+                        </button>
+                    </div>
+                )}
+
+
                 {/* FOOTER */}
                 {canModify && (
                     <div className="border-t px-8 py-6 bg-white space-y-3">
@@ -102,8 +133,8 @@ export default function BookingManageModal({
                                 router.push(`/account/bookings/${booking.id}/reschedule`)
                             }
                             className={`w-full rounded-full py-3 font-semibold transition ${disableReschedule
-                                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                                    : "bg-emerald-600 text-white hover:bg-emerald-700"
+                                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                : "bg-emerald-600 text-white hover:bg-emerald-700"
                                 }`}
                         >
                             {getRescheduleLabel()}

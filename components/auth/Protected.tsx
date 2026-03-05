@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -14,21 +14,25 @@ export default function Protected({
     const { isAuthenticated, bootstrapped, role } = useSelector((s: any) => s.auth);
     const router = useRouter();
 
-    console.log(role,'roler');
-
     useEffect(() => {
         if (!bootstrapped) return;
 
+        // Not logged in
         if (!isAuthenticated) {
             router.replace("/");
             return;
         }
 
+        // Wait until role is available
+        if (!role) return;
+
+        // Role mismatch
         if (requiredRole && role !== requiredRole) {
             router.replace("/");
         }
     }, [bootstrapped, isAuthenticated, role, requiredRole, router]);
 
+    // Don't render until auth state is ready
     if (!bootstrapped) return null;
 
     return <>{children}</>;

@@ -10,7 +10,11 @@ type Promo = {
     code: string;
 };
 
-export default function PromoBanner() {
+type PromoBannerProps = {
+    onVisibilityChange?: (visible: boolean) => void;
+};
+
+export default function PromoBanner({ onVisibilityChange }: PromoBannerProps) {
     const [promo, setPromo] = useState<Promo | null>(null);
     const [visible, setVisible] = useState(true);
     const [copied, setCopied] = useState(false);
@@ -19,7 +23,9 @@ export default function PromoBanner() {
         async function fetchPromo() {
             try {
                 const res = await api.get("/promo/public");
-                if (res.data) setPromo(res.data);
+                if (res.data) {
+                    setPromo(res.data);
+                }
             } catch {
                 console.log("No active promo");
             }
@@ -27,6 +33,12 @@ export default function PromoBanner() {
 
         fetchPromo();
     }, []);
+
+    // ✅ Notify Navbar AFTER render
+    useEffect(() => {
+        const isVisible = !!promo && visible;
+        onVisibilityChange?.(isVisible);
+    }, [promo, visible, onVisibilityChange]);
 
     if (!promo || !visible) return null;
 
@@ -38,16 +50,12 @@ export default function PromoBanner() {
 
     return (
         <div className="w-full relative">
-
-            {/* gradient glow background */}
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/30 via-green-400/30 to-teal-400/30 blur-2xl"></div>
 
-            {/* glass container */}
             <div className="relative backdrop-blur-md bg-white/20 text-eco-black text-sm">
                 <div className="max-w-7xl mx-auto px-6 py-3 relative flex items-center justify-center">
 
                     <div className="flex items-center gap-3 group">
-
                         <Sparkles size={16} className="text-white" />
 
                         <span className="text-center font-medium text-white">
@@ -67,12 +75,7 @@ export default function PromoBanner() {
                             hover:scale-105 hover:shadow-lg"
                         >
                             {promo.code}
-
-                            {copied ? (
-                                <Check size={14} />
-                            ) : (
-                                <Copy size={14} />
-                            )}
+                            {copied ? <Check size={14} /> : <Copy size={14} />}
                         </button>
                     </div>
 

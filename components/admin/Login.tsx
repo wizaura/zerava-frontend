@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { adminRequestOtp, adminVerifyOtp } from "@/lib/admin/admin.api";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/store/slices/authSlice";
 
 export default function AdminLoginPage() {
     const router = useRouter();
@@ -13,6 +16,8 @@ export default function AdminLoginPage() {
     const [timeLeft, setTimeLeft] = useState(0);
     const [canResend, setCanResend] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const dispatch = useDispatch();
 
     /* ---------------- STEP 1: SEND OTP ---------------- */
 
@@ -42,13 +47,15 @@ export default function AdminLoginPage() {
         setLoading(true);
 
         try {
-            await adminVerifyOtp(email, otp);
+            const res = await adminVerifyOtp(email, otp);
+
+            dispatch(setUser(res.data.user));
 
             router.push("/admin");
 
         } catch (error: any) {
             console.error(error);
-            // toast.error("Invalid OTP");
+            toast.error("Invalid OTP");
         } finally {
             setLoading(false);
         }

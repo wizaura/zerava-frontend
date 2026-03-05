@@ -41,13 +41,16 @@ const mobileNavItems = [
 export default function Navbar() {
     const [open, setOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
-    const { isAuthenticated } = useSelector((s: any) => s.auth);
+    const { isAuthenticated, role } = useSelector((s: any) => s.auth);
     const [openDropdown, setOpenDropdown] = useState(false);
     const pathname = usePathname();
     const dropdownTimeout = useRef<NodeJS.Timeout | null>(null);
+    const [hasPromo, setHasPromo] = useState(false);
     const dispatch = useDispatch();
 
     const isHome = pathname === "/";
+
+    console.log(role,'gga',isAuthenticated)
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 20);
@@ -71,13 +74,13 @@ export default function Navbar() {
     }, [open]);
 
     return (
-        <div className="mb-8">
+        <div className={`${isHome ? "" : hasPromo ? "mb-12" : ""}`}>
             <div className="fixed top-0 left-0 w-full z-50">
-                <PromoBanner />
+                <PromoBanner onVisibilityChange={setHasPromo} />
             </div>
             <header
-                className={`fixed top-14 z-50 w-full transition-all duration-300
-    ${isHome
+                className={`fixed ${hasPromo ? "top-14" : "top-0"} z-50 w-full transition-all duration-300
+                    ${isHome
                         ? scrolled
                             ? "bg-white text-eco-black border-b border-black/10"
                             : "bg-transparent text-gray-300"
@@ -172,7 +175,7 @@ export default function Navbar() {
                         </Link>
 
                         {/* Account */}
-                        {isAuthenticated ? (
+                        {isAuthenticated && role === "USER" ? (
                             <Link
                                 href="/account"
                                 className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
@@ -246,6 +249,27 @@ export default function Navbar() {
                                     {item.label}
                                 </Link>
                             ))}
+                            {isAuthenticated && role === "USER" ? (
+                                <Link
+                                    href="/account"
+                                    onClick={() => setOpen(false)}
+                                    className="mt-4 rounded-xl border border-black/10 px-4 py-3 flex items-center gap-2"
+                                >
+                                    <User size={18} />
+                                    Account
+                                </Link>
+                            ) : (
+                                <button
+                                    onClick={() => {
+                                        dispatch(openLoginModal());
+                                        setOpen(false);
+                                    }}
+                                    className="mt-4 rounded-xl border border-black/10 px-4 py-3 flex items-center gap-2"
+                                >
+                                    <User size={18} />
+                                    Login
+                                </button>
+                            )}
                         </nav>
                     </div>
                 )}

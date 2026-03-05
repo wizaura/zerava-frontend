@@ -5,7 +5,6 @@ import { createGalleryItem, GalleryItem } from "@/lib/admin/gallery.api";
 import UploadBox from "@/components/ui/UploadBox";
 import TextInput from "@/components/ui/TextInput";
 import TextArea from "@/components/ui/TextArea";
-import SelectInput from "@/components/ui/SelectInput";
 import toast from "react-hot-toast";
 import { getApiError } from "@/lib/utils";
 import ImageCropModal from "@/components/ui/ImageCropModal";
@@ -157,8 +156,8 @@ export default function GalleryAdd({ onSuccess, onCancel }: Props) {
                     </label>
                     <UploadBox
                         label="Click to upload"
-                        onChange={(e) => handleFileSelect(e, "after")}
-                        preview={afterPreview}
+                        onChange={(e) => handleFileSelect(e, "before")}
+                        preview={beforePreview}
                     />
                 </div>
 
@@ -168,8 +167,8 @@ export default function GalleryAdd({ onSuccess, onCancel }: Props) {
                     </label>
                     <UploadBox
                         label="Click to upload"
-                        onChange={(e) => handleFileSelect(e, "before")}
-                        preview={beforePreview}
+                        onChange={(e) => handleFileSelect(e, "after")}
+                        preview={afterPreview}
                     />
                 </div>
             </div>
@@ -183,15 +182,12 @@ export default function GalleryAdd({ onSuccess, onCancel }: Props) {
                     onChange={(e) => setTitle(e.target.value)}
                 />
 
-                <SelectInput
+                <TextInput
                     label="Service Type"
+                    placeholder="e.g. Exterior, Interior, Full Detail"
                     value={serviceType}
                     onChange={(e) => setServiceType(e.target.value)}
-                >
-                    <option>Exterior</option>
-                    <option>Interior</option>
-                    <option>Full</option>
-                </SelectInput>
+                />
             </div>
 
             {/* VEHICLE TYPE */}

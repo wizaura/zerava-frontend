@@ -10,6 +10,7 @@ import FinalDetailsForm from "./FinalDetailsForm";
 import BookingSummary from "./BookingSummary";
 import { openLoginModal } from "@/store/slices/authSlice";
 import { useDispatch } from "react-redux";
+import { getApiError } from "@/lib/utils";
 
 type Props = {
     bookingDraft: any;
@@ -116,8 +117,8 @@ export default function FinalDetailsStep({
             window.location.href = session.data.url;
             onSuccess();
 
-        } catch {
-            toast.error("Something went wrong");
+        } catch (err: any) {
+            toast.error(getApiError(err));
         } finally {
             setLoading(false);
         }
