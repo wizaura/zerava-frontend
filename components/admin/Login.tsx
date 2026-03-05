@@ -49,7 +49,7 @@ export default function AdminLoginPage() {
         try {
             const res = await adminVerifyOtp(email, otp);
 
-            dispatch(setUser(res.data.user));
+            dispatch(setUser(res.data.admin));
 
             router.push("/admin");
 
