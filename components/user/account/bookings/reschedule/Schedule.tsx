@@ -50,6 +50,8 @@ export default function ScheduleStep({
     const [slots, setSlots] = useState<Slot[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [houseNumber, setHouseNumber] = useState("");
+    const [baseAddress, setBaseAddress] = useState("");
     const oldSchedule = useRef<{
         date: string | null;
         timeFrom: string | null;
@@ -121,7 +123,8 @@ export default function ScheduleStep({
     const suggestions = usePostcodeAddressSuggestions(postcode);
     const [showSuggestions, setShowSuggestions] = useState(true);
 
-    function handleAddressSelect(placeId: string) {
+    const handleSelect = (placeId: string) => {
+
         const service =
             new window.google.maps.places.PlacesService(
                 document.createElement("div")
@@ -133,38 +136,48 @@ export default function ScheduleStep({
                 fields: ["formatted_address", "address_components"],
             },
             (place: any) => {
+
                 if (!place) return;
 
-                if (place.formatted_address) {
-                    setAddress(place.formatted_address);
+                const components = place.address_components || [];
 
-                    setDraft((d) => ({
-                        ...d,
-                        address: place.formatted_address,
-                    }));
-                }
+                const get = (type: string) =>
+                    components.find((c: any) =>
+                        c.types.includes(type)
+                    )?.long_name || "";
 
-                const postcodeComponent =
-                    place.address_components?.find((c: any) =>
-                        c.types.includes("postal_code")
-                    );
+                const street = get("route");
+                const city = get("postal_town") || get("locality");
+                const postcodeValue = get("postal_code");
 
-                if (postcodeComponent) {
-                    const fullPostcode =
-                        postcodeComponent.long_name.toUpperCase();
+                const addressWithoutHouse = [
+                    street,
+                    city,
+                    postcodeValue,
+                ]
+                    .filter(Boolean)
+                    .join(", ");
 
-                    setPostcode(fullPostcode);
+                setBaseAddress(addressWithoutHouse);
 
-                    setDraft((d) => ({
-                        ...d,
-                        postcode: fullPostcode,
-                    }));
+                if (postcodeValue) {
+                    setPostcode(postcodeValue.toUpperCase());
                 }
 
                 setShowSuggestions(false);
             }
         );
-    }
+    };
+
+    // Build full address whenever house number changes
+    useEffect(() => {
+        const fullAddress = [
+            houseNumber,
+            baseAddress
+        ].filter(Boolean).join(" ");
+
+        setAddress(fullAddress);
+    }, [houseNumber, baseAddress]);
 
     function highlightPostcode(text: string) {
         const match = text.match(/[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}/i);
@@ -358,38 +371,80 @@ export default function ScheduleStep({
             {/* POSTCODE */}
             <div className="rounded-2xl border p-6 space-y-4 relative">
 
-                <label className="text-sm font-medium text-gray-600">
-                    Your Postcode
-                </label>
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="space-y-2 w-full">
+                        <label className="text-sm font-medium text-gray-600">
+                            Your Postcode
+                        </label>
 
-                <input
-                    value={postcode}
-                    onChange={(e) => {
-                        setPostcode(e.target.value.toUpperCase());
-                        setShowSuggestions(true);
-                    }}
-                    placeholder="SO16 or SO16 0YS"
-                    className="w-full rounded-xl border px-4 py-3 text-sm focus:border-electric-teal focus:outline-none"
-                />
+                        <input
+                            value={postcode}
+                            onChange={(e) => {
+                                setPostcode(e.target.value.toUpperCase());
+                                setShowSuggestions(true);
+                            }}
+                            placeholder="SO16 or SO16 0YS"
+                            className="w-full rounded-xl border px-4 py-3 text-sm focus:border-electric-teal focus:outline-none"
+                        />
 
-                {/* ADDRESS DROPDOWN */}
-                {showSuggestions && suggestions.length > 0 && (
-                    <div className="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-lg max-h-60 overflow-auto">
 
-                        {suggestions.map((item) => (
-                            <div
-                                key={item.place_id}
-                                onClick={() => handleAddressSelect(item.place_id)}
-                                className="px-4 py-3 text-sm cursor-pointer hover:bg-gray-100 flex items-start gap-2"
-                            >
-                                <MapPin size={14} className="mt-1 text-gray-400" />
+                        {/* ADDRESS DROPDOWN */}
+                        {showSuggestions && suggestions.length > 0 && (
+                            <div className="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-lg max-h-60 overflow-auto">
 
-                                <span>{highlightPostcode(item.description)}</span>
+                                {suggestions.map((item) => (
+                                    <div
+                                        key={item.place_id}
+                                        onClick={() => handleSelect(item.place_id)}
+                                        className="px-4 py-3 text-sm cursor-pointer hover:bg-gray-100 flex items-start gap-2"
+                                    >
+                                        <MapPin size={14} className="mt-1 text-gray-400" />
+
+                                        <span>{highlightPostcode(item.description)}</span>
+                                    </div>
+                                ))}
+
                             </div>
-                        ))}
+                        )}
+                    </div>
+
+                    {/* HOUSE NUMBER */}
+                    <div className="space-y-2">
+
+                        <label className="text-sm font-medium text-gray-600">
+                            House / Flat Number
+                        </label>
+
+                        <input
+                            value={houseNumber}
+                            onChange={(e) => setHouseNumber(e.target.value)}
+                            placeholder="e.g. 221B"
+                            className="w-full rounded-xl border px-4 py-3 text-sm focus:border-electric-teal focus:outline-none"
+                        />
 
                     </div>
-                )}
+                </div>
+
+                {/* ADDRESS */}
+                <div className="space-y-3">
+                    <label className="text-sm font-medium text-gray-600">
+                        Service Address
+                    </label>
+
+                    <input
+                        value={address}
+                        onChange={(e) => {
+                            setAddress(e.target.value);
+                            setDraft((d) => ({ ...d, address: e.target.value }));
+                        }}
+                        placeholder="Enter service address"
+                        className="w-full rounded-xl border px-4 py-3 text-sm focus:border-electric-teal focus:outline-none"
+                    />
+
+                    <p className="text-xs text-gray-400">
+                        You can update the address if needed.
+                    </p>
+                </div>
 
                 {showPostcodeError && (
                     <p className="mt-2 text-sm text-red-500">
@@ -530,27 +585,6 @@ export default function ScheduleStep({
                     )}
                 </div>
             )}
-            {/* ADDRESS */}
-            <div className="rounded-2xl border p-6 space-y-3">
-                <label className="text-sm font-medium text-gray-600">
-                    Service Address
-                </label>
-
-                <input
-                    value={address}
-                    onChange={(e) => {
-                        setAddress(e.target.value);
-                        setDraft((d) => ({ ...d, address: e.target.value }));
-                    }}
-                    placeholder="Enter service address"
-                    className="w-full rounded-xl border px-4 py-3 text-sm focus:border-electric-teal focus:outline-none"
-                />
-
-                <p className="text-xs text-gray-400">
-                    You can update the address if needed.
-                </p>
-            </div>
-
 
             {/* CONTINUE */}
             <div className="flex justify-end">

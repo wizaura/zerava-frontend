@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import api from "@/lib/user/axios";
 import { AlertTriangle, CalendarClock, ArrowLeft } from "lucide-react";
@@ -18,6 +18,7 @@ export default function CancelFlowPage() {
     const { bookingId } = useParams<{ bookingId: string }>();
 
     const [step, setStep] = useState<"redirect" | "confirm">("redirect");
+    const [alreadyRescheduled, setAlreadyRescheduled] = useState(false);
     const [loading, setLoading] = useState(false);
     const [preview, setPreview] = useState<CancelPreview | null>(null);
 
@@ -41,6 +42,19 @@ export default function CancelFlowPage() {
             setLoading(false);
         }
     }
+
+    useEffect(() => {
+        async function loadBooking() {
+            try {
+                const res = await api.get(`/bookings/${bookingId}`);
+                setAlreadyRescheduled(res.data.rescheduleCount > 0);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        if (bookingId) loadBooking();
+    }, [bookingId]);
 
     async function handleConfirmCancel() {
         try {
@@ -102,12 +116,17 @@ export default function CancelFlowPage() {
                             <div className="space-y-3 pt-4">
 
                                 <button
+                                    disabled={alreadyRescheduled}
                                     onClick={() =>
                                         router.push(`/account/bookings/${bookingId}/reschedule`)
                                     }
-                                    className="w-full bg-emerald-600 text-white py-3 rounded-full font-semibold hover:bg-emerald-700 transition"
+                                    className={`w-full py-3 rounded-full font-semibold transition
+        ${alreadyRescheduled
+                                            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                            : "bg-emerald-600 text-white hover:bg-emerald-700"
+                                        }`}
                                 >
-                                    Reschedule Instead
+                                    {alreadyRescheduled ? "Already Rescheduled" : "Reschedule Instead"}
                                 </button>
 
                                 <button

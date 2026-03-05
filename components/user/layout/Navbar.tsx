@@ -50,7 +50,6 @@ export default function Navbar() {
 
     const isHome = pathname === "/";
 
-    console.log(role,'gga',isAuthenticated)
 
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 20);
@@ -175,7 +174,7 @@ export default function Navbar() {
                         </Link>
 
                         {/* Account */}
-                        {isAuthenticated && role === "USER" ? (
+                        {isAuthenticated ? (
                             <Link
                                 href="/account"
                                 className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
@@ -249,7 +248,7 @@ export default function Navbar() {
                                     {item.label}
                                 </Link>
                             ))}
-                            {isAuthenticated && role === "USER" ? (
+                            {isAuthenticated ? (
                                 <Link
                                     href="/account"
                                     onClick={() => setOpen(false)}
