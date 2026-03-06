@@ -125,7 +125,7 @@ export default function FinalDetailsStep({
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-10">
+        <div className="max-w-4xl mx-auto space-y-10 overflow-hidden">
             <h2 className="text-2xl font-medium text-gray-900">
                 Final details
             </h2>

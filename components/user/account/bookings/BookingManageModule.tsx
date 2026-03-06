@@ -52,7 +52,7 @@ export default function BookingManageModal({
         if (isWithin24Hours) return "Reschedule Visit (€5)";
         return "Reschedule Visit";
     }
-    
+
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
@@ -84,6 +84,7 @@ export default function BookingManageModal({
 
                 {/* BODY */}
                 <div className="flex-1 overflow-y-auto px-8 py-6 space-y-6">
+
                     <Section label="Schedule">
                         {formatDateTime(booking.date, booking.timeFrom, booking.timeTo)}
                     </Section>
@@ -105,8 +106,62 @@ export default function BookingManageModal({
                     )}
 
                     <Section label="Status">
-                        <span className="capitalize font-medium">{booking.status}</span>
+                        <span className="capitalize font-medium">
+                            {booking.status.replace("_", " ").toLowerCase()}
+                        </span>
                     </Section>
+
+                    {/* ADD ONS */}
+                    {booking.addOns?.length > 0 && (
+                        <Section label="Add-ons">
+                            <div className="space-y-2">
+                                {booking.addOns.map((addon: any) => (
+                                    <div
+                                        key={addon.id}
+                                        className="flex justify-between text-sm"
+                                    >
+                                        <span>{addon.name}</span>
+                                        <span className="font-medium">
+                                            £{(addon.price / 100).toFixed(2)}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </Section>
+                    )}
+
+                    {/* PAYMENT SUMMARY */}
+                    <Section label="Payment Summary">
+                        <div className="space-y-2 text-sm">
+
+                            <div className="flex justify-between">
+                                <span>Service</span>
+                                <span>£{(booking.servicePrice / 100).toFixed(2)}</span>
+                            </div>
+
+                            {booking.addOns?.length > 0 && (
+                                <div className="flex justify-between">
+                                    <span>Add-ons</span>
+                                    <span>
+                                        £
+                                        {(
+                                            booking.addOns.reduce(
+                                                (sum: number, a: any) => sum + a.price,
+                                                0
+                                            ) / 100
+                                        ).toFixed(2)}
+                                    </span>
+                                </div>
+                            )}
+
+                            <div className="border-t pt-2 flex justify-between font-semibold">
+                                <span>Total</span>
+                                <span>£{(booking.price / 100).toFixed(2)}</span>
+                            </div>
+
+                        </div>
+                    </Section>
+
                 </div>
 
                 {paymentPending && (
@@ -167,7 +222,10 @@ function Section({ label, children, icon }: any) {
                 {icon}
                 {label}
             </p>
-            <p className="font-medium text-gray-800">{children}</p>
+
+            <div className="font-medium text-gray-800">
+                {children}
+            </div>
         </div>
     );
 }

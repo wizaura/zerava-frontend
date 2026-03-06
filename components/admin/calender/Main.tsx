@@ -29,6 +29,7 @@ const STATUS_COLORS: Record<BookingStatus, string> = {
     PENDING_PAYMENT: "#facc15",   // yellow
     COMPLETED: "#3b82f6", // blue
     CANCELLED: "#ef4444", // red
+    NO_SHOW: "#363636"
 };
 
 export default function AdminCalendarPage() {
@@ -90,6 +91,7 @@ export default function AdminCalendarPage() {
                 <Legend color={STATUS_COLORS.PENDING_PAYMENT} label="Pending" />
                 <Legend color={STATUS_COLORS.COMPLETED} label="Completed" />
                 <Legend color={STATUS_COLORS.CANCELLED} label="Cancelled" />
+                <Legend color={STATUS_COLORS.NO_SHOW} label="No Show" />
             </div>
 
             {/* DETAILS MODAL */}

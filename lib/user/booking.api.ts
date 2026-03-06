@@ -10,6 +10,8 @@ export type UserBooking = {
     originalPrice: number | null;
     discountAmount: number;
 
+    servicePrice: number;
+
     createdAt: string;
 
     date: string;
@@ -20,21 +22,21 @@ export type UserBooking = {
 
     address: string;
     postcode: string;
+    location: string;
+
     rescheduleCount: number;
 
-    make: string | null;
-    model: string | null;
-    registrationNumber: string | null;
+    vehicle: string | null;
 
-    service: {
-        name: string;
-    };
+    service: string;
+    operatorName: string | null;
 
-    operator: {
+    addOns: {
+        id: string;
         name: string;
-    };
+        price: number;
+    }[];
 };
-
 
 export async function getUserBookings(): Promise<UserBooking[]> {
     const res = await userApi.get("/bookings/me");

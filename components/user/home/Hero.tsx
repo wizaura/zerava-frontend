@@ -57,21 +57,35 @@ export default function HeroSlideshow() {
     }, []);
 
     return (
-        <section className="relative isolate h-[80vh] sm:min-h-screen overflow-hidden bg-eco-black">
+        <section className="relative isolate min-h-[90vh] sm:min-h-screen overflow-hidden bg-eco-black">
 
             {/* 🔥 PREMIUM GRADIENT BACKGROUND */}
-            <div>
-                <Image
-                    src={"/hero-stock-1.jpg"}
-                    alt="hero stock"
-                    fill 
-                    className="object-cover"
-                />
+            {/* Background Slides */}
+            <div className="absolute inset-0 -z-10">
+
+                {slides.map((slide, i) => (
+                    <Image
+                        key={slide.image}
+                        src={slide.image}
+                        alt="Hero background"
+                        fill
+                        priority={i === 0}
+                        className={`object-cover transition-opacity duration-[1400ms] ${active === i ? "opacity-100" : "opacity-0"
+                            }`}
+                    />
+                ))}
+
+                {/* Dark overlay for readability */}
+                <div className="absolute inset-0 bg-black/20" />
+
+                {/* Premium gradient layer */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40" />
+
             </div>
 
 
             {/* CONTENT */}
-            <div className="relative z-10 mx-auto text-center flex min-h-screen max-w-5xl flex-col items-center justify-end px-6">
+            <div className="relative z-10 mx-auto text-center flex min-h-[90vh] sm:min-h-screen max-w-6xl flex-col items-center justify-end px-6 pb-8">
 
                 {/* Pill */}
                 <div className="relative mb-4 inline-flex">
@@ -141,7 +155,7 @@ export default function HeroSlideshow() {
                 <div
                     data-aos="zoom-in"
                     data-aos-delay="400"
-                    className="mt-8 flex flex-col items-center gap-4 sm:flex-row"
+                    className="mt-3 sm:mt-8 flex items-center gap-4 flex-row"
                 >
                     <Link
                         href="/booking"

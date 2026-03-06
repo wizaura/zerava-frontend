@@ -17,6 +17,7 @@ const STATUS_STYLES: Record<AdminBooking["status"], string> = {
     PENDING_PAYMENT: "bg-yellow-100 text-yellow-700",
     COMPLETED: "bg-blue-100 text-blue-700",
     CANCELLED: "bg-red-100 text-red-700",
+    NO_SHOW: "bg-gray-100 text-gray-700",
 };
 
 export default function BookingsTable({

@@ -29,13 +29,13 @@ const moreNavItems = [
 const mobileNavItems = [
     { label: "Home", href: "/" },
     { label: "Services", href: "/services" },
+    { label: "Pricing", href: "/services#pricing" },
+    { label: "Eco Method", href: "/eco-method" },
     { label: "Fleet", href: "/fleet" },
     { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" },
-    { label: "Pricing", href: "/services#pricing" },
     { label: "Our Works", href: "/gallery" },
-    { label: "Eco Method", href: "/eco-method" },
     { label: "FAQs", href: "/FAQs" },
+    { label: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
@@ -108,16 +108,28 @@ export default function Navbar() {
                     </Link>
 
                     {/* Desktop Nav */}
-                    <nav className="hidden items-center gap-8 text-sm font-medium md:flex">
+                    <nav
+                        className={`hidden items-center gap-8 text-sm font-medium md:flex px-4 py-2 rounded-full transition
+                            ${isHome && !scrolled
+                                ? "bg-white/10 backdrop-blur-md border border-white/10"
+                                : ""
+                            }
+                        `}
+                    >
 
                         {mainNavItems.map((item) => (
                             <Link
                                 key={item.label}
                                 href={item.href}
-                                className={`transition text-base ${isActive(item.href)
-                                    ? "text-electric-teal"
-                                    : "hover:text-electric-teal text-white"
-                                    }`}
+                                className={`transition text-base
+                                    ${isHome
+                                        ? scrolled
+                                            ? "text-eco-black hover:text-electric-teal"
+                                            : "text-white hover:text-electric-teal"
+                                        : "text-eco-black hover:text-electric-teal"
+                                    }
+                                    ${isActive(item.href) ? "text-electric-teal" : ""}
+                                `}
                             >
                                 {item.label}
                             </Link>
@@ -138,19 +150,40 @@ export default function Navbar() {
                                 }, 500);
                             }}
                         >
-                            <button className="flex items-center gap-1 transition hover:text-electric-teal text-base">
+                            <button
+                                className={`flex items-center gap-1 transition text-base
+                                    ${isHome
+                                        ? scrolled
+                                            ? "text-eco-black hover:text-electric-teal"
+                                            : "text-white hover:text-electric-teal"
+                                        : "text-eco-black hover:text-electric-teal"
+                                    }
+                                `}
+                            >
                                 More
                                 <span className="text-xs">▾</span>
                             </button>
 
                             {openDropdown && (
-                                <div className="absolute left-0 mt-2 w-48 rounded-xl bg-white shadow-lg border border-black/10 z-50">
+                                <div
+                                    className={`absolute left-0 mt-2 w-48 rounded-xl z-50 shadow-lg border transition
+                                        ${isHome && !scrolled
+                                            ? "bg-white/10 backdrop-blur-lg border-white/20"
+                                            : "bg-white border-black/10"
+                                        }
+                                    `}
+                                >
                                     <div className="py-2">
                                         {moreNavItems.map((item) => (
                                             <Link
                                                 key={item.label}
                                                 href={item.href}
-                                                className="block px-4 py-2 text-sm text-eco-black hover:bg-gray-100 transition"
+                                                className={`block px-4 py-2 text-sm transition
+                                                    ${isHome && !scrolled
+                                                        ? "text-white hover:bg-white/10"
+                                                        : "text-eco-black hover:bg-gray-100"
+                                                    }
+                                                `}
                                             >
                                                 {item.label}
                                             </Link>
@@ -176,12 +209,10 @@ export default function Navbar() {
                         {isAuthenticated ? (
                             <Link
                                 href="/account"
-                                className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
-            ${isHome
-                                        ? scrolled
-                                            ? "text-eco-black hover:bg-black/5"
-                                            : "text-gray-300 hover:bg-white/10"
-                                        : "text-eco-black hover:bg-black/5"
+                                className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition backdrop-blur-md
+                                    ${isHome && !scrolled
+                                        ? "bg-white/10 border border-white/20 text-white hover:bg-white/20"
+                                        : "text-eco-black border border-white hover:bg-black/5"
                                     }`}
                             >
                                 <User size={16} />
@@ -190,16 +221,14 @@ export default function Navbar() {
                         ) : (
                             <button
                                 onClick={() => dispatch(openLoginModal())}
-                                className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition
-            ${isHome
-                                        ? scrolled
-                                            ? "text-eco-black hover:bg-black/5"
-                                            : "text-gray-300 hover:bg-white/10"
-                                        : "text-eco-black hover:bg-black/5"
+                                className={`flex items-center sm:gap-2 rounded-full px-4 py-2 text-sm font-medium transition backdrop-blur-md
+                                    ${isHome && !scrolled
+                                        ? "bg-white/10 border border-white/20 text-white hover:bg-white/20"
+                                        : "text-eco-black border border-white hover:bg-black/5"
                                     }`}
                             >
                                 <User size={16} />
-                                <span className="hidden sm:inline">Login</span>
+                                <span className="hidden sm:inline text-base">Login</span>
                             </button>
                         )}
 
@@ -207,10 +236,14 @@ export default function Navbar() {
                         {/* Mobile Menu Toggle */}
                         <button
                             onClick={() => setOpen(!open)}
-                            className="md:hidden"
                             aria-label="Toggle Menu"
+                            className={`md:hidden rounded-full p-2 transition backdrop-blur-md
+                                ${isHome && !scrolled
+                                    ? "bg-white/10 border border-white/20 text-white"
+                                    : "text-eco-black border border-white hover:bg-black/5"
+                                }`}
                         >
-                            {open ? <X size={22} /> : <Menu size={22} />}
+                            {open ? <X size={22} className="hover:text-black"/> : <Menu size={16} />}
                         </button>
                     </div>
                 </div>

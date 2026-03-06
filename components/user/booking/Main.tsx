@@ -87,6 +87,7 @@ export type BookingDraft = {
     parkingInstructions: string | null;
 
     address: string | null;
+    houseNumber: string | null;
     notes: string | null;
     name: string | null;
     email: string | null;
@@ -136,6 +137,7 @@ export default function BookingClient({
         operatorId: null,
 
         address: null,
+        houseNumber: null,
         notes: null,
         name: null,
         email: null,

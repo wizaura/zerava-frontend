@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Instagram, Mail, MailIcon, MapPin } from "lucide-react";
+import { Instagram, Linkedin, Mail, MailIcon, MapPin } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 
 export default function Footer() {
@@ -72,12 +72,6 @@ export default function Footer() {
                                 </Link>
                             </li>
 
-                            <li className="hover:text-emerald-500">
-                                <Link href="/contact">
-                                    Contact
-                                </Link>
-                            </li>
-
                         </ul>
                     </div>
 
@@ -101,11 +95,11 @@ export default function Footer() {
                                 </Link>
                             </li>
 
-                            {/* <li className="hover:text-emerald-500">
-                                <Link href="/blog">
-                                    Blog
+                            <li className="hover:text-emerald-500">
+                                <Link href="/FAQs">
+                                    FAQs
                                 </Link>
-                            </li> */}
+                            </li>
 
                             <li className="hover:text-emerald-500">
                                 <Link href="/contact">
@@ -119,17 +113,10 @@ export default function Footer() {
                     {/* CONTACT + SOCIAL */}
                     <div>
                         <h4 className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-muted">
-                            Contact
+                            Connect
                         </h4>
 
                         <ul className="space-y-3 text-sm">
-
-                            <li className="flex items-center gap-2 hover:text-emerald-500">
-                                <FaWhatsapp size={14} />
-                                <a href="https://wa.me/447000000000">
-                                    <span>WhatsApp</span>
-                                </a>
-                            </li>
 
                             <li className="flex items-center gap-2 hover:text-emerald-500">
                                 <MailIcon size={14} />
@@ -168,6 +155,13 @@ export default function Footer() {
                                 className="hover:text-emerald-500"
                             >
                                 <Instagram size={18} />
+                            </a>
+
+                            <a
+                                href="https://www.linkedin.com/company/zerava"
+                                className="hover:text-emerald-500"
+                            >
+                                <Linkedin size={18} />
                             </a>
 
                         </div>

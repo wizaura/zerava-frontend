@@ -22,7 +22,7 @@ export default function EnvironmentalImpactSection() {
                 <div className="grid grid-cols-2 gap-12 md:grid-cols-4 text-center mb-20">
 
                     <div>
-                        <p className="text-5xl font-light">
+                        <p className="text-3xl md:text-4xl font-light">
                             0 <span className="text-electric-teal text-2xl">litres</span>
                         </p>
                         <p className="mt-3 text-sm text-gray-400">
@@ -31,7 +31,7 @@ export default function EnvironmentalImpactSection() {
                     </div>
 
                     <div>
-                        <p className="text-5xl font-light">
+                        <p className="text-3xl md:text-4xl font-light">
                             150+ <span className="text-electric-teal text-2xl">litres</span>
                         </p>
                         <p className="mt-3 text-sm text-gray-400">
@@ -40,7 +40,7 @@ export default function EnvironmentalImpactSection() {
                     </div>
 
                     <div>
-                        <p className="text-5xl font-light">
+                        <p className="text-3xl md:text-4xl font-light">
                             99.78%
                         </p>
                         <p className="mt-3 text-sm text-gray-400">
@@ -49,7 +49,7 @@ export default function EnvironmentalImpactSection() {
                     </div>
 
                     <div>
-                        <p className="text-5xl font-light">
+                        <p className="text-3xl md:text-4xl font-light">
                             ~1kg<span className="text-electric-teal text-2xl">CO2</span>
                         </p>
                         <p className="mt-3 text-sm text-gray-400">

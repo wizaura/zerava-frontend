@@ -6,7 +6,8 @@ export type BookingStatus =
     | "CONFIRMED"
     | "CANCELLED"
     | "PENDING_PAYMENT"
-    | "COMPLETED";
+    | "COMPLETED"
+    | "NO_SHOW";
 
 /* ---------- BOOKING TYPE (MATCHES BACKEND) ---------- */
 
@@ -72,7 +73,7 @@ export async function completeAdminBooking(id: string) {
 
 export type AdminBookingUpdatePayload = {
     notes?: string;
-    status?: "PENDING_PAYMENT" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
+    status?: "PENDING_PAYMENT" | "CONFIRMED" | "COMPLETED" | "CANCELLED" | "NO_SHOW";
 };
 
 export async function updateAdminBooking(

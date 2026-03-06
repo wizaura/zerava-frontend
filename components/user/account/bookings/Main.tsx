@@ -10,13 +10,14 @@ import Link from "next/link";
 import BookingManageModal from "./BookingManageModule";
 
 const STATUS_STYLE: Record<
-    "confirmed" | "pending" | "cancelled" | "completed",
+    "confirmed" | "pending" | "cancelled" | "completed" | "no_show",
     string
 > = {
     confirmed: "bg-blue-100 text-blue-700",
     pending: "bg-yellow-100 text-yellow-700",
     cancelled: "bg-red-100 text-red-700",
     completed: "bg-blue-100 text-blue-700",
+    no_show: "bg-gray-100 text-gray-700",
 };
 
 
@@ -37,13 +38,19 @@ type UIBooking = {
     rescheduleCount: number;
     subscriptionId: string | null;
 
-    status: "confirmed" | "pending" | "cancelled" | "completed";
+    status: "confirmed" | "pending" | "cancelled" | "completed" | "no_show";
 
     price: number;
     originalPrice: number | null;
     discountAmount: number;
 
     operatorName: string | null;
+
+    addOns: {
+        id: string;
+        name: string;
+        price: number;
+    }[];
 };
 
 
@@ -72,8 +79,8 @@ export default function UserBookingsSection() {
 
 
     function mapStatus(
-        status: "CONFIRMED" | "PENDING_PAYMENT" | "CANCELLED" | "COMPLETED"
-    ): "confirmed" | "pending" | "cancelled" | "completed" {
+        status: "CONFIRMED" | "PENDING_PAYMENT" | "CANCELLED" | "COMPLETED" | "NO_SHOW"
+    ): "confirmed" | "pending" | "cancelled" | "completed" | "no_show" {
         switch (status) {
             case "CONFIRMED":
                 return "confirmed";
@@ -81,6 +88,8 @@ export default function UserBookingsSection() {
                 return "cancelled";
             case "COMPLETED":
                 return "completed";
+            case "NO_SHOW":
+                return "no_show";
             default:
                 return "pending";
         }
@@ -99,6 +108,7 @@ export default function UserBookingsSection() {
 
     async function load() {
         setLoading(true);
+
         try {
             const data = await getUserBookings();
 
@@ -107,17 +117,15 @@ export default function UserBookingsSection() {
                     id: b.id,
                     referenceCode: b.referenceCode,
 
-                    service: b.service.name,
+                    service: b.service,
 
                     date: b.date,
                     timeFrom: b.timeFrom,
                     timeTo: b.timeTo,
 
-                    location: `${b.address}, ${b.postcode}`,
+                    location: b.location,
 
-                    vehicle: b.make
-                        ? `${b.make} ${b.model} (${b.registrationNumber})`
-                        : null,
+                    vehicle: b.vehicle,
 
                     subscriptionId: b.subscriptionId,
                     rescheduleCount: b.rescheduleCount,
@@ -128,9 +136,14 @@ export default function UserBookingsSection() {
                     originalPrice: b.originalPrice,
                     discountAmount: b.discountAmount,
 
-                    operatorName: b.operator?.name ?? null,
+                    servicePrice: b.servicePrice,
+
+                    operatorName: b.operatorName,
+
+                    addOns: b.addOns,
                 }))
             );
+
         } finally {
             setLoading(false);
         }
@@ -242,7 +255,10 @@ export default function UserBookingsSection() {
                                 </span>
 
                                 <p className="font-semibold text-sm sm:text-base">
-                                    {b.price}
+                                    {new Intl.NumberFormat("en-GB", {
+                                        style: "currency",
+                                        currency: "GBP",
+                                    }).format(b.price)}
                                 </p>
 
                                 {/* ACTIONS */}

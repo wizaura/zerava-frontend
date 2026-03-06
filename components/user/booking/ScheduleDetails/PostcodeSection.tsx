@@ -6,6 +6,8 @@ import { usePostcodeAddressSuggestions } from "@/hooks/useGoogleAutocomplete";
 
 export function PostcodeSection({
     postcode,
+    bookingDraft,
+    setBookingDraft,
     address,
     setPostcode,
     setAddress,
@@ -16,8 +18,8 @@ export function PostcodeSection({
     const suggestions = usePostcodeAddressSuggestions(postcode);
 
     const [showSuggestions, setShowSuggestions] = useState(true);
-    const [houseNumber, setHouseNumber] = useState("");
-    const [baseAddress, setBaseAddress] = useState("");
+    const [houseNumber, setHouseNumber] = useState(bookingDraft.houseNumber || "");
+    const [baseAddress, setBaseAddress] = useState(bookingDraft.address || "");
 
     const handleSelect = (placeId: string) => {
 
@@ -68,12 +70,13 @@ export function PostcodeSection({
     // Build full address whenever house number changes
     useEffect(() => {
         const fullAddress = [
-            houseNumber,
+            bookingDraft.houseNumber,
             baseAddress
         ].filter(Boolean).join(" ");
 
         setAddress(fullAddress);
-    }, [houseNumber, baseAddress]);
+
+    }, [bookingDraft.houseNumber, baseAddress]);
 
     const highlightPostcode = (text: string) => {
         const match = text.match(/[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}/i);
@@ -113,7 +116,7 @@ export function PostcodeSection({
                     />
 
                     {showSuggestions && suggestions.length > 0 && (
-                        <div className="absolute z-50 mt-1 w-full bg-white border rounded-xl shadow-lg max-h-60 overflow-auto">
+                        <div className="absolute left-0 right-0 z-50 mt-1 bg-white border rounded-xl shadow-lg max-h-60 overflow-auto">
 
                             {suggestions.map((item) => (
                                 <div
@@ -144,7 +147,13 @@ export function PostcodeSection({
 
                     <input
                         value={houseNumber}
-                        onChange={(e) => setHouseNumber(e.target.value)}
+                        onChange={(e) => {
+                            setBookingDraft((d: any) => ({
+                                ...d,
+                                houseNumber: e.target.value
+                            }))
+                            setHouseNumber(e.target.value)
+                        }}
                         className="w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-electric-teal"
                         placeholder="e.g. 221B"
                     />

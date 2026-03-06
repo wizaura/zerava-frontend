@@ -35,7 +35,7 @@ export default function BookingDetailsModal({
             case "PENDING_PAYMENT":
                 return ["PENDING_PAYMENT", "CONFIRMED", "CANCELLED"];
             case "CONFIRMED":
-                return ["CONFIRMED", "COMPLETED", "CANCELLED"];
+                return ["CONFIRMED", "COMPLETED", "CANCELLED", "NO_SHOW"];
             case "COMPLETED":
                 return ["COMPLETED"];
             case "CANCELLED":

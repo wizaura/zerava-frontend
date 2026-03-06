@@ -294,23 +294,12 @@ export default function ScheduleStep({
     const matchesFullPostcode =
         /^[A-Z]{1,2}\d{2}\s?\d[A-Z]{2}$/i.test(postcode.trim());
 
-    const showPostcodeError =
-        matchesFirstStage && !matchesFullPostcode;
-
-    const canSubmit =
-        zoneChecked &&
-        matchesFullPostcode &&
-        !!serviceDays &&
-        !!selectedDate &&
-        !!bookingDraft.timeFrom &&
-        !!bookingDraft.timeTo;
-
     const today = new Date();
     const maxDate = new Date();
     maxDate.setDate(today.getDate() + 30);
 
     return (
-        <div className="space-y-8 max-w-5xl mx-auto bg-white">
+        <div className="space-y-8 max-w-5xl mx-auto bg-white overflow-x-hidden px-4 sm:px-0 min-w-0">
 
             <h2 className="text-2xl font-medium text-gray-900">
                 Choose your schedule
@@ -318,6 +307,8 @@ export default function ScheduleStep({
 
             <PostcodeSection
                 postcode={postcode}
+                bookingDraft={bookingDraft}
+                setBookingDraft={setBookingDraft}
                 address={bookingDraft.address}
                 setPostcode={setPostcode}
                 setAddress={(value: string) =>

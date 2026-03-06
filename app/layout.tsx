@@ -37,7 +37,8 @@ export const metadata: Metadata = {
   ],
 
   authors: [{ name: "Zerava" }],
-
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
+  
   openGraph: {
     title: "Zerava - Premium Eco Vehicle Care",
     description:
