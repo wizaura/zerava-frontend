@@ -11,6 +11,7 @@ type Term = {
     heading: string;
     description: string;
     isActive: boolean;
+    order: number;
 };
 
 export default function TermsSection() {
@@ -28,6 +29,7 @@ export default function TermsSection() {
         try {
             setLoading(true);
             const { data } = await adminApi.get("/admin/settings/terms");
+
             setTerms(data);
         } catch (err: any) {
             toast.error(getApiError(err));
@@ -116,7 +118,7 @@ export default function TermsSection() {
                         >
                             <div className="space-y-1">
                                 <p className="font-semibold text-gray-800">
-                                    {index + 1}. {term.heading}
+                                    {term.order}. {term.heading}
                                 </p>
 
                                 <p className="text-sm text-gray-600">
@@ -125,8 +127,8 @@ export default function TermsSection() {
 
                                 <span
                                     className={`inline-block mt-1 px-3 py-1 text-xs rounded-full ${term.isActive
-                                            ? "bg-emerald-100 text-emerald-700"
-                                            : "bg-gray-200 text-gray-600"
+                                        ? "bg-emerald-100 text-emerald-700"
+                                        : "bg-gray-200 text-gray-600"
                                         }`}
                                 >
                                     {term.isActive ? "Active" : "Inactive"}
@@ -168,6 +170,7 @@ export default function TermsSection() {
                     fields={[
                         { name: "heading", label: "Heading", type: "text" },
                         { name: "description", label: "Description", type: "textarea" },
+                        { name: "order", label: "Display Order", type: "number" },
                         { name: "isActive", label: "Active", type: "checkbox" },
                     ]}
                 />

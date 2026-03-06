@@ -11,10 +11,23 @@ export default function ZeravaModal({
 }: any) {
     const [form, setForm] = useState<any>({});
 
-    // Ensure form updates when editing different item
+    // Populate form when editing
     useEffect(() => {
         setForm(initialData || {});
     }, [initialData]);
+
+    function handleChange(field: any, value: any) {
+        let parsedValue = value;
+
+        if (field.type === "number") {
+            parsedValue = value === "" ? "" : Number(value);
+        }
+
+        setForm((prev: any) => ({
+            ...prev,
+            [field.name]: parsedValue,
+        }));
+    }
 
     return (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
@@ -29,36 +42,32 @@ export default function ZeravaModal({
                 <div className="space-y-5">
                     {fields.map((field: any) => (
                         <div key={field.name}>
-
                             <label className="block mb-2 text-sm font-medium text-gray-600">
                                 {field.label}
                             </label>
 
-                            {/* Textarea */}
+                            {/* TEXTAREA */}
                             {field.type === "textarea" && (
                                 <textarea
                                     rows={4}
-                                    value={form[field.name] || ""}
+                                    value={form[field.name] ?? ""}
                                     onChange={(e) =>
-                                        setForm({ ...form, [field.name]: e.target.value })
+                                        handleChange(field, e.target.value)
                                     }
-                                    className="w-full px-3 py-2 rounded-lg border border-gray-300 
-                             focus:outline-none focus:ring-2 focus:ring-emerald-500 
-                             focus:border-emerald-500 transition"
+                                    className="w-full px-3 py-2 rounded-lg border border-gray-300
+                                    focus:outline-none focus:ring-2 focus:ring-emerald-500
+                                    focus:border-emerald-500 transition"
                                 />
                             )}
 
-                            {/* Checkbox */}
+                            {/* CHECKBOX */}
                             {field.type === "checkbox" && (
                                 <div className="flex items-center gap-3">
                                     <input
                                         type="checkbox"
                                         checked={form[field.name] ?? true}
                                         onChange={(e) =>
-                                            setForm({
-                                                ...form,
-                                                [field.name]: e.target.checked,
-                                            })
+                                            handleChange(field, e.target.checked)
                                         }
                                         className="w-4 h-4 accent-emerald-600"
                                     />
@@ -68,18 +77,18 @@ export default function ZeravaModal({
                                 </div>
                             )}
 
-                            {/* Default Text Input */}
+                            {/* INPUT (text / number / etc) */}
                             {field.type !== "textarea" &&
                                 field.type !== "checkbox" && (
                                     <input
-                                        type="text"
-                                        value={form[field.name] || ""}
+                                        type={field.type || "text"}
+                                        value={form[field.name] ?? ""}
                                         onChange={(e) =>
-                                            setForm({ ...form, [field.name]: e.target.value })
+                                            handleChange(field, e.target.value)
                                         }
-                                        className="w-full px-3 py-2 rounded-lg border border-gray-300 
-                               focus:outline-none focus:ring-2 focus:ring-emerald-500 
-                               focus:border-emerald-500 transition"
+                                        className="w-full px-3 py-2 rounded-lg border border-gray-300
+                                        focus:outline-none focus:ring-2 focus:ring-emerald-500
+                                        focus:border-emerald-500 transition"
                                     />
                                 )}
                         </div>
@@ -102,6 +111,7 @@ export default function ZeravaModal({
                         Save
                     </button>
                 </div>
+
             </div>
         </div>
     );

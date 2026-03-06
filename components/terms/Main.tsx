@@ -7,6 +7,7 @@ type Section = {
     id: string;
     heading: string;
     description: string;
+    order: number;
 };
 
 export default function TermsPage() {
@@ -36,7 +37,7 @@ export default function TermsPage() {
                 {sections.map((section) => (
                     <section key={section.id}>
                         <h2 className="text-3xl font-light">
-                            {section.heading}
+                            {section.order}. {section.heading}
                         </h2>
 
                         <div
