@@ -74,7 +74,7 @@ export default function ProcessSection() {
                 <div className="relative rounded-3xl">
                     <div className="relative h-[520px] w-full">
                         <Image
-                            src="/hero-stock-2.jpg"
+                            src="/hr-5.jpg"
                             alt="Technician applying Zerava eco-formula treatment"
                             fill
                             className="object-cover rounded-2xl transition-transform duration-700 ease-out hover:scale-[1.05]"
