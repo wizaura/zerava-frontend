@@ -198,16 +198,7 @@ export default function BookingClient({
                         onContinue={() => setCurrentStep(2)}
                     />
                 )}
-
-                {/* {currentStep === 2 && (
-                    <AddressStep
-                        bookingDraft={bookingDraft}
-                        setBookingDraft={setBookingDraft}
-                        onBack={() => setCurrentStep(1)}
-                        onContinue={() => setCurrentStep(3)}
-                    />
-                )} */}
-
+                
                 {currentStep === 2 && (
                     <FinalDetailsStep
                         bookingDraft={bookingDraft}

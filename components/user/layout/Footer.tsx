@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Instagram, Linkedin, Mail, MailIcon, MapPin } from "lucide-react";
-import { FaWhatsapp } from "react-icons/fa";
+import { Instagram, Linkedin, Mail, MailIcon, MapPin, Phone } from "lucide-react";
+import { FaPhone, FaWhatsapp } from "react-icons/fa";
 
 export default function Footer() {
     return (
@@ -137,10 +137,10 @@ export default function Footer() {
                         <div className="flex gap-4 pt-5">
 
                             <a
-                                href="https://wa.me/447000000000"
+                                href="tel:+442382252342"
                                 className="hover:text-emerald-500"
                             >
-                                <FaWhatsapp size={18} />
+                                <Phone size={18} />
                             </a>
 
                             <a

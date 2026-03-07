@@ -26,12 +26,12 @@ export default function About() {
                 buttons={[
                     {
                         label: "Book Your First Clean",
-                        href: "/",
+                        href: "/booking",
                         variant: "primary",
                     },
                     {
                         label: "Get in Touch",
-                        href: "/",
+                        href: "/contact",
                         variant: "secondary",
                     },
                 ]}

@@ -12,8 +12,8 @@ import { MapPin } from "lucide-react";
 import { ServiceAvailabilityBanner } from "./ServiceAvailability";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d{2}$/;
-const UK_POSTCODE_REGEX_FULL = /^[A-Z]{1,2}\d{2}\s?\d[A-Z]{2}$/i;
+const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d[A-Z\d]?$/;
+const UK_POSTCODE_REGEX_FULL = /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i;
 
 type AvailableOperator = {
     operatorId: string;

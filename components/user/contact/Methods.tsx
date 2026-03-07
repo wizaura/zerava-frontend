@@ -6,7 +6,7 @@ export default function ContactMethods() {
             <div className="mx-auto max-w-6xl grid grid-cols-1 gap-10 text-center sm:grid-cols-3">
 
                 {/* WhatsApp */}
-                <div className="group flex flex-col items-center rounded-2xl p-8 transition hover:shadow-lg hover:-translate-y-1">
+                {/* <div className="group flex flex-col items-center rounded-2xl p-8 transition hover:shadow-lg hover:-translate-y-1">
                     <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-electric-teal/10 text-electric-teal transition group-hover:scale-110">
                         <MessageCircle size={22} />
                     </div>
@@ -18,7 +18,7 @@ export default function ContactMethods() {
                     >
                         Message us →
                     </a>
-                </div>
+                </div> */}
 
                 {/* Email */}
                 <div className="group flex flex-col items-center rounded-2xl p-8 transition hover:shadow-lg hover:-translate-y-1">
@@ -41,9 +41,9 @@ export default function ContactMethods() {
                         <Phone size={22} />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900">Phone</h3>
-                    <p className="mt-1 text-sm text-gray-600">+44 7000 000000</p>
+                    <p className="mt-1 text-sm text-gray-600">+44 23 8225 2342</p>
                     <a
-                        href="tel:+447000000000"
+                        href="tel:+442382252342"
                         className="mt-3 text-sm font-semibold text-electric-teal hover:underline"
                     >
                         Call us →

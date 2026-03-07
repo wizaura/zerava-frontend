@@ -121,7 +121,7 @@ export default function TermsSection() {
                                     {term.order}. {term.heading}
                                 </p>
 
-                                <p className="text-sm text-gray-600">
+                                <p className="whitespace-pre-line text-sm text-gray-600">
                                     {term.description}
                                 </p>
 

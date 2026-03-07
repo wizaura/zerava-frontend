@@ -34,7 +34,6 @@ export default function PromoBanner({ onVisibilityChange }: PromoBannerProps) {
         fetchPromo();
     }, []);
 
-    // ✅ Notify Navbar AFTER render
     useEffect(() => {
         const isVisible = !!promo && visible;
         onVisibilityChange?.(isVisible);
@@ -53,30 +52,39 @@ export default function PromoBanner({ onVisibilityChange }: PromoBannerProps) {
             <div className="absolute inset-0 bg-bright-lime"></div>
 
             <div className="relative backdrop-blur-md bg-white/20 text-eco-black text-sm">
-                <div className="max-w-7xl mx-auto px-6 py-2 relative flex items-center justify-center">
+                <div className="max-w-7xl mx-auto px-4 md:px-6 py-2 relative flex items-center justify-center">
 
-                    <div className="flex items-center gap-3 group">
-                        <Sparkles size={16} className="text-text-gray-800" />
+                    <div className="flex items-center gap-3 flex-row justify-center text-center mr-4 sm:mr-0">
 
-                        <span className="text-center font-semibold text-gray-800">
-                            <strong>{promo.name}</strong> - Get{" "}
-                            <strong className="text-black">
-                                {promo.percentage}% OFF
-                            </strong>{" "}
-                            with code
+                        <Sparkles size={16} className="text-gray-800 shrink-0" />
+
+                        {/* TEXT BLOCK */}
+                        <span className="font-semibold text-gray-800 leading-tight">
+                            <span className="whitespace-nowrap">
+                                <strong>{promo.name}</strong> –
+                            </span>{" "}
+
+                            <span className="whitespace-nowrap">
+                                Get <strong className="text-black">{promo.percentage}% OFF</strong>
+                            </span>{" "}
+
+                            <span className="whitespace-nowrap">
+                                with code
+                            </span>
                         </span>
 
+                        {/* BUTTON */}
                         <button
                             onClick={handleCopy}
                             className="flex items-center gap-2 rounded-lg
-                            bg-white
-                            text-lime-green px-3 py-1.5 font-semibold
-                            shadow-md transition-all
+                            bg-white text-lime-green px-3 py-1.5 font-semibold
+                            shadow-md transition-all shrink-0
                             hover:scale-105 hover:shadow-lg"
                         >
                             {promo.code}
                             {copied ? <Check size={14} /> : <Copy size={14} />}
                         </button>
+
                     </div>
 
                     <button
@@ -85,6 +93,7 @@ export default function PromoBanner({ onVisibilityChange }: PromoBannerProps) {
                     >
                         ✕
                     </button>
+
                 </div>
             </div>
         </div>

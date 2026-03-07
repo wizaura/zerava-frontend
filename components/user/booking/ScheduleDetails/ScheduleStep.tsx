@@ -11,8 +11,8 @@ import { openLoginModal } from "@/store/slices/authSlice";
 import toast from "react-hot-toast";
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d{2}$/;
-const UK_POSTCODE_REGEX_FULL = /^[A-Z]{1,2}\d{2}\s?\d[A-Z]{2}$/i;
+const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d[A-Z\d]?$/;
+const UK_POSTCODE_REGEX_FULL = /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i;
 
 type AvailableOperator = {
     operatorId: string;
@@ -288,9 +288,6 @@ export default function ScheduleStep({
         }
     }
 
-    const matchesFirstStage =
-        /^[A-Z]{1,2}\d{2}$/i.test(outwardCode);
-
     const matchesFullPostcode =
         /^[A-Z]{1,2}\d{2}\s?\d[A-Z]{2}$/i.test(postcode.trim());
 
@@ -299,9 +296,11 @@ export default function ScheduleStep({
     maxDate.setDate(today.getDate() + 30);
 
     return (
-        <div className="space-y-8 max-w-5xl mx-auto bg-white overflow-x-hidden px-4 sm:px-0 min-w-0">
+        <div className="space-y-8 max-w-5xl mx-auto bg-white 
+        w-full min-w-0 overflow-x-hidden 
+        px-4 sm:px-6 lg:px-0">
 
-            <h2 className="text-2xl font-medium text-gray-900">
+            <h2 className="text-2xl font-medium text-gray-900 break-words">
                 Choose your schedule
             </h2>
 
