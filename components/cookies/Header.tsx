@@ -11,7 +11,7 @@ export default function CookieHeader() {
     return (
         <div className="bg-eco-black mt-20 p-16">
             <h2 className="text-gray-200 text-light text-4xl">
-                Cookie Policy
+                Cookie Policy - Zerava Mobility Ltd
             </h2>
 
             <p className="text-gray-400 mt-3">

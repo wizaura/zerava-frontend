@@ -258,7 +258,7 @@ export default function UserBookingsSection() {
                                     {new Intl.NumberFormat("en-GB", {
                                         style: "currency",
                                         currency: "GBP",
-                                    }).format(b.price)}
+                                    }).format(b.price / 100)}
                                 </p>
 
                                 {/* ACTIONS */}

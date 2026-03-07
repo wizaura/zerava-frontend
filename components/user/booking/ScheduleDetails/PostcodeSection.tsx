@@ -99,8 +99,7 @@ export function PostcodeSection({
 
             {/* POSTCODE INPUT */}
             <div className="flex flex-col sm:flex-row gap-3">
-                <div className="space-y-2 w-full relative">
-
+                <div className="space-y-2 w-full relative overflow-visible">
                     <label className="text-sm font-medium">
                         Your Postcode
                     </label>
@@ -116,17 +115,40 @@ export function PostcodeSection({
                     />
 
                     {showSuggestions && suggestions.length > 0 && (
-                        <div className="absolute left-0 right-0 z-50 mt-1 bg-white border rounded-xl shadow-lg max-h-60 overflow-auto">
+                        <div
+                            className="
+            absolute top-full left-0 right-0
+            z-[999]
+            mt-1
+            bg-white
+            border border-gray-200
+            rounded-xl
+            shadow-lg
+            max-h-60
+            overflow-y-auto
+            w-full
+        "
+                        >
 
                             {suggestions.map((item) => (
                                 <div
                                     key={item.place_id}
                                     onClick={() => handleSelect(item.place_id)}
-                                    className="px-4 py-3 text-sm cursor-pointer hover:bg-gray-100 flex items-start gap-2"
+                                    className="
+                    px-4 py-3
+                    text-sm
+                    cursor-pointer
+                    hover:bg-gray-100
+                    flex items-start gap-2
+                    break-words
+                "
                                 >
-                                    <MapPin size={14} className="mt-1 text-gray-400" />
+                                    <MapPin
+                                        size={14}
+                                        className="mt-1 text-gray-400 shrink-0"
+                                    />
 
-                                    <span>
+                                    <span className="text-gray-700">
                                         {highlightPostcode(item.description)}
                                     </span>
 

@@ -66,14 +66,6 @@ export default function FinalDetailsStep({
         }
     }, [isAuthenticated]);
 
-    const canSubmit =
-        bookingDraft.name &&
-        bookingDraft.email &&
-        bookingDraft.phone &&
-        bookingDraft.address &&
-        bookingDraft.postcode &&
-        isValidUKReg(bookingDraft.registrationNumber || "");
-
     async function submitBooking() {
 
         if (!bookingDraft.name?.trim())
@@ -93,6 +85,12 @@ export default function FinalDetailsStep({
 
         if (!isValidUKReg(bookingDraft.registrationNumber || ""))
             return toast.error("Enter valid registration number");
+
+        if (!bookingDraft.make?.trim())
+            return toast.error("Enter Vehicle Make");
+
+        if (!bookingDraft.model?.trim())
+            return toast.error("Enter Vehicle Model");
 
 
         // 🔥 2. If form valid but NOT logged in → open modal
@@ -150,7 +148,7 @@ export default function FinalDetailsStep({
                 </button>
 
                 <button
-                    disabled={!canSubmit || loading}
+                    disabled={loading}
                     onClick={submitBooking}
                     className="rounded-full px-8 py-2 text-sm text-white bg-black"
                 >

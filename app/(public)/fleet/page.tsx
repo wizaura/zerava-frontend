@@ -17,13 +17,8 @@ export default function Fleet() {
                 buttons={[
                     {
                         label: "Get a Quote",
-                        href: "/booking",
-                        variant: "primary",
-                    },
-                    {
-                        label: "Call Us",
                         href: "/contact",
-                        variant: "secondary",
+                        variant: "primary",
                     },
                 ]}
             />
@@ -37,13 +32,8 @@ export default function Fleet() {
                 buttons={[
                     {
                         label: "Request a Quote",
-                        href: "/booking",
+                        href: "/contact",
                         variant: "primary",
-                    },
-                    {
-                        label: "Email Us",
-                        href: "mailto:info@zerava.uk",
-                        variant: "secondary",
                     },
                 ]}
             />

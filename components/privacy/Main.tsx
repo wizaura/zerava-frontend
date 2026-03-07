@@ -25,80 +25,129 @@ type PrivacySection =
 
 const privacySections: PrivacySection[] = [
     {
-        title: "Introduction",
+        title: "1. Introduction",
         type: "text",
         content:
-            "Zerava Mobility Ltd (“we”, “us”, “our”) is committed to protecting your privacy. This policy explains how we collect, use, and protect your personal data in accordance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.",
+            "Zerava Mobility Ltd (“Zerava”, “we”, “us”, “our”) is committed to protecting your privacy and handling your personal data responsibly. This Privacy Policy explains how we collect, use, store, and protect your personal data in accordance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.",
     },
+
     {
-        title: "1. Information We Collect",
+        title: "2. Who We Are",
         type: "list",
         content: [
-            "Name, email address, phone number",
-            "Vehicle and booking details",
-            "Payment and transaction information",
-            "Technical data such as IP address, browser type, and usage data",
+            "Company name: Zerava Mobility Ltd",
+            "Registered office: 71–75 Shelton Street, London, WC2H 9JQ, United Kingdom",
+            "ICO registration: Registered with the UK Information Commissioner’s Office",
+            "Contact email: hello@zerava.uk",
         ],
     },
+
     {
-        title: "2. How We Use Your Information",
+        title: "3. What Personal Data We Collect",
         type: "list",
         content: [
-            "Provide and manage our services",
-            "Process bookings and payments",
-            "Communicate with you regarding your services",
-            "Improve our website and customer experience",
-            "Comply with legal obligations",
+            "Name",
+            "Email address",
+            "Telephone number",
+            "Service address or location",
+            "Vehicle details (such as make, model, registration, where provided)",
+            "Booking and service history",
+            "Subscription status",
+            "Communications with us",
+            "Payment confirmations (we do not store full card details)",
         ],
     },
+
     {
-        title: "3. Legal Basis for Processing",
-        type: "list",
-        content: [
-            "Contractual necessity",
-            "Legal obligation",
-            "Legitimate business interests",
-            "Your consent (where applicable)",
-        ],
-    },
-    {
-        title: "4. Data Sharing",
+        title: "4. How We Collect Your Data",
         type: "intro-list",
-        intro: "We do not sell your data. We may share it with:",
+        intro: "We collect personal data when you:",
         content: [
-            "Payment providers",
-            "IT and hosting providers",
-            "Legal and regulatory authorities where required",
+            "Book a service or subscription",
+            "Contact us via our website, email, phone, or messaging platforms",
+            "Interact with our website",
+            "Receive services from us",
         ],
     },
+
     {
-        title: "5. Data Retention",
+        title: "5. Lawful Basis for Processing",
+        type: "intro-list",
+        intro: "We process personal data under the following lawful bases:",
+        content: [
+            "Contract – to provide booked services or subscriptions",
+            "Legitimate interests – scheduling, service communication, quality control",
+            "Legal obligation – accounting, tax, and regulatory compliance",
+        ],
+    },
+
+    {
+        title: "6. How We Use Your Data",
+        type: "intro-list",
+        intro: "We use your personal data to:",
+        content: [
+            "Deliver and manage vehicle care services",
+            "Communicate booking details, updates, and reminders",
+            "Process payments via secure third-party providers",
+            "Maintain internal records",
+            "Improve our services and customer experience",
+        ],
+    },
+
+    {
+        title: "7. Sharing Your Data",
+        type: "intro-list",
+        intro: "We may share your data with:",
+        content: [
+            "Payment processors (e.g. Stripe)",
+            "Booking or scheduling platforms",
+            "Professional advisers (accountants, insurers)",
+        ],
+    },
+
+    {
+        title: "8. Photos & Documentation",
         type: "text",
         content:
-            "We retain data only for as long as necessary to fulfil the purposes outlined in this policy or as required by law.",
+            "We may take photos or videos of vehicles before, during, and after service for condition records, quality control, and dispute resolution. Images will only be used for marketing purposes where the vehicle cannot be identified or where you have provided explicit consent.",
     },
+
     {
-        title: "6. Your Rights",
+        title: "9. Data Storage & Security",
         type: "list",
         content: [
-            "Access your data",
-            "Request correction or deletion",
-            "Restrict or object to processing",
-            "Data portability",
-            "Withdraw consent at any time",
+            "Secure systems and password protection",
+            "Restricted access to personal data",
+            "Use of reputable third-party service providers",
         ],
     },
+
     {
-        title: "7. Security",
-        type: "text",
-        content:
-            "We apply appropriate technical and organisational measures to protect your personal data against unauthorised access, loss, or misuse.",
+        title: "10. Data Retention",
+        type: "list",
+        content: [
+            "Customer and booking records: up to 6 years",
+            "Enquiries with no booking: up to 12 months",
+            "Marketing communications: until you opt out",
+        ],
     },
+
     {
-        title: "8. Contact",
+        title: "11. Your Rights",
+        type: "list",
+        content: [
+            "Access your personal data",
+            "Request correction or deletion",
+            "Object to processing",
+            "Request data portability",
+        ],
+    },
+
+    {
+        title: "12. Changes to This Policy",
         type: "text",
         content:
-            "For data protection queries, please contact us at support@zerava.co. Our registered address is in the United Kingdom.",
+            "We may update this Privacy Policy from time to time. The latest version will always be published on our website.",
     },
 ];
 
