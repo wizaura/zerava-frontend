@@ -9,9 +9,12 @@ type Props = {
 };
 
 export default function BeforeAfterCard({ item }: Props) {
+
     const [showBefore, setShowBefore] = useState(false);
 
-    const imageSrc = showBefore ? item.beforeImage : item.afterImage;
+    const imageSrc = showBefore
+        ? item.beforeImage
+        : item.afterImage;
 
     return (
         <div
@@ -19,8 +22,10 @@ export default function BeforeAfterCard({ item }: Props) {
             onMouseEnter={() => setShowBefore(true)}
             onMouseLeave={() => setShowBefore(false)}
         >
+
             {/* IMAGE */}
             <div className="relative">
+
                 <img
                     src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/gallery/${imageSrc}`}
                     alt={item.title}
@@ -47,34 +52,38 @@ export default function BeforeAfterCard({ item }: Props) {
                 >
                     {showBefore ? "After" : "Before"}
                 </button>
+
             </div>
 
             {/* INFO */}
             <div className="space-y-1 p-4 text-left">
-                {/* Title */}
+
+                {/* TITLE */}
                 <p className="font-medium text-gray-900">
                     {item.title}
                 </p>
 
-                {/* Vehicle type */}
+                {/* VEHICLE TYPE */}
                 {item.vehicleType && (
                     <p className="text-xs text-gray-500">
                         {item.vehicleType}
                     </p>
                 )}
 
-                {/* Description */}
+                {/* DESCRIPTION */}
                 {item.description && (
                     <p className="mt-1 line-clamp-2 text-sm text-gray-600">
                         {item.description}
                     </p>
                 )}
 
-                {/* Service type */}
+                {/* SERVICE BADGE */}
                 <p className="mt-2 inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                    {item.serviceType}
+                    {item.service?.name}
                 </p>
+
             </div>
+
         </div>
     );
 }

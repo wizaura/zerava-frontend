@@ -3,24 +3,34 @@ import api from "./axios";
 export type GalleryItem = {
     id: string;
     title: string;
-    serviceType: "Exterior" | "Interior" | "Full";
+
     beforeImage: string;
     afterImage: string;
-    description: string;
-    featured: boolean;
-    vehicleType: string;
+
+    vehicleType?: string;
+    description?: string;
+    featured?: boolean;
+
+    service: {
+        id: string;
+        name: string;
+    };
+
+    vehicleCategory?: {
+        id: string;
+        name: string;
+    };
 };
+
 
 /* -------- GET GALLERY -------- */
 
 export async function getGallery(
-    serviceType?: "All" | "Exterior" | "Interior" | "Full"
+    serviceId?: string
 ): Promise<GalleryItem[]> {
+
     const res = await api.get("/gallery", {
-        params:
-            serviceType && serviceType !== "All"
-                ? { serviceType }
-                : {},
+        params: serviceId ? { serviceId } : {},
     });
 
     return res.data;

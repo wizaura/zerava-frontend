@@ -1,13 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { Image, Trash2 } from "lucide-react";
+import { Image, Trash2, Star } from "lucide-react";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 
 type GalleryItem = {
     id: string;
     title: string;
+    description: string;
+    vehicleType: string;
     afterImage: string;
+    featured: boolean;
+
+    service: {
+        id: string;
+        name: string;
+    };
+
+    vehicleCategory: {
+        id: string;
+        name: string;
+    };
 };
 
 export default function GalleryList({
@@ -17,6 +30,7 @@ export default function GalleryList({
     items: GalleryItem[];
     onDelete: (id: string) => Promise<void> | void;
 }) {
+
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [loadingId, setLoadingId] = useState<string | null>(null);
 
@@ -31,12 +45,23 @@ export default function GalleryList({
 
     return (
         <>
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
                 {items.map((item) => (
+
                     <div
                         key={item.id}
                         className="relative rounded-xl border p-3 bg-white group"
                     >
+
+                        {/* FEATURED BADGE */}
+                        {item.featured && (
+                            <div className="absolute top-4 left-4 flex items-center gap-1 bg-yellow-400 text-white text-xs px-2 py-1 rounded">
+                                <Star size={12} />
+                                Featured
+                            </div>
+                        )}
+
                         {/* DELETE BUTTON */}
                         <button
                             onClick={() => setDeleteId(item.id)}
@@ -45,17 +70,43 @@ export default function GalleryList({
                             <Trash2 size={16} className="text-red-500" />
                         </button>
 
+                        {/* IMAGE */}
                         <img
                             src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/gallery/${item.afterImage}`}
                             className="h-48 w-full object-cover rounded-lg"
                         />
 
-                        <p className="mt-2 font-medium">{item.title}</p>
+                        {/* DETAILS */}
+                        <div className="mt-3 space-y-1">
+
+                            <p className="font-semibold text-gray-800">
+                                {item.title}
+                            </p>
+
+                            <p className="text-sm text-gray-500">
+                                Service: {item.service.name}
+                            </p>
+
+                            <p className="text-sm text-gray-500">
+                                Category: {item.vehicleCategory.name}
+                            </p>
+
+                            <p className="text-sm text-gray-500">
+                                Vehicle: {item.vehicleType}
+                            </p>
+
+                            <p className="text-xs text-gray-500">
+                                {item.description}
+                            </p>
+
+                        </div>
+
                     </div>
                 ))}
+
             </div>
 
-            {/* CONFIRM MODAL */}
+            {/* DELETE CONFIRM MODAL */}
             <ConfirmModal
                 open={!!deleteId}
                 title="Delete Gallery Item"
@@ -67,6 +118,7 @@ export default function GalleryList({
                 icon={<Trash2 className="h-6 w-6 text-red-600" />}
                 onCancel={() => setDeleteId(null)}
                 onConfirm={async () => {
+
                     if (!deleteId) return;
 
                     try {
@@ -76,6 +128,7 @@ export default function GalleryList({
                     } finally {
                         setLoadingId(null);
                     }
+
                 }}
             />
         </>
