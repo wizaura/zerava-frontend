@@ -1,7 +1,6 @@
 import FinalCTA from "@/components/common/FinalCTA";
 import FAQsPreview from "@/components/user/home/FAQs";
 import FleetPreview from "@/components/user/home/Fleet";
-import GalleryPreview from "@/components/user/home/Gallery";
 import Hero from "@/components/user/home/Hero";
 import HowItWorks from "@/components/user/home/How";
 import ServiceHighlights from "@/components/user/home/Services";
