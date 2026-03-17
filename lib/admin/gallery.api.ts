@@ -5,8 +5,8 @@ export type GalleryItem = {
     title: string;
     vehicleType: string;
     description: string;
-    afterImage: string;
-    beforeImage: string;
+    afterImageUrl: string;
+    beforeImageUrl: string;
     featured: boolean;
 
     service: {

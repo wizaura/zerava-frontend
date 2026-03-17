@@ -1,89 +1,78 @@
 "use client";
 
 import { useState } from "react";
-import { GalleryItem } from "@/lib/user/gallery.api";
 import { Star } from "lucide-react";
 
 type Props = {
-    item: GalleryItem;
+  item: any;
 };
 
 export default function BeforeAfterCard({ item }: Props) {
+  const [showBefore, setShowBefore] = useState(false);
 
-    const [showBefore, setShowBefore] = useState(false);
+  // ✅ Use Cloudinary URLs
+  const imageSrc = showBefore
+    ? item.beforeImageUrl
+    : item.afterImageUrl;
 
-    const imageSrc = showBefore
-        ? item.beforeImage
-        : item.afterImage;
+  return (
+    <div
+      className="group relative overflow-hidden rounded-xl border bg-white"
+      onMouseEnter={() => setShowBefore(true)}
+      onMouseLeave={() => setShowBefore(false)}
+    >
+      {/* IMAGE */}
+      <div className="relative">
+        <img
+          src={imageSrc || "/placeholder.jpg"} // ✅ FIXED
+          alt={item.title}
+          className="h-56 w-full object-cover transition-all duration-300"
+        />
 
-    return (
-        <div
-            className="group relative overflow-hidden rounded-xl border bg-white"
-            onMouseEnter={() => setShowBefore(true)}
-            onMouseLeave={() => setShowBefore(false)}
+        {/* BEFORE / AFTER BADGE */}
+        <span className="absolute left-3 top-3 rounded-full bg-black/70 px-3 py-1 text-xs font-medium text-white">
+          {showBefore ? "Before" : "After"}
+        </span>
+
+        {/* FEATURED BADGE */}
+        {item.featured && (
+          <span className="absolute left-3 bottom-3 flex items-center gap-1 rounded-full bg-emerald-500 px-3 py-1 text-xs font-medium text-white">
+            <Star className="h-3 w-3" />
+            Featured
+          </span>
+        )}
+
+        {/* MOBILE TOGGLE */}
+        <button
+          onClick={() => setShowBefore((p) => !p)}
+          className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-gray-800 md:hidden"
         >
+          {showBefore ? "After" : "Before"}
+        </button>
+      </div>
 
-            {/* IMAGE */}
-            <div className="relative">
+      {/* INFO */}
+      <div className="space-y-1 p-4 text-left">
+        <p className="font-medium text-gray-900">
+          {item.title}
+        </p>
 
-                <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/gallery/${imageSrc}`}
-                    alt={item.title}
-                    className="h-56 w-full object-cover transition-all duration-300"
-                />
+        {item.vehicleType && (
+          <p className="text-xs text-gray-500">
+            {item.vehicleType}
+          </p>
+        )}
 
-                {/* BEFORE / AFTER BADGE */}
-                <span className="absolute left-3 top-3 rounded-full bg-black/70 px-3 py-1 text-xs font-medium text-white">
-                    {showBefore ? "Before" : "After"}
-                </span>
+        {item.description && (
+          <p className="mt-1 line-clamp-2 text-sm text-gray-600">
+            {item.description}
+          </p>
+        )}
 
-                {/* FEATURED BADGE */}
-                {item.featured && (
-                    <span className="absolute left-3 bottom-3 flex items-center gap-1 rounded-full bg-emerald-500 px-3 py-1 text-xs font-medium text-white">
-                        <Star className="h-3 w-3" />
-                        Featured
-                    </span>
-                )}
-
-                {/* MOBILE TOGGLE */}
-                <button
-                    onClick={() => setShowBefore((p) => !p)}
-                    className="absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-gray-800 md:hidden"
-                >
-                    {showBefore ? "After" : "Before"}
-                </button>
-
-            </div>
-
-            {/* INFO */}
-            <div className="space-y-1 p-4 text-left">
-
-                {/* TITLE */}
-                <p className="font-medium text-gray-900">
-                    {item.title}
-                </p>
-
-                {/* VEHICLE TYPE */}
-                {item.vehicleType && (
-                    <p className="text-xs text-gray-500">
-                        {item.vehicleType}
-                    </p>
-                )}
-
-                {/* DESCRIPTION */}
-                {item.description && (
-                    <p className="mt-1 line-clamp-2 text-sm text-gray-600">
-                        {item.description}
-                    </p>
-                )}
-
-                {/* SERVICE BADGE */}
-                <p className="mt-2 inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                    {item.service?.name}
-                </p>
-
-            </div>
-
-        </div>
-    );
+        <p className="mt-2 inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+          {item.service?.name}
+        </p>
+      </div>
+    </div>
+  );
 }

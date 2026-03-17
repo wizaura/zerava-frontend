@@ -4,8 +4,8 @@ export type GalleryItem = {
     id: string;
     title: string;
 
-    beforeImage: string;
-    afterImage: string;
+    beforeImageUrl: string;
+    afterImageUrl: string;
 
     vehicleType?: string;
     description?: string;

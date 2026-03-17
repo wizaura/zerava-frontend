@@ -9,7 +9,7 @@ type GalleryItem = {
     title: string;
     description: string;
     vehicleType: string;
-    afterImage: string;
+    afterImageUrl: string;
     featured: boolean;
 
     service: {
@@ -72,7 +72,7 @@ export default function GalleryList({
 
                         {/* IMAGE */}
                         <img
-                            src={`${process.env.NEXT_PUBLIC_API_URL}/uploads/gallery/${item.afterImage}`}
+                            src={item.afterImageUrl}
                             className="h-48 w-full object-cover rounded-lg"
                         />
 

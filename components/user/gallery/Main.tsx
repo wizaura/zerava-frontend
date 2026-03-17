@@ -9,8 +9,8 @@ import api from "@/lib/user/axios";
 type GalleryItem = {
   id: string;
   title: string;
-  beforeImage: string;
-  afterImage: string;
+  beforeImageUrl: string;
+  afterImageUrl: string;
   service: {
     id: string;
     name: string;
