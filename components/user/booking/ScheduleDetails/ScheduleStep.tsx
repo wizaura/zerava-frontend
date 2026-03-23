@@ -44,6 +44,7 @@ export default function ScheduleStep({
     const [postcode, setPostcode] = useState(bookingDraft.postcode || "");
     const [serviceDays, setServiceDays] = useState<number[] | null>(null);
     const [zoneChecked, setZoneChecked] = useState(false);
+    const [houseNumber, setHouseNumber] = useState(bookingDraft.houseNumber || "");
     const [selectedDate, setSelectedDate] = useState<string | null>(
         bookingDraft.date
     );
@@ -75,22 +76,31 @@ export default function ScheduleStep({
                     `/service-zones/check/${outwardCode.toUpperCase()}`
                 );
 
-                if (!res.data.available) {
+                if (res.data.available === null) {
+                    setZoneChecked(false);
+                    setServiceDays(null);
+                    return;
+                }
+
+                // NOT AVAILABLE
+                if (res.data.available === false) {
                     setError("Service not available in this postcode");
                     setZoneChecked(true);
                     setServiceDays(null);
                     return;
                 }
 
+                // AVAILABLE
+                if (res.data.available === true) {
+                    setZoneChecked(true);
+                    setServiceDays(res.data.serviceDays);
 
-                setZoneChecked(true);
+                    setBookingDraft(d => ({
+                        ...d,
+                        serviceDays: res.data.serviceDays
+                    }));
+                }
 
-                setServiceDays(res.data.serviceDays);
-
-                setBookingDraft(d => ({
-                    ...d,
-                    serviceDays: res.data.serviceDays
-                }));
 
             } catch {
                 setError("Failed to check postcode");
@@ -227,6 +237,11 @@ export default function ScheduleStep({
             return;
         }
 
+        if(!houseNumber.trim()){
+            toast.error("Please enter house number.");
+            return;
+        }
+
         if (!matchesFullPostcode) {
             toast.error("Please enter a valid full UK postcode.");
             return;
@@ -316,6 +331,8 @@ export default function ScheduleStep({
                         address: value,
                     }))
                 }
+                houseNumber={houseNumber}
+                setHouseNumber={setHouseNumber}
                 loading={loading}
                 error={error}
             />

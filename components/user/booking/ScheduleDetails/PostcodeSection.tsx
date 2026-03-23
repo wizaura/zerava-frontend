@@ -11,6 +11,8 @@ export function PostcodeSection({
     address,
     setPostcode,
     setAddress,
+    houseNumber,
+    setHouseNumber,
     loading,
     error,
 }: any) {
@@ -18,7 +20,6 @@ export function PostcodeSection({
     const suggestions = usePostcodeAddressSuggestions(postcode);
 
     const [showSuggestions, setShowSuggestions] = useState(true);
-    const [houseNumber, setHouseNumber] = useState(bookingDraft.houseNumber || "");
     const [baseAddress, setBaseAddress] = useState(bookingDraft.address || "");
 
     const handleSelect = (placeId: string) => {
