@@ -123,7 +123,7 @@ export default function FinalDetailsStep({
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-10 overflow-hidden">
+        <div className="max-w-4xl mx-auto space-y-6 overflow-hidden">
             <h2 className="text-2xl font-medium text-gray-900">
                 Final details
             </h2>
@@ -138,6 +138,17 @@ export default function FinalDetailsStep({
             />
 
             <BookingSummary bookingDraft={bookingDraft} />
+            <p className="text-sm max-w-xl mx-auto text-eco-black text-center">
+                By confirming your booking, you agree to our{" "}
+                <a
+                    href="/terms"
+                    target="_blank"
+                    className="underline hover:text-blue-500 transition"
+                >
+                    Terms & Conditions
+                </a>
+                . Our technician will arrive within your selected arrival window. Please ensure your vehicle is accessible during this time.
+            </p>
 
             <div className="flex justify-between">
                 <button

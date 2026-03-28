@@ -46,51 +46,9 @@ export function SlotSection({
     return (
         <div className="rounded-2xl border bg-white p-6 shadow-sm space-y-6">
 
-            {/* ---------- Selected Summary ---------- */}
-            <div className="rounded-xl bg-gray-100 border border-[#A8F3D6] p-4">
-
-                <p className="text-xs uppercase tracking-wide font-semibold text-gray-800 mb-2">
-                    Selected Schedule
-                </p>
-
-                {selectedDate ? (
-                    <div className="flex items-center justify-between rounded-xl border border-white/10 px-4 py-3 text-sm">
-
-                        <div className="flex items-center gap-4 text-gray-800">
-
-                            <div className="flex items-center gap-2">
-                                <Calendar size={14} className="text-gray-800" />
-                                <span className="font-medium">
-                                    {formatDate(selectedDate)}
-                                </span>
-                            </div>
-
-                            {selectedTimeFrom && selectedTimeTo ? (
-                                <div className="flex items-center gap-2">
-                                    <Clock size={14} className="text-gray-800" />
-                                    <span className="font-medium">
-                                        {formatTime12h(selectedTimeFrom)} –{" "}
-                                        {formatTime12h(selectedTimeTo)}
-                                    </span>
-                                </div>
-                            ) : (
-                                <span className="text-white/50 text-xs">
-                                    Select a time slot
-                                </span>
-                            )}
-
-                        </div>
-                    </div>
-                ) : (
-                    <p className="text-xs text-gray-500">
-                        Please choose a date first.
-                    </p>
-                )}
-            </div>
-
             {/* ---------- Title ---------- */}
             <p className="text-md text-center font-medium text-gray-700">
-                Choose your time slot
+                Choose your Arrival Window
             </p>
 
             {slots.length === 0 ? (
@@ -150,6 +108,67 @@ export function SlotSection({
                     </p>
                 </>
             )}
+
+            {/* ---------- Selected Summary ---------- */}
+            <div className="p-4">
+
+                <p className="text-xs uppercase tracking-wide font-semibold text-gray-800 mb-2">
+                    Selected Schedule
+                </p>
+
+                {selectedDate ? (
+                    <div className="w-full rounded-2xl border border-white/10 bg-eco-black px-6 py-5 backdrop-blur-md">
+
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-around gap-4">
+
+                            {/* Selected Date */}
+                            <div className="flex items-center gap-3">
+                                <div className="bg-white/10 p-2 rounded-lg">
+                                    <Calendar size={16} className="text-white" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-white/60">Selected Date</span>
+                                    <span className="text-sm font-semibold text-white">
+                                        {formatDate(selectedDate)}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Divider */}
+                            <div className="hidden md:block h-10 w-px bg-white/10" />
+
+                            {/* Arrival Window */}
+                            {selectedTimeFrom && selectedTimeTo ? (
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-white/10 p-2 rounded-lg">
+                                        <Clock size={16} className="text-white" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-xs text-white/60">Arrival Window</span>
+                                        <span className="text-sm font-semibold text-white">
+                                            {formatTime12h(selectedTimeFrom)} – {formatTime12h(selectedTimeTo)}
+                                        </span>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-xs text-white/50">
+                                    Select a time slot
+                                </div>
+                            )}
+
+                        </div>
+
+                        {/* Bottom Info */}
+                        <div className="mt-4 text-xs text-center text-white/60 border-t border-white/10 pt-3">
+                            Our technician will arrive within your selected time window.
+                        </div>
+                    </div>
+                ) : (
+                    <p className="text-xs text-gray-500">
+                        Please choose a date first.
+                    </p>
+                )}
+            </div>
         </div>
     );
 }

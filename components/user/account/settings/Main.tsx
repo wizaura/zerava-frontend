@@ -114,7 +114,7 @@ export default function UserSettings() {
                     </label>
 
                     <div className="flex gap-3">
-                        {(["SMALL", "MEDIUM", "LARGE"] as VehicleSize[]).map((size) => {
+                        {(["STANDARD", "LARGE", "XL"] as VehicleSize[]).map((size) => {
                             const active = form.vehicleSize === size;
 
                             return (
@@ -133,7 +133,7 @@ export default function UserSettings() {
                                         !edit && "cursor-default",
                                     ].join(" ")}
                                 >
-                                    {size.charAt(0) + size.slice(1).toLowerCase()}
+                                    {size}
                                 </button>
                             );
                         })}
