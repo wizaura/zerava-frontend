@@ -2,6 +2,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type Props = {
     bookingDraft: any;
@@ -19,9 +20,19 @@ export default function FinalDetailsForm({
     isValidUKReg,
     lookupVehicle,
 }: Props) {
-    const hasValidReg = bookingDraft.registrationNumber
-        ? isValidUKReg(bookingDraft.registrationNumber)
-        : false;
+    const [reg, setReg] = useState("");
+
+    useEffect(() => {
+        if (!reg) return;
+
+        const timer = setTimeout(() => {
+            if (isValidUKReg(reg)) {
+                lookupVehicle(reg);
+            }
+        }, 1500);
+
+        return () => clearTimeout(timer);
+    }, [reg]);
 
     return (
         <div className="rounded-2xl border bg-white p-6 shadow-sm space-y-6">
@@ -57,17 +68,15 @@ export default function FinalDetailsForm({
                 <div className="relative">
                     <Input
                         label="Registration number"
-                        value={bookingDraft.registrationNumber || ""}
+                        value={reg}
                         onChange={(v: string) => {
                             const val = v.toUpperCase();
+                            setReg(val);
+
                             setBookingDraft((d: any) => ({
                                 ...d,
                                 registrationNumber: val,
                             }));
-
-                            if (isValidUKReg(val)) {
-                                lookupVehicle(val);
-                            }
                         }}
                     />
 
@@ -76,12 +85,6 @@ export default function FinalDetailsForm({
                             className="absolute right-3 top-9 animate-spin"
                             size={18}
                         />
-                    )}
-
-                    {bookingDraft.registrationNumber && !hasValidReg && (
-                        <p className="text-sm text-red-500 mt-1">
-                            Enter valid UK registration (AB12 CDE)
-                        </p>
                     )}
                 </div>
 

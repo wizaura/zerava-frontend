@@ -48,7 +48,7 @@ export function SlotSection({
 
             {/* ---------- Title ---------- */}
             <p className="text-md text-center font-medium text-gray-700">
-                Choose your Arrival Window
+                Choose your arrival window
             </p>
 
             {slots.length === 0 ? (

@@ -55,6 +55,10 @@ export default function ServicesList() {
                         const fromPrice =
                             standard ?? large ?? xl ?? null;
 
+                        const durationText = service.name.includes("+")
+                            ? "up to 75 minutes"
+                            : "up to 45 minutes";
+
                         return (
                             <div
                                 key={service.id}
@@ -105,7 +109,7 @@ export default function ServicesList() {
 
                                     <div className="flex items-center gap-2 text-gray-500">
                                         <Clock size={14} className="text-electric-teal" />
-                                        up to {service.durationMin} minutes
+                                        {durationText}
                                     </div>
                                 </div>
 

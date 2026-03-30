@@ -34,13 +34,13 @@ export default function FinalDetailsStep({
     const addressRef = useRef<HTMLInputElement | null>(null);
     const dispatch = useDispatch();
 
-    function isValidUKReg(reg: string) {
+    function isLikelyReg(reg: string) {
         const cleaned = reg.toUpperCase().replace(/\s/g, "");
-        return /^[A-Z]{2}[0-9]{2}[A-Z]{3}$/.test(cleaned);
+        return cleaned.length >= 2 && cleaned.length <= 8;
     }
 
     async function lookupVehicle(reg: string) {
-        if (!isValidUKReg(reg)) return;
+        if (!isLikelyReg(reg)) return;
 
         try {
             setRegLoading(true);
@@ -83,7 +83,7 @@ export default function FinalDetailsStep({
         if (!bookingDraft.postcode?.trim())
             return toast.error("Postcode missing");
 
-        if (!isValidUKReg(bookingDraft.registrationNumber || ""))
+        if (!isLikelyReg(bookingDraft.registrationNumber || ""))
             return toast.error("Enter valid registration number");
 
         if (!bookingDraft.make?.trim())
@@ -133,7 +133,7 @@ export default function FinalDetailsStep({
                 setBookingDraft={setBookingDraft}
                 addressRef={addressRef}
                 regLoading={regLoading}
-                isValidUKReg={isValidUKReg}
+                isValidUKReg={isLikelyReg}
                 lookupVehicle={lookupVehicle}
             />
 

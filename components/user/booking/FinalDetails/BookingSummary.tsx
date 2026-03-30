@@ -106,6 +106,8 @@ export default function BookingSummary({ bookingDraft }: Props) {
                 <span>Total</span>
                 <span>£{(total / 100).toFixed(2)}</span>
             </div>
+
+            <p className="text-sm text-center font-semibold">Apply your promo code at checkout</p>
         </div>
     );
 }

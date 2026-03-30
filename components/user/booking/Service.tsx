@@ -170,6 +170,10 @@ export default function ServiceAndAddOnsStep({
                         const Icon =
                             serviceIconMap[service.icon] ?? Sparkles;
 
+                        const durationText = service.name.includes("+")
+                            ? "75"
+                            : "45";
+
                         return (
                             <button
                                 key={service.id}
@@ -223,7 +227,7 @@ export default function ServiceAndAddOnsStep({
                                             </p>
 
                                             <p className="text-xs text-gray-400">
-                                                ⏱ Up to {service.durationMin} min
+                                                ⏱ Up to {durationText} min
                                             </p>
                                         </div>
                                     </div>
