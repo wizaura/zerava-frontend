@@ -78,7 +78,7 @@ export default function PricingSection() {
 
     const [planType, setPlanType] = useState<
         "oneoff" | "subscription"
-    >("subscription");
+    >("oneoff");
 
     const [tier, setTier] = useState<
         "zerava-care" | "zerava-care-plus"
@@ -172,6 +172,16 @@ export default function PricingSection() {
                     <div className="flex justify-center mb-12">
                         <div className="flex flex-col sm:flex-row bg-black rounded-2xl sm:rounded-full p-2 shadow-lg w-full sm:w-auto gap-2 sm:gap-0">
 
+                            {/* ONE-OFF */}
+                            <button
+                                onClick={() => setPlanType("oneoff")}
+                                className={`px-6 sm:px-8 py-3 sm:py-2 rounded-xl sm:rounded-full transition w-full sm:w-auto text-center ${planType === "oneoff"
+                                    ? "bg-white text-black font-semibold"
+                                    : "text-white"
+                                    }`}
+                            >
+                                One-off Cleans
+                            </button>
                             {/* SUBSCRIPTION */}
                             <button
                                 onClick={() => setPlanType("subscription")}
@@ -200,16 +210,6 @@ export default function PricingSection() {
                                 </span>
                             </button>
 
-                            {/* ONE-OFF */}
-                            <button
-                                onClick={() => setPlanType("oneoff")}
-                                className={`px-6 sm:px-8 py-3 sm:py-2 rounded-xl sm:rounded-full transition w-full sm:w-auto text-center ${planType === "oneoff"
-                                    ? "bg-white text-black font-semibold"
-                                    : "text-white"
-                                    }`}
-                            >
-                                One-off Cleans
-                            </button>
                         </div>
                     </div>
 
@@ -264,6 +264,10 @@ export default function PricingSection() {
                                 planType === "oneoff"
                                     ? plan.isPopular
                                     : plan.billing === "monthly";
+
+                            const durationText = plan.name.includes("+")
+                                ? "75"
+                                : "45";
 
                             return (
                                 <div
@@ -328,7 +332,7 @@ export default function PricingSection() {
                                         )}
                                         {plan.durationMin && (
                                             <>
-                                                <p className="text-xs italic mt-3 text-gray-500">Time up to: {plan.durationMin} min</p>
+                                                <p className="text-xs italic mt-3 text-gray-500">Time up to: {durationText} min</p>
                                                 <span className="text-xs italic mt-3 text-gray-500">{plan.vehicleConditionNote}</span>
                                             </>
                                         )}
