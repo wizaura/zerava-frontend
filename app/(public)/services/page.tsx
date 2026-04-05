@@ -4,7 +4,13 @@ import AddOnsSection from "@/components/user/services/AddOns";
 import ServicesList from "@/components/user/services/List";
 import PricingSection from "@/components/user/services/Pricing";
 import OurPromiseSection from "@/components/user/services/Promise";
-import WhySubscribe from "@/components/user/services/Why";
+
+export const metadata = {
+  title: "Services & Pricing | Zerava Mobility",
+  description:
+    "Explore Zerava Mobility’s premium waterless car cleaning services, valet packages, and add-ons with transparent pricing and eco-friendly technology.",
+};
+
 
 export default function ServicesAndPricing() {
     return (

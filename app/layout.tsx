@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 
   authors: [{ name: "Zerava" }],
   viewport: "width=device-width, initial-scale=1, maximum-scale=1",
-  
+
   openGraph: {
     title: "Zerava - Premium Eco Vehicle Care",
     description:
@@ -90,6 +90,18 @@ export default function RootLayout({
           <AOSProvider />
           {children}
           <Toaster position="top-right" />
+          <Script
+            src="https://www.googletagmanager.com/gtag/js?id=G-J49J0MF84R"
+            strategy="afterInteractive"
+          />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-J49J0MF84R');
+            `}
+          </Script>
           <Script
             src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_KEY}&libraries=places`}
             strategy="afterInteractive"
