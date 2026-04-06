@@ -3,6 +3,17 @@ import PageHero from "@/components/common/PageHero";
 import ContactMain from "@/components/user/contact/Main";
 import ContactMethods from "@/components/user/contact/Methods";
 
+export const metadata = {
+  title: "Contact Zerava | Book or Enquire",
+  description:
+    "Contact Zerava for bookings, fleet enquiries, or support. Premium eco-friendly vehicle care services in Southampton.",
+  keywords: [
+    "Contact Zerava",
+    "Car wash Southampton contact",
+    "Book car wash Southampton",
+  ],
+};
+
 export default function Contact() {
     return (
         <div>

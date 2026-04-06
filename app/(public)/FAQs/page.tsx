@@ -2,6 +2,12 @@ import FinalCTA from "@/components/common/FinalCTA";
 import PageHero from "@/components/common/PageHero";
 import FAQSection from "@/components/user/FAQs/Main";
 
+export const metadata = {
+  title: "FAQs | Zerava Vehicle Care",
+  description:
+    "Frequently asked questions about Zerava’s waterless car cleaning, booking process, pricing, and service areas.",
+};
+
 export default function FAQs() {
     return (
         <div>

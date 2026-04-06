@@ -96,7 +96,7 @@ export default function Footer() {
                             </li>
 
                             <li className="hover:text-emerald-500">
-                                <Link href="/FAQs">
+                                <Link href="/faqs">
                                     FAQs
                                 </Link>
                             </li>

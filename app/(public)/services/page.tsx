@@ -6,9 +6,21 @@ import PricingSection from "@/components/user/services/Pricing";
 import OurPromiseSection from "@/components/user/services/Promise";
 
 export const metadata = {
-  title: "Services & Pricing | Zerava Mobility",
+  title: "Mobile Car Wash Services & Pricing Southampton | Zerava",
   description:
-    "Explore Zerava Mobility’s premium waterless car cleaning services, valet packages, and add-ons with transparent pricing and eco-friendly technology.",
+    "Explore Zerava’s mobile car wash and eco-friendly vehicle detailing services in Southampton. Transparent pricing, premium service, and sustainable cleaning.",
+  keywords: [
+    "Mobile car wash Southampton",
+    "Car detailing Southampton",
+    "Eco car wash Southampton",
+    "Waterless car cleaning",
+    "Car wash pricing Southampton",
+    "Zerava services",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 

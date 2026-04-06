@@ -15,7 +15,6 @@ const cormorant = Cormorant_Garamond({
   variable: "--font-serif",
 });
 
-
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.zerava.uk"),
 
@@ -37,7 +36,6 @@ export const metadata: Metadata = {
   ],
 
   authors: [{ name: "Zerava" }],
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 
   openGraph: {
     title: "Zerava - Premium Eco Vehicle Care",
@@ -65,6 +63,13 @@ export const metadata: Metadata = {
     images: ["/og-image.jpg"],
   },
 
+  other: {
+    "geo.region": "GB-HAM",
+    "geo.placename": "Southampton",
+    "geo.position": "50.9097;-1.4044",
+    "ICBM": "50.9097, -1.4044",
+  },
+
   robots: {
     index: true,
     follow: true,
@@ -77,6 +82,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
 
 export default function RootLayout({
   children,
@@ -91,20 +100,44 @@ export default function RootLayout({
           {children}
           <Toaster position="top-right" />
           <Script
-            src="https://www.googletagmanager.com/gtag/js?id=G-J49J0MF84R"
-            strategy="afterInteractive"
-          />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-J49J0MF84R');
-            `}
-          </Script>
-          <Script
             src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_KEY}&libraries=places`}
             strategy="afterInteractive"
+          />
+          <Script
+            id="ld-json"
+            type="application/ld+json"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "LocalBusiness",
+                name: "Zerava Mobility",
+                image: "https://www.zerava.uk/og-image.jpg",
+                url: "https://www.zerava.uk",
+                telephone: "+44 2382 252342",
+                priceRange: "££",
+                address: {
+                  "@type": "PostalAddress",
+                  addressLocality: "Southampton",
+                  addressRegion: "Hampshire",
+                  addressCountry: "GB",
+                },
+                geo: {
+                  "@type": "GeoCoordinates",
+                  latitude: 50.9097,
+                  longitude: -1.4044,
+                },
+                areaServed: {
+                  "@type": "City",
+                  name: "Southampton",
+                },
+                sameAs: [
+                  "https://www.instagram.com/zerava.uk",
+                  "https://www.linkedin.com/company/zerava"
+                ],
+                serviceType: "Mobile Car Wash",
+              }),
+            }}
           />
         </Providers>
       </body>

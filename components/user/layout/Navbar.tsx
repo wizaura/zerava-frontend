@@ -22,7 +22,7 @@ const moreNavItems = [
     { label: "Pricing", href: "/services#pricing" },
     { label: "Our Works", href: "/gallery" },
     { label: "Eco Method", href: "/eco-method" },
-    { label: "FAQs", href: "/FAQs" },
+    { label: "FAQs", href: "/faqs" },
 ];
 
 // Mobile keeps full list
@@ -34,7 +34,7 @@ const mobileNavItems = [
     { label: "Fleet", href: "/fleet" },
     { label: "About", href: "/about" },
     { label: "Our Works", href: "/gallery" },
-    { label: "FAQs", href: "/FAQs" },
+    { label: "FAQs", href: "/faqs" },
     { label: "Contact", href: "/contact" },
 ];
 

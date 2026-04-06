@@ -6,6 +6,12 @@ import { ValuesSection } from "@/components/user/about/Values";
 import FinalCTA from "@/components/common/FinalCTA";
 import PageHero from "@/components/common/PageHero";
 
+export const metadata = {
+  title: "About Zerava | Premium Eco Vehicle Care",
+  description:
+    "Learn about Zerava's mission to transform vehicle care through sustainable, eco-friendly, and convenient car cleaning services.",
+};
+
 export default function About() {
     return (
         <div>

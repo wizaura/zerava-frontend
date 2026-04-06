@@ -7,6 +7,24 @@ import ServiceHighlights from "@/components/user/home/Services";
 import TestimonialsSection from "@/components/user/home/Testimonials";
 import WhyZerava from "@/components/user/home/Why";
 
+export const metadata = {
+  title: "Mobile Car Wash Southampton | Zerava Eco Vehicle Care",
+  description:
+    "Zerava offers premium mobile car wash and eco-friendly vehicle cleaning services in Southampton. Book online for waterless car cleaning at your location.",
+  keywords: [
+    "Car wash Southampton",
+    "Mobile car wash Southampton",
+    "Eco car wash Southampton",
+    "Waterless car wash Southampton",
+    "Car detailing Southampton",
+    "Fleet car cleaning Southampton",
+  ],
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 export default function Home() {
   return (
     <div>

@@ -59,7 +59,6 @@ export default function HeroSlideshow() {
     return (
         <section className="relative isolate min-h-[90vh] sm:min-h-screen overflow-hidden bg-eco-black">
 
-            {/* 🔥 PREMIUM GRADIENT BACKGROUND */}
             {/* Background Slides */}
             <div className="absolute inset-0 -z-10">
 
@@ -67,7 +66,7 @@ export default function HeroSlideshow() {
                     <Image
                         key={slide.image}
                         src={slide.image}
-                        alt="Hero background"
+                        alt="Mobile car wash service in Southampton by Zerava"
                         fill
                         priority={i === 0}
                         className={`object-cover transition-opacity duration-[1400ms] ${active === i ? "opacity-100" : "opacity-0"
@@ -82,6 +81,10 @@ export default function HeroSlideshow() {
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/40" />
 
             </div>
+
+            <h1 className="sr-only">
+                Mobile Car Wash Southampton | Eco-Friendly Car Cleaning | Zerava
+            </h1>
 
 
             {/* CONTENT */}
@@ -112,7 +115,7 @@ export default function HeroSlideshow() {
               blur-2xl"
                     />
 
-                    <h1 className="leading-[1.15] relative z-10">
+                    <h2 className="leading-[1.15] relative z-10">
                         <span
                             data-aos="fade-up"
                             data-aos-delay="100"
@@ -132,7 +135,7 @@ export default function HeroSlideshow() {
                         >
                             {slides[active].highlight}
                         </span>
-                    </h1>
+                    </h2>
                 </div>
 
                 {/* Description */}
@@ -148,6 +151,11 @@ export default function HeroSlideshow() {
               text-white drop-shadow-md"
                     >
                         {slides[active].desc}
+                    </p>
+                    <p className="sr-only">
+                        Zerava provides premium mobile car wash services in Southampton using
+                        eco-friendly waterless cleaning technology. We offer convenient,
+                        professional car cleaning and fleet washing services across Southampton.
                     </p>
                 </div>
 

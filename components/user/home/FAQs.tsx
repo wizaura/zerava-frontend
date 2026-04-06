@@ -101,7 +101,7 @@ export default function FAQsPreview() {
                 {/* CTA */}
                 <div className="mt-8 text-center">
                     <Link
-                        href="/FAQs"
+                        href="/faqs"
                         className="inline-flex items-center rounded-full border border-gray-300 px-6 py-3 
               text-sm font-semibold text-gray-900 transition-all
               hover:bg-gray-200 hover:scale-105"

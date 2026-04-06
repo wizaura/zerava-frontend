@@ -6,6 +6,18 @@ import { TrustStrip } from "@/components/user/fleet/Trust";
 import WhoWeServeSection from "@/components/user/fleet/WhoWeServe";
 import WhyZeravaSection from "@/components/user/fleet/Why";
 
+export const metadata = {
+  title: "Fleet & Corporate Vehicle Cleaning | Zerava",
+  description:
+    "Sustainable fleet and corporate vehicle cleaning services in Southampton. Tailored packages for businesses and organisations.",
+  keywords: [
+    "Fleet cleaning Southampton",
+    "Corporate car wash",
+    "Fleet vehicle cleaning UK",
+    "Commercial vehicle cleaning",
+  ],
+};
+
 export default function Fleet() {
     return (
         <div>
