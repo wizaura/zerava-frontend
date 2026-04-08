@@ -53,6 +53,7 @@ export default function FinalDetailsStep({
                 ...d,
                 make: res.data.make,
                 model: res.data.model,
+                colour: res.data.colour,
             }));
         } finally {
             setRegLoading(false);
@@ -91,6 +92,9 @@ export default function FinalDetailsStep({
 
         if (!bookingDraft.model?.trim())
             return toast.error("Enter Vehicle Model");
+
+        if (!bookingDraft.colour?.trim())
+            return toast.error("Enter Vehicle Colour");
 
 
         // 🔥 2. If form valid but NOT logged in → open modal

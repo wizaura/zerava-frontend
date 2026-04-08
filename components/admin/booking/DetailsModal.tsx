@@ -90,6 +90,7 @@ export default function BookingDetailsModal({
                         <div className="grid grid-cols-2 gap-4">
                             <Info label="Make" value={booking.make} />
                             <Info label="Model" value={booking.model} />
+                            <Info label="Colour" value={booking.colour} />
                             <Info label="Registration" value={booking.registrationNumber} />
                             <Info label="Vehicle Size" value={booking.vehicleCategory.name} />
                         </div>

@@ -24,3 +24,18 @@ export async function createZone(data: {
 export async function deleteZone(id: string) {
     await adminApi.delete(`/admin/service-zones/${id}`);
 }
+
+export async function updateZone(
+    id: string,
+    data: {
+        postcodePrefix?: string;
+        serviceDay?: number;
+        zoneCode?: string;
+    }
+) {
+    const res = await adminApi.patch(
+        `/admin/service-zones/${id}`,
+        data
+    );
+    return res.data;
+}

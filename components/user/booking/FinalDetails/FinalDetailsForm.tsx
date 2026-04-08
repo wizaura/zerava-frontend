@@ -64,7 +64,7 @@ export default function FinalDetailsForm({
             </div>
 
             {/* Vehicle */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="relative">
                     <Input
                         label="Registration number"
@@ -101,6 +101,14 @@ export default function FinalDetailsForm({
                     value={bookingDraft.model || ""}
                     onChange={(v: string) =>
                         setBookingDraft((d: any) => ({ ...d, model: v }))
+                    }
+                />
+
+                <Input
+                    label="Colour"
+                    value={bookingDraft.colour || ""}
+                    onChange={(v: string) =>
+                        setBookingDraft((d: any) => ({ ...d, colour: v }))
                     }
                 />
             </div>

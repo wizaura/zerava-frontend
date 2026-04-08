@@ -23,6 +23,7 @@ export type AdminBooking = {
     postcode: string;
     make: string;
     model: string;
+    colour: string;
     registrationNumber: string;
     parkingInstructions: string;
     address: string;

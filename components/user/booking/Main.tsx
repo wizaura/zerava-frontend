@@ -83,6 +83,7 @@ export type BookingDraft = {
 
     make: string | null;
     model: string | null;
+    colour: string | null;
     registrationNumber: string | null;
     parkingInstructions: string | null;
 
@@ -123,6 +124,7 @@ export default function BookingClient({
 
         make: null,
         model: null,
+        colour: null,
         registrationNumber:  null,
         parkingInstructions:  null,
 

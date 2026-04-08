@@ -1,7 +1,7 @@
 "use client";
 
 import api from "@/lib/user/axios";
-import { X, MapPin, ShieldCheck, Car, User, CreditCard } from "lucide-react";
+import { X, MapPin, ShieldCheck, Car, CreditCard } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function BookingManageModal({
@@ -96,12 +96,6 @@ export default function BookingManageModal({
                     {booking.vehicle && (
                         <Section label="Vehicle" icon={<Car size={14} />}>
                             {booking.vehicle}
-                        </Section>
-                    )}
-
-                    {booking.operatorName && (
-                        <Section label="Assigned Operator" icon={<User size={14} />}>
-                            {booking.operatorName}
                         </Section>
                     )}
 
