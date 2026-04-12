@@ -63,6 +63,7 @@ export default function BookingSummary({ bookingDraft }: Props) {
                 <SummaryRow label="Registration" value={bookingDraft.registrationNumber} />
                 <SummaryRow label="Make" value={bookingDraft.make} />
                 <SummaryRow label="Model" value={bookingDraft.model} />
+                <SummaryRow label="Colour" value={bookingDraft.colour} />
             </AccordionSection>
 
             {/* ADDRESS */}

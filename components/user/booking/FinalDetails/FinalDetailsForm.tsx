@@ -1,6 +1,7 @@
 // components/booking/FinalDetailsForm.tsx
 "use client";
 
+import { userApi } from "@/lib/user/user.api";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -34,6 +35,26 @@ export default function FinalDetailsForm({
         return () => clearTimeout(timer);
     }, [reg]);
 
+    useEffect(() => {
+        async function loadProfile() {
+            try {
+                const res = await userApi.getProfile();
+                const user = res.data;
+
+                setBookingDraft((prev: any) => ({
+                    ...prev,
+                    name: user.name || "",
+                    email: user.email || "",
+                    phone: user.phone || "",
+                }));
+            } catch (err) {
+                console.error("Failed to load profile", err);
+            }
+        }
+
+        loadProfile();
+    }, []);
+
     return (
         <div className="rounded-2xl border bg-white p-6 shadow-sm space-y-6">
 
@@ -50,6 +71,7 @@ export default function FinalDetailsForm({
                     label="Email"
                     type="email"
                     value={bookingDraft.email}
+                    disabled
                     onChange={(v: string) =>
                         setBookingDraft((d: any) => ({ ...d, email: v }))
                     }
@@ -136,13 +158,13 @@ export default function FinalDetailsForm({
 }
 
 /* ================= INPUT ================= */
-
 function Input({
     label,
     value,
     onChange,
     placeholder,
     type = "text",
+    disabled = false,
 }: any) {
     return (
         <div>
@@ -154,7 +176,12 @@ function Input({
                 value={value || ""}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="w-full rounded-xl border px-4 py-3 text-sm"
+                disabled={disabled}
+                className={`w-full rounded-xl border px-4 py-3 text-sm ${
+                    disabled
+                        ? "bg-gray-100 text-gray-500 cursor-not-allowed"
+                        : ""
+                }`}
             />
         </div>
     );
