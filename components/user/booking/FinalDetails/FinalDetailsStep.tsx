@@ -61,6 +61,12 @@ export default function FinalDetailsStep({
     }
 
     useEffect(() => {
+        if (typeof window !== "undefined" && (window as any).fbq) {
+            (window as any).fbq("track", "InitiateCheckout");
+        }
+    }, []);
+
+    useEffect(() => {
         if (isAuthenticated && pendingSubmit) {
             setPendingSubmit(false);
             submitBooking();
@@ -107,8 +113,13 @@ export default function FinalDetailsStep({
 
         // 🔥 3. Now proceed booking
 
+        if (typeof window !== "undefined" && (window as any).fbq) {
+            (window as any).fbq("track", "AddPaymentInfo");
+        }
+
         try {
             setLoading(true);
+
 
             const bookingRes = await api.post("/bookings", bookingDraft);
 

@@ -32,6 +32,7 @@ type Props = {
     bookingDraft: BookingDraft;
     setBookingDraft: Dispatch<SetStateAction<BookingDraft>>;
     onContinue: () => void;
+    onBack?: () => void;
 };
 
 export default function ServiceAndAddOnsStep({
@@ -40,18 +41,19 @@ export default function ServiceAndAddOnsStep({
     bookingDraft,
     setBookingDraft,
     onContinue,
+    onBack,
 }: Props) {
 
     const [selectedCategory, setSelectedCategory] =
-    useState<VehicleCategory | null>(() => {
-        if (!bookingDraft.vehicleCategory) return null;
+        useState<VehicleCategory | null>(() => {
+            if (!bookingDraft.vehicleCategory) return null;
 
-        const match = services
-            .flatMap((s) => s.prices.map((p) => p.vehicleCategory))
-            .find((c) => c.name === bookingDraft.vehicleCategory);
+            const match = services
+                .flatMap((s) => s.prices.map((p) => p.vehicleCategory))
+                .find((c) => c.name === bookingDraft.vehicleCategory);
 
-        return match ?? null;
-    });
+            return match ?? null;
+        });
 
     const canContinue = Boolean(bookingDraft.servicePriceId);
 
@@ -311,7 +313,13 @@ export default function ServiceAndAddOnsStep({
             )}
 
             {/* ================= CONTINUE ================= */}
-            <div className="flex justify-end pt-6">
+            <div className="flex justify-between pt-6">
+                <button
+                    onClick={onBack}
+                    className="rounded-full border px-6 py-2 text-sm"
+                >
+                    ← Back
+                </button>
                 <button
                     disabled={!canContinue}
                     onClick={onContinue}

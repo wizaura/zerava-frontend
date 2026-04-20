@@ -8,6 +8,8 @@ import api from "@/lib/user/axios";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import Link from "next/link";
 import BookingManageModal from "./BookingManageModule";
+import RebookModal from "./ReebokModal";
+
 
 const STATUS_STYLE: Record<
     "confirmed" | "pending" | "cancelled" | "completed" | "no_show",
@@ -16,7 +18,7 @@ const STATUS_STYLE: Record<
     confirmed: "bg-blue-100 text-blue-700",
     pending: "bg-yellow-100 text-yellow-700",
     cancelled: "bg-red-100 text-red-700",
-    completed: "bg-blue-100 text-blue-700",
+    completed: "bg-green-100 text-green-700",
     no_show: "bg-gray-100 text-gray-700",
 };
 
@@ -61,12 +63,18 @@ export default function UserBookingsSection() {
     const [cancelTarget, setCancelTarget] = useState<UIBooking | null>(null);
     const [cancelLoading, setCancelLoading] = useState(false);
     const [selectedBooking, setSelectedBooking] = useState<UIBooking | null>(null);
+    const [rebookTarget, setRebookTarget] = useState<UIBooking | null>(null);
+
 
     const router = useRouter();
 
     useEffect(() => {
         load();
     }, []);
+
+    const lastCompletedBooking = bookings
+        .filter((b) => b.status === "completed")
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 
     function canReschedule(date: string, timeFrom: string) {
         const [h, m] = timeFrom.split(":").map(Number);
@@ -178,6 +186,46 @@ export default function UserBookingsSection() {
 
     return (
         <div className="mt-6 rounded-xl max-w-6xl mx-auto border bg-white p-6">
+            {lastCompletedBooking && (
+                <div className="mb-6 rounded-xl bg-gradient-to-r from-[#0B2E28] to-[#123F38] p-[1px]">
+                    <div className="rounded-2xl bg-[#0A0A0A] p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+                        {/* LEFT CONTENT */}
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 rounded-xl bg-electric-teal/20 flex items-center justify-center">
+                                <CalendarClock className="text-electric-teal" size={22} />
+                            </div>
+
+                            <div>
+                                <p className="text-white font-semibold text-sm sm:text-base">
+                                    Repeat your last service
+                                </p>
+
+                                <p className="text-gray-400 text-xs sm:text-sm mt-1">
+                                    {lastCompletedBooking.service} • Same weekday next month
+                                </p>
+
+                                <p className="text-gray-500 text-xs mt-1">
+                                    {formatDateTime(
+                                        lastCompletedBooking.date,
+                                        lastCompletedBooking.timeFrom,
+                                        lastCompletedBooking.timeTo
+                                    )}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* CTA */}
+                        <button
+                            onClick={() => setRebookTarget(lastCompletedBooking)}
+                            className="shrink-0 rounded-full bg-electric-teal text-eco-black px-5 py-2 text-sm font-semibold hover:brightness-110 transition flex items-center gap-2"
+                        >
+                            Rebook Now
+                        </button>
+
+                    </div>
+                </div>
+            )}
             <h2 className="mb-4 text-lg font-semibold">All Bookings</h2>
             {bookings.length === 0 ? (
                 /* ---------- EMPTY STATE ---------- */
@@ -284,6 +332,10 @@ export default function UserBookingsSection() {
                 }}
                 canReschedule={canReschedule}
                 goToStripe={goToStripe}
+            />
+            <RebookModal
+                booking={rebookTarget}
+                onClose={() => setRebookTarget(null)}
             />
             <ConfirmModal
                 open={!!cancelTarget}

@@ -24,18 +24,6 @@ export default function FinalDetailsForm({
     const [reg, setReg] = useState("");
 
     useEffect(() => {
-        if (!reg) return;
-
-        const timer = setTimeout(() => {
-            if (isValidUKReg(reg)) {
-                lookupVehicle(reg);
-            }
-        }, 1500);
-
-        return () => clearTimeout(timer);
-    }, [reg]);
-
-    useEffect(() => {
         async function loadProfile() {
             try {
                 const res = await userApi.getProfile();
@@ -43,10 +31,17 @@ export default function FinalDetailsForm({
 
                 setBookingDraft((prev: any) => ({
                     ...prev,
-                    name: user.name || "",
+                    name: user.fullName || "",
                     email: user.email || "",
                     phone: user.phone || "",
+                    registrationNumber: user.registrationNumber || "",
                 }));
+
+                // 🔥 IMPORTANT: also set local reg state
+                if (user.registrationNumber) {
+                    setReg(user.registrationNumber.toUpperCase());
+                }
+
             } catch (err) {
                 console.error("Failed to load profile", err);
             }
@@ -54,6 +49,37 @@ export default function FinalDetailsForm({
 
         loadProfile();
     }, []);
+
+    /* 🔹 2. TRIGGER LOOKUP WHEN REG CHANGES */
+    useEffect(() => {
+        if (!reg) return;
+
+        const timer = setTimeout(() => {
+            if (isValidUKReg(reg)) {
+                lookupVehicle(reg);
+
+                // 🔥 keep draft in sync
+                setBookingDraft((prev: any) => ({
+                    ...prev,
+                    registrationNumber: reg,
+                }));
+            }
+        }, 1500);
+
+        return () => clearTimeout(timer);
+    }, [reg]);
+
+    /* 🔹 INPUT HANDLER */
+    const handleRegChange = (value: string) => {
+        const upper = value.toUpperCase();
+
+        setReg(upper);
+
+        setBookingDraft((prev: any) => ({
+            ...prev,
+            registrationNumber: upper,
+        }));
+    };
 
     return (
         <div className="rounded-2xl border bg-white p-6 shadow-sm space-y-6">
@@ -177,11 +203,10 @@ function Input({
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
                 disabled={disabled}
-                className={`w-full rounded-xl border px-4 py-3 text-sm ${
-                    disabled
+                className={`w-full rounded-xl border px-4 py-3 text-sm ${disabled
                         ? "bg-gray-100 text-gray-500 cursor-not-allowed"
                         : ""
-                }`}
+                    }`}
             />
         </div>
     );

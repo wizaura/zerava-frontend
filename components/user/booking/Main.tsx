@@ -108,6 +108,8 @@ export default function BookingClient({
     const [currentStep, setCurrentStep] = useState(0);
     const user = useSelector((state: any) => state.auth.user);
 
+    console.log(user, 'u')
+
     const [bookingDraft, setBookingDraft] = useState<BookingDraft>({
         servicePriceId: null,
 
@@ -125,8 +127,8 @@ export default function BookingClient({
         make: null,
         model: null,
         colour: null,
-        registrationNumber:  null,
-        parkingInstructions:  null,
+        registrationNumber: null,
+        parkingInstructions: null,
 
         timeFrom: null,
         timeTo: null,
@@ -149,17 +151,52 @@ export default function BookingClient({
     /* ---------- PREFILL USER DATA ---------- */
 
     useEffect(() => {
-        if (!user) return;
+        if (!user || !services?.length) return;
+
+        const selectedService = services.find(
+            (s) => s.id === user.serviceId
+        );
+
+        const selectedPrice = selectedService?.prices.find(
+            (p) => p.vehicleCategory.id === user.vehicleCategoryId
+        );
 
         setBookingDraft((d) => ({
             ...d,
+
+            /* ---------- USER ---------- */
             name: d.name ?? user.fullName ?? "",
             email: d.email ?? user.email ?? "",
             phone: d.phone ?? user.phone ?? "",
+
             address: d.address ?? user.address ?? "",
             postcode: d.postcode ?? user.postcode ?? "",
+            houseNumber: d.houseNumber ?? user.houseNumber ?? "",
+
+            /* ---------- VEHICLE ---------- */
+            make: d.make ?? user.make ?? "",
+            model: d.model ?? user.model ?? "",
+            colour: d.colour ?? user.colour ?? "",
+            registrationNumber: d.registrationNumber ?? user.registrationNumber ?? "",
+            parkingInstructions: d.parkingInstructions ?? user.parkingInstructions ?? "",
+
+            /* ---------- SERVICE (AUTO SELECT) ---------- */
+            vehicleCategory:
+                d.vehicleCategory ??
+                selectedPrice?.vehicleCategory?.name ??
+                null,
+
+            servicePriceId:
+                d.servicePriceId ??
+                selectedPrice?.id ??
+                null,
+
+            serviceName:
+                d.serviceName ??
+                selectedService?.name ??
+                null,
         }));
-    }, [user]);
+    }, [user, services]);
 
     useEffect(() => {
         window.scrollTo({
@@ -200,7 +237,7 @@ export default function BookingClient({
                         onContinue={() => setCurrentStep(2)}
                     />
                 )}
-                
+
                 {currentStep === 2 && (
                     <FinalDetailsStep
                         bookingDraft={bookingDraft}

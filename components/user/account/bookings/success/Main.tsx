@@ -3,10 +3,21 @@
 import Link from "next/link";
 import { CheckCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function BookingSuccessPage() {
     const params = useSearchParams();
     const ref = params.get("ref");
+    const amount = params.get("amount");
+
+    useEffect(() => {
+        if ((window as any).fbq && amount) {
+            (window as any).fbq("track", "Purchase", {
+                value: Number(amount) / 100,
+                currency: "GBP",
+            });
+        }
+    }, [amount]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-6">
