@@ -24,7 +24,7 @@ export function CalendarSection({
 
     const today = new Date();
     const maxDate = new Date();
-    maxDate.setDate(today.getDate() + 30);
+    maxDate.setDate(today.getDate() + 45);
 
     return (
         <div className="rounded-2xl border p-8 flex justify-center">

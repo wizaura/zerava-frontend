@@ -41,11 +41,33 @@ export default function RebookModal({ booking, onClose }: any) {
     loadProfile();
   }, []);
 
+  /* ---------------- EFFECTIVE DATA ---------------- */
+  const effectiveData = {
+    serviceId: profile?.serviceId || booking?.serviceId,
+    vehicleCategoryId:
+      profile?.vehicleCategoryId || booking?.vehicleCategoryId,
+
+    make: profile?.make || booking?.vehicleMake,
+    model: profile?.model || booking?.vehicleModel,
+    registrationNumber:
+      profile?.registrationNumber || booking?.registrationNumber,
+    colour: profile?.colour || booking?.vehicleColour,
+
+    postcode: profile?.postcode || booking?.postcode,
+    address: profile?.address || booking?.address,
+
+    parkingInstructions:
+      profile?.parkingInstructions || booking?.parkingInstructions,
+  };
+
   /* ---------------- CHECK POSTCODE ZONE ---------------- */
   useEffect(() => {
-    if (!profile?.postcode) return;
+    if (!effectiveData?.postcode) return;
 
-    const outward = profile.postcode.toUpperCase().trim().split(" ")[0];
+    const outward = effectiveData.postcode
+      .toUpperCase()
+      .trim()
+      .split(" ")[0];
 
     async function checkZone() {
       try {
@@ -65,12 +87,14 @@ export default function RebookModal({ booking, onClose }: any) {
     }
 
     checkZone();
-  }, [profile]);
+  }, [effectiveData.postcode]);
 
+  /* ---------------- LOAD SERVICES ---------------- */
   useEffect(() => {
-    api.get("/services")
+    api
+      .get("/services")
       .then((res) => setServices(res.data.services || []))
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   /* ---------------- DEFAULT DATE ---------------- */
@@ -92,17 +116,18 @@ export default function RebookModal({ booking, onClose }: any) {
     }));
   }, [booking]);
 
+  /* ---------------- SERVICE + PRICE ---------------- */
   const selectedService = services.find(
-    (s) => s.id === profile.serviceId
+    (s) => s.id === effectiveData.serviceId
   );
 
   const selectedCategory = selectedService?.prices.find(
-    (p: any) => p.vehicleCategory.id === profile.vehicleCategoryId
+    (p: any) => p.vehicleCategory.id === effectiveData.vehicleCategoryId
   )?.vehicleCategory;
 
   const selectedPrice = selectedService?.prices.find(
     (p: any) =>
-      p.vehicleCategory.id === profile.vehicleCategoryId
+      p.vehicleCategory.id === effectiveData.vehicleCategoryId
   );
 
   const amount = selectedPrice?.price || 0;
@@ -114,17 +139,15 @@ export default function RebookModal({ booking, onClose }: any) {
 
   /* ---------------- FETCH SLOTS ---------------- */
   async function fetchSlots(date: string) {
-    if (!zoneChecked) return;
+    if (!zoneChecked || !effectiveData.postcode) return;
 
     try {
       setSlotLoading(true);
 
       const res = await api.post("/availability/check", {
         date,
-        postcode: profile.postcode.toUpperCase().trim(),
+        postcode: effectiveData.postcode.toUpperCase().trim(),
       });
-
-      console.log(res, 'res')
 
       setSlots(res.data.slots || []);
     } catch {
@@ -135,15 +158,13 @@ export default function RebookModal({ booking, onClose }: any) {
     }
   }
 
-  /* ---------------- DATE CHANGE EFFECT ---------------- */
+  /* ---------------- DATE CHANGE ---------------- */
   useEffect(() => {
-    if (!draft.date || !profile || !zoneChecked) return;
+    if (!draft.date || !effectiveData.postcode || !zoneChecked) return;
 
-    // reset slot before fetching
     setSlots([]);
-
     fetchSlots(draft.date);
-  }, [draft.date, profile, zoneChecked]);
+  }, [draft.date, effectiveData.postcode, zoneChecked]);
 
   /* ---------------- SELECT SLOT ---------------- */
   function selectSlot(slot: any) {
@@ -174,7 +195,6 @@ export default function RebookModal({ booking, onClose }: any) {
     try {
       setLoading(true);
 
-      // 🔹 1. Create lock
       const lockRes = await api.post("/bookings/lock", {
         serviceSlotId: draft.serviceSlotId,
         templateId: draft.templateId,
@@ -183,10 +203,9 @@ export default function RebookModal({ booking, onClose }: any) {
         date: draft.date,
         timeFrom: draft.timeFrom,
         timeTo: draft.timeTo,
-        postcode: profile.postcode,
+        postcode: effectiveData.postcode,
       });
 
-      // 🔹 2. Create booking (NEW API)
       const bookingRes = await api.post("/bookings/rebook", {
         lockId: lockRes.data.lockId,
         serviceSlotId: lockRes.data.serviceSlotId,
@@ -195,13 +214,11 @@ export default function RebookModal({ booking, onClose }: any) {
         timeTo: draft.timeTo,
       });
 
-      // 🔹 3. Payment
       const session = await api.post("/payments/create-session", {
         bookingId: bookingRes.data.bookingId,
       });
 
       window.location.href = session.data.url;
-
     } catch (err: any) {
       toast.error(err?.response?.data?.message || "Rebook failed");
     } finally {
@@ -212,7 +229,7 @@ export default function RebookModal({ booking, onClose }: any) {
   /* ---------------- GUARD ---------------- */
   if (!booking) return null;
 
-  if (!profile) {
+  if (!profile && !booking) {
     return (
       <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
         <div className="bg-white p-6 rounded-xl text-sm text-gray-500">
@@ -231,33 +248,29 @@ export default function RebookModal({ booking, onClose }: any) {
         className="w-full max-w-3xl max-h-[90vh] rounded-3xl bg-white shadow-xl flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-
         {/* HEADER */}
-        <div className="flex justify-between items-center px-6 py-4 border-b shrink-0">
+        <div className="flex justify-between items-center px-6 py-4 border-b">
           <h2 className="text-lg font-semibold">Rebook Service</h2>
-          <button onClick={onClose}><X /></button>
+          <button onClick={onClose}>
+            <X />
+          </button>
         </div>
 
         {/* BODY */}
         <div className="overflow-y-auto px-6 py-6 space-y-6">
-
           <div className="rounded-2xl border bg-gray-50 p-5 space-y-4">
-
             <p className="text-sm font-semibold text-gray-800">
               Booking Details
             </p>
 
             <div className="grid grid-cols-2 gap-4 text-sm">
-
-              {/* SERVICE */}
               <div>
                 <p className="text-gray-500 text-xs">Service</p>
                 <p className="font-medium">
-                  {selectedService?.name || booking.serviceName || "—"}
+                  {selectedService?.name || booking?.serviceName || "—"}
                 </p>
               </div>
 
-              {/* CATEGORY */}
               <div>
                 <p className="text-gray-500 text-xs">Vehicle Size</p>
                 <p className="font-medium">
@@ -265,45 +278,40 @@ export default function RebookModal({ booking, onClose }: any) {
                 </p>
               </div>
 
-              {/* VEHICLE */}
               <div>
                 <p className="text-gray-500 text-xs">Vehicle</p>
                 <p className="font-medium">
-                  {profile?.make} {profile?.model}
+                  {effectiveData.make || "—"} {effectiveData.model || ""}
                 </p>
                 <p className="text-xs text-gray-400">
-                  {profile?.registrationNumber} ({profile.colour})
+                  {effectiveData.registrationNumber || "—"} (
+                  {effectiveData.colour || "—"})
                 </p>
               </div>
 
-              {/* POSTCODE */}
               <div>
                 <p className="text-gray-500 text-xs">Postcode</p>
                 <p className="font-medium">
-                  {profile?.postcode}
+                  {effectiveData.postcode || "—"}
                 </p>
               </div>
 
-              {/* ADDRESS */}
               <div>
                 <p className="text-gray-500 text-xs">Address</p>
                 <p className="font-medium">
-                  {profile?.address}
+                  {effectiveData.address || "—"}
                 </p>
               </div>
-
             </div>
 
-            {/* PARKING */}
-            {profile?.parkingInstructions && (
+            {effectiveData.parkingInstructions && (
               <div>
                 <p className="text-gray-500 text-xs">Parking Instructions</p>
                 <p className="text-sm">
-                  {profile.parkingInstructions}
+                  {effectiveData.parkingInstructions}
                 </p>
               </div>
             )}
-
           </div>
 
           {!zoneChecked && (
@@ -313,10 +321,8 @@ export default function RebookModal({ booking, onClose }: any) {
           )}
 
           <div className="grid md:grid-cols-2 gap-4">
-
-            {/* CALENDAR */}
             <CalendarSection
-              serviceDays={serviceDays || booking.serviceDays}
+              serviceDays={serviceDays || booking?.serviceDays}
               selectedDate={draft.date}
               selectDate={(date: string) => {
                 setDraft((d: any) => ({
@@ -328,7 +334,6 @@ export default function RebookModal({ booking, onClose }: any) {
               }}
             />
 
-            {/* SLOT */}
             <SlotSection
               slots={slots}
               bookingDraft={draft}
@@ -337,17 +342,15 @@ export default function RebookModal({ booking, onClose }: any) {
             />
           </div>
 
-          {/* EMPTY STATE */}
           {draft.date && !slotLoading && slots.length === 0 && (
             <p className="text-sm text-gray-500">
               No available slots for this date
             </p>
           )}
-
         </div>
 
         {/* FOOTER */}
-        <div className="p-6 border-t shrink-0">
+        <div className="p-6 border-t">
           <button
             onClick={handleRebook}
             disabled={loading}
@@ -359,7 +362,6 @@ export default function RebookModal({ booking, onClose }: any) {
               : `Continue to Payment ${formattedAmount}`}
           </button>
         </div>
-
       </div>
     </div>
   );
