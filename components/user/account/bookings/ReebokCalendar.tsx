@@ -26,7 +26,7 @@ export default function RebookCalendar({
 
   const today = new Date();
   const maxDate = new Date();
-  maxDate.setDate(today.getDate() + 30);
+  maxDate.setDate(today.getDate() + 45);
 
   return (
     <div className="rounded-2xl border border-gray-200 p-4 bg-gray-50">

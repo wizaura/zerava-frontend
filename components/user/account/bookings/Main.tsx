@@ -9,6 +9,8 @@ import ConfirmModal from "@/components/ui/ConfirmModal";
 import Link from "next/link";
 import BookingManageModal from "./BookingManageModule";
 import RebookModal from "./ReebokModal";
+import { useDispatch, useSelector } from "react-redux";
+import { openLoginModal } from "@/store/slices/authSlice";
 
 
 const STATUS_STYLE: Record<
@@ -66,11 +68,17 @@ export default function UserBookingsSection() {
     const [rebookTarget, setRebookTarget] = useState<UIBooking | null>(null);
 
 
-    const router = useRouter();
+    const dispatch = useDispatch();
+    const user = useSelector((state: any) => state.auth.user);
 
     useEffect(() => {
+        if (!user) {
+            dispatch(openLoginModal());
+            return;
+        }
+
         load();
-    }, []);
+    }, [user]);
 
     const lastCompletedBooking = bookings
         .filter((b) => b.status === "completed")
@@ -184,6 +192,8 @@ export default function UserBookingsSection() {
         return "This booking is within 24 hours. No refund will be issued.";
     }
 
+    if (!user) return null;
+
     return (
         <div className="mt-6 rounded-xl max-w-6xl mx-auto border bg-white p-6">
             {lastCompletedBooking && (
@@ -217,7 +227,14 @@ export default function UserBookingsSection() {
 
                         {/* CTA */}
                         <button
-                            onClick={() => setRebookTarget(lastCompletedBooking)}
+                            onClick={() => {
+                                if (!user) {
+                                    dispatch(openLoginModal());
+                                    return;
+                                }
+
+                                setRebookTarget(lastCompletedBooking);
+                            }}
                             className="shrink-0 rounded-full bg-electric-teal text-eco-black px-5 py-2 text-sm font-semibold hover:brightness-110 transition flex items-center gap-2"
                         >
                             Rebook Now

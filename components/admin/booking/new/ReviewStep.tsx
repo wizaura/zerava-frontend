@@ -22,13 +22,8 @@ export default function ReviewStep({ bookingDraft, onBack }: any) {
             setLoading(true);
 
             const res = await api.post("/admin/bookings/create", bookingDraft);
-            const bookingId = res.data.id;
 
-            const session = await api.post("/payments/create-session", {
-                bookingId,
-            });
-
-            setPaymentLink(session.data.url);
+            setPaymentLink(res.data.paymentLink);
 
         } catch (err) {
             console.error(err);
