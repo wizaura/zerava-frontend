@@ -3,8 +3,6 @@
 import { useState } from "react";
 import PlanServiceStep from "./PlanService";
 import { SubscriptionDraft } from "./types";
-import ScheduleStep from "./Schedule";
-import PaymentStep from "./Payment";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { SubscriptionService } from "./Call";
