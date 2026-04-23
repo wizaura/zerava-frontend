@@ -9,6 +9,8 @@ import { SubscriptionDraft } from "../types";
 import { SubscriptionsAPI } from "@/lib/user/subscriptions.api";
 import SubscriptionSummary from "./SubscriptionSummary";
 import { openLoginModal } from "@/store/slices/authSlice";
+import { userApi } from "@/lib/user/user.api";
+import api from "@/lib/user/axios";
 
 type Props = {
     draft: SubscriptionDraft;
@@ -30,12 +32,20 @@ export default function SubscriptionFinalDetailsStep({
 
     const [loading, setLoading] = useState(false);
     const [pendingSubmit, setPendingSubmit] = useState(false);
+    const [regLoading, setRegLoading] = useState(false);
 
     const addressRef = useRef<HTMLInputElement | null>(null);
+
+    /* ---------------- VALIDATION ---------------- */
 
     function isValidUKReg(reg: string) {
         const cleaned = reg.toUpperCase().replace(/\s/g, "");
         return /^[A-Z]{2}[0-9]{2}[A-Z]{3}$/.test(cleaned);
+    }
+
+    function isLikelyReg(reg: string) {
+        const cleaned = reg.toUpperCase().replace(/\s/g, "");
+        return cleaned.length >= 2 && cleaned.length <= 8;
     }
 
     const canSubmit =
@@ -49,7 +59,78 @@ export default function SubscriptionFinalDetailsStep({
         draft.timeTo &&
         draft.servicePriceId &&
         draft.stripePriceId &&
-        isValidUKReg(draft.registrationNumber || "");
+        isValidUKReg(draft.registrationNumber || "") &&
+        draft.make &&
+        draft.model &&
+        draft.colour;
+
+    /* ---------------- PROFILE AUTO-FILL ---------------- */
+
+    useEffect(() => {
+        async function loadProfile() {
+            try {
+                const res = await userApi.getProfile();
+                const user = res.data;
+
+                setDraft((d) => ({
+                    ...d,
+                    name: d.name || user.fullName || "",
+                    email: d.email || user.email || "",
+                    phone: d.phone || user.phone || "",
+                    address: d.address || user.address || "",
+                    postcode: d.postcode || user.postcode || "",
+                    registrationNumber: d.registrationNumber || user.registrationNumber || "",
+                    model: d.model || user.model || "",
+                    make: d.make || user.make || "",
+                    colour: d.colour || user.colour || "",
+                }));
+            } catch {
+                console.log("Profile load failed");
+            }
+        }
+
+        if (isAuthenticated) loadProfile();
+    }, [isAuthenticated]);
+
+    /* ---------------- VEHICLE LOOKUP ---------------- */
+
+    async function lookupVehicle(reg: string) {
+        if (!isLikelyReg(reg)) return;
+
+        try {
+            setRegLoading(true);
+
+            const res = await api.post("/vehicle/lookup", {
+                registrationNumber: reg,
+            });
+
+            setDraft((d) => ({
+                ...d,
+                make: res.data.make,
+                model: res.data.model,
+                colour: res.data.colour,
+            }));
+        } catch {
+            // silent fail
+        } finally {
+            setRegLoading(false);
+        }
+    }
+
+    /* Debounce lookup */
+    useEffect(() => {
+        const reg = draft.registrationNumber;
+
+        if (!reg) return;
+
+        const delay = setTimeout(() => {
+            lookupVehicle(reg);
+        }, 500);
+
+        return () => clearTimeout(delay);
+    }, [draft.registrationNumber]);
+
+    /* ---------------- AUTH CONTINUE ---------------- */
 
     useEffect(() => {
         if (isAuthenticated && pendingSubmit) {
@@ -57,6 +138,8 @@ export default function SubscriptionFinalDetailsStep({
             handleSubscribe();
         }
     }, [isAuthenticated]);
+
+    /* ---------------- SUBSCRIBE ---------------- */
 
     async function handleSubscribe() {
         if (!stripe || !elements) return;
@@ -75,7 +158,6 @@ export default function SubscriptionFinalDetailsStep({
         try {
             setLoading(true);
 
-            /* 1️⃣ Setup Intent */
             const { clientSecret } =
                 await SubscriptionsAPI.createSetupIntent();
 
@@ -91,10 +173,29 @@ export default function SubscriptionFinalDetailsStep({
                 throw new Error(error?.message || "Card setup failed");
             }
 
-            /* 2️⃣ Create Subscription */
+            const subscriptionData = {
+                servicePriceId: draft.servicePriceId!,
+                stripePriceId: draft.stripePriceId!,
+                postcode: draft.postcode!,
+                address: draft.address!,
+                firstServiceDate: draft.firstServiceDate!,
+                preferredDay: draft.preferredDay!,
+                templateId: draft.templateId!,
+                timeFrom: draft.timeFrom!,
+                timeTo: draft.timeTo!,
+                name: draft.name!,
+                email: draft.email!,
+                phone: draft.phone!,
+                make: draft.make || undefined,
+                model: draft.model || undefined,
+                colour: draft.colour || undefined,
+                registrationNumber: draft.registrationNumber || undefined,
+                parkingInstructions: draft.parkingInstructions || undefined,
+            };
+
             await SubscriptionsAPI.createSubscription({
                 paymentMethodId: setupIntent.payment_method as string,
-                subscriptionData: draft,
+                subscriptionData,
             });
 
             toast.success("Subscription activated 🎉");
@@ -106,6 +207,8 @@ export default function SubscriptionFinalDetailsStep({
         }
     }
 
+    /* ---------------- UI ---------------- */
+
     return (
         <div className="max-w-4xl mx-auto space-y-10">
 
@@ -113,17 +216,16 @@ export default function SubscriptionFinalDetailsStep({
                 Final details
             </h2>
 
-            {/* FORM */}
             <div className="rounded-2xl border bg-white p-6 shadow-sm space-y-6">
 
-                {/* Personal */}
+                {/* PERSONAL */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Input label="Full name" value={draft.name}
                         onChange={(v: string) =>
                             setDraft(d => ({ ...d, name: v }))
                         }
                     />
-                    <Input label="Email" type="email" value={draft.email}
+                    <Input label="Email" type="email" value={draft.email} disabled
                         onChange={(v: string) =>
                             setDraft(d => ({ ...d, email: v }))
                         }
@@ -135,8 +237,15 @@ export default function SubscriptionFinalDetailsStep({
                     />
                 </div>
 
-                {/* Vehicle */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* VEHICLE */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <Input label="Registration"
+                        value={draft.registrationNumber || ""}
+                        onChange={(v: string) =>
+                            setDraft(d => ({ ...d, registrationNumber: v }))
+                        }
+                    />
+
                     <Input label="Make" value={draft.make || ""}
                         onChange={(v: string) =>
                             setDraft(d => ({ ...d, make: v }))
@@ -147,15 +256,20 @@ export default function SubscriptionFinalDetailsStep({
                             setDraft(d => ({ ...d, model: v }))
                         }
                     />
-                    <Input label="Registration"
-                        value={draft.registrationNumber || ""}
+                    <Input label="Colour" value={draft.colour || ""}
                         onChange={(v: string) =>
-                            setDraft(d => ({ ...d, registrationNumber: v }))
+                            setDraft(d => ({ ...d, colour: v }))
                         }
                     />
                 </div>
 
-                {/* Address */}
+                {regLoading && (
+                    <p className="text-xs text-gray-500">
+                        Fetching vehicle details…
+                    </p>
+                )}
+
+                {/* ADDRESS */}
                 <div>
                     <label className="text-sm font-medium">Full address</label>
                     <input
@@ -168,7 +282,7 @@ export default function SubscriptionFinalDetailsStep({
                     />
                 </div>
 
-                {/* Stripe */}
+                {/* STRIPE */}
                 <div className="rounded-xl border p-4">
                     <CardElement
                         options={{
@@ -210,7 +324,7 @@ export default function SubscriptionFinalDetailsStep({
 
 /* ---------- Input ---------- */
 
-function Input({ label, value, onChange, type = "text" }: any) {
+function Input({ label, value, onChange, type = "text", disabled = false, }: any) {
     return (
         <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">
@@ -219,6 +333,7 @@ function Input({ label, value, onChange, type = "text" }: any) {
             <input
                 type={type}
                 value={value || ""}
+                disabled={disabled}
                 onChange={e => onChange(e.target.value)}
                 className="w-full rounded-xl border px-4 py-3 text-sm"
             />

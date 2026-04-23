@@ -15,7 +15,7 @@ export default function AdminLayout({
             <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
                 <AdminHeader />
                 <div className="flex-1 overflow-y-auto">
-                    <main className="max-w-7xl mx-auto p-6">{children}</main>
+                    <main className="max-w-7xl mx-auto p-2 md:p-6">{children}</main>
                 </div>
             </div>
         </AdminUIProvider>

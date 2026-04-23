@@ -4,7 +4,7 @@ import ServiceAndAddOnsStep from "@/components/user/booking/Service";
 
 export default function AdminServiceStep(props: any) {
   return (
-    <div className="border border-gray-200 rounded-2xl p-6 bg-white space-y-8">
+    <div className="border border-gray-200 rounded-2xl p-3 md:p-6 bg-white space-y-8">
 
       <div>
         <h2 className="text-xl font-semibold">

@@ -68,7 +68,7 @@ export default function AdminScheduleStep({
   }
 
   return (
-    <div className="border border-gray-200 rounded-2xl p-6 bg-white space-y-8">
+    <div className="border border-gray-200 rounded-2xl mmd:p-6 bg-white space-y-8">
 
       <div>
         <h2 className="text-xl font-semibold">

@@ -149,7 +149,7 @@ export default function AdminUserStep({
 
   /* ---------------- UI ---------------- */
   return (
-    <div className="border border-gray-200 rounded-2xl p-6 bg-white space-y-8">
+    <div className="border border-gray-200 rounded-2xl p-3 md:p-6 bg-white space-y-8">
 
       {/* HEADER */}
       <div>

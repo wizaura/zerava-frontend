@@ -198,7 +198,8 @@ export default function SubscriptionPage() {
                         <div className="mt-10 flex flex-wrap gap-4 justify-between items-center">
 
                             <Link
-                                href={`/account/subscriptions/${subscription.id}/reschedule`}
+                                // href={`/account/subscriptions/${subscription.id}/reschedule`}
+                                href={`/account/subscriptions`}
                                 className="rounded-full bg-white text-[#0B2E28] px-6 py-2 text-sm font-medium hover:opacity-90 transition"
                             >
                                 Reschedule Plan

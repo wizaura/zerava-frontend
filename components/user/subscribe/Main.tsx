@@ -38,6 +38,7 @@ export default function SubscribeClient({
 
         postcode: null,
         address: null,
+        houseNumber: null,
 
         preferredDay: null,
         firstServiceDate: null,
@@ -51,6 +52,7 @@ export default function SubscribeClient({
         phone: null,
         make: null,
         model: null,
+        colour: null,
         registrationNumber: null,
         parkingInstructions: null,
 

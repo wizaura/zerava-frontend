@@ -5,25 +5,29 @@ import { MapPin } from "lucide-react";
 import { usePostcodeAddressSuggestions } from "@/hooks/useGoogleAutocomplete";
 
 export function PostcodeSection({
+    postcode,
     bookingDraft,
     setBookingDraft,
+    address,
+    setPostcode,
+    setAddress,
+    houseNumber,
+    setHouseNumber,
     loading,
     error,
 }: any) {
-    const postcode = bookingDraft.postcode || "";
-    const houseNumber = bookingDraft.houseNumber || "";
-    const address = bookingDraft.address || "";
 
     const suggestions = usePostcodeAddressSuggestions(postcode);
 
     const [showSuggestions, setShowSuggestions] = useState(true);
-    const [baseAddress, setBaseAddress] = useState(address || "");
+    const [baseAddress, setBaseAddress] = useState(bookingDraft.address || "");
 
-    /* SELECT ADDRESS FROM GOOGLE */
     const handleSelect = (placeId: string) => {
-        const service = new window.google.maps.places.PlacesService(
-            document.createElement("div")
-        );
+
+        const service =
+            new window.google.maps.places.PlacesService(
+                document.createElement("div")
+            );
 
         service.getDetails(
             {
@@ -31,6 +35,7 @@ export function PostcodeSection({
                 fields: ["formatted_address", "address_components"],
             },
             (place: any) => {
+
                 if (!place) return;
 
                 const components = place.address_components || [];
@@ -54,35 +59,37 @@ export function PostcodeSection({
 
                 setBaseAddress(addressWithoutHouse);
 
-                setBookingDraft((prev: any) => ({
-                    ...prev,
-                    postcode: postcodeValue?.toUpperCase() || prev.postcode,
-                }));
+                if (postcodeValue) {
+                    setPostcode(postcodeValue.toUpperCase());
+                }
 
                 setShowSuggestions(false);
             }
         );
     };
 
-    /* BUILD FULL ADDRESS */
+    // Build full address whenever house number changes
     useEffect(() => {
         let cleanBase = baseAddress || "";
 
-        if (houseNumber && cleanBase) {
-            const regex = new RegExp(`^${houseNumber}\\s*`, "i");
+        if (bookingDraft.houseNumber && cleanBase) {
+            const hn = bookingDraft.houseNumber.trim();
+
+            // 🔥 remove house number if already at start
+            const regex = new RegExp(`^${hn}\\s*`, "i");
             cleanBase = cleanBase.replace(regex, "");
         }
 
-        const fullAddress = [houseNumber, cleanBase]
+        const fullAddress = [
+            bookingDraft.houseNumber,
+            cleanBase
+        ]
             .filter(Boolean)
             .join(" ")
             .trim();
 
-        setBookingDraft((prev: any) => ({
-            ...prev,
-            address: fullAddress,
-        }));
-    }, [houseNumber, baseAddress]);
+        setAddress(fullAddress);
+    }, [bookingDraft.houseNumber, baseAddress]);
 
     const highlightPostcode = (text: string) => {
         const match = text.match(/[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}/i);
@@ -103,11 +110,9 @@ export function PostcodeSection({
     return (
         <div className="rounded-2xl border p-6 space-y-5">
 
-            {/* POSTCODE + HOUSE NUMBER */}
+            {/* POSTCODE INPUT */}
             <div className="flex flex-col sm:flex-row gap-3">
-
-                {/* POSTCODE */}
-                <div className="space-y-2 w-full relative">
+                <div className="space-y-2 w-full relative overflow-visible">
                     <label className="text-sm font-medium">
                         Your Postcode
                     </label>
@@ -115,68 +120,98 @@ export function PostcodeSection({
                     <input
                         value={postcode}
                         onChange={(e) => {
-                            setBookingDraft((prev: any) => ({
-                                ...prev,
-                                postcode: e.target.value.toUpperCase(),
-                            }));
+                            setPostcode(e.target.value.toUpperCase());
                             setShowSuggestions(true);
                         }}
-                        className="w-full rounded-xl border px-4 py-3 text-sm focus:ring-2 focus:ring-electric-teal"
+                        className="w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-electric-teal"
                         placeholder="Enter postcode (e.g. SO16 0YS)"
                     />
 
-                    {/* SUGGESTIONS */}
                     {showSuggestions && suggestions.length > 0 && (
-                        <div className="absolute top-full left-0 right-0 z-50 mt-1 bg-white border rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                        <div
+                            className="
+            absolute top-full left-0 right-0
+            z-[999]
+            mt-1
+            bg-white
+            border border-gray-200
+            rounded-xl
+            shadow-lg
+            max-h-60
+            overflow-y-auto
+            w-full
+        "
+                        >
+
                             {suggestions.map((item) => (
                                 <div
                                     key={item.place_id}
                                     onClick={() => handleSelect(item.place_id)}
-                                    className="px-4 py-3 text-sm cursor-pointer hover:bg-gray-100 flex gap-2"
+                                    className="
+                    px-4 py-3
+                    text-sm
+                    cursor-pointer
+                    hover:bg-gray-100
+                    flex items-start gap-2
+                    break-words
+                "
                                 >
-                                    <MapPin size={14} className="mt-1 text-gray-400" />
-                                    <span>{highlightPostcode(item.description)}</span>
+                                    <MapPin
+                                        size={14}
+                                        className="mt-1 text-gray-400 shrink-0"
+                                    />
+
+                                    <span className="text-gray-700">
+                                        {highlightPostcode(item.description)}
+                                    </span>
+
                                 </div>
                             ))}
+
                         </div>
                     )}
+
                 </div>
 
                 {/* HOUSE NUMBER */}
-                <div className="space-y-2 w-full sm:w-[200px]">
+                <div className="space-y-2">
+
                     <label className="text-sm font-medium">
-                        House / Flat No.
+                        House / Flat Number
                     </label>
 
                     <input
                         value={houseNumber}
-                        onChange={(e) =>
-                            setBookingDraft((prev: any) => ({
-                                ...prev,
-                                houseNumber: e.target.value,
+                        onChange={(e) => {
+                            setBookingDraft((d: any) => ({
+                                ...d,
+                                houseNumber: e.target.value
                             }))
-                        }
-                        className="w-full rounded-xl border px-4 py-3 text-sm focus:ring-2 focus:ring-electric-teal"
+                            setHouseNumber(e.target.value)
+                        }}
+                        className="w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-electric-teal"
                         placeholder="e.g. 221B"
                     />
+
                 </div>
             </div>
 
-            {/* FULL ADDRESS */}
+            {/* ADDRESS FIELD */}
             <div className="space-y-2">
+
                 <label className="text-sm font-medium">
                     Full Address
                 </label>
 
                 <input
-                    value={address}
+                    value={address ?? ""}
                     readOnly
                     className="w-full rounded-xl border px-4 py-3 text-sm bg-gray-50"
                     placeholder="Select address from suggestions"
                 />
+
             </div>
 
-            {/* STATUS */}
             {loading && (
                 <p className="text-sm text-gray-500">
                     Checking postcode...
@@ -188,6 +223,7 @@ export function PostcodeSection({
                     {error}
                 </p>
             )}
+
         </div>
     );
 }

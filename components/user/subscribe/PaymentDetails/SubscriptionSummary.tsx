@@ -13,6 +13,19 @@ export default function SubscriptionSummary({ draft }: Props) {
     const toggle = (s: string) =>
         setOpen(prev => (prev === s ? "" : s));
 
+    function formatDate(dateStr?: string | null) {
+        if (!dateStr) return "—";
+
+        const d = new Date(dateStr);
+
+        return d.toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+        });
+    }
+
     return (
         <div className="rounded-2xl bg-black p-6 text-white space-y-4">
             <h3 className="text-lg font-medium">
@@ -28,11 +41,16 @@ export default function SubscriptionSummary({ draft }: Props) {
                 <Row label="Service" value={draft.serviceName} />
                 <Row label="Vehicle" value={draft.vehicleCategory} />
                 <Row
-                    label="Schedule"
-                    value={`${formatWeekday(draft.preferredDay)} · ${formatTimeRange(
+                    label="First Service"
+                    value={`${formatDate(draft.firstServiceDate)} · ${formatTimeRange(
                         draft.timeFrom,
                         draft.timeTo
                     )}`}
+                />
+
+                <Row
+                    label="Repeats" 
+                    value={formatWeekday(draft.preferredDay)}
                 />
             </Accordion>
 

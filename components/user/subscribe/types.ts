@@ -23,6 +23,7 @@ export type SubscriptionDraft = {
 
    postcode: string | null;
    address: string | null;
+   houseNumber: string | null;
 
    preferredDay: number | null;   // 0–6 (Sunday–Saturday)
    firstServiceDate: string | null;
@@ -41,6 +42,7 @@ export type SubscriptionDraft = {
 
    make?: string | null;
    model?: string | null;
+   colour: string | null;
    registrationNumber?: string | null;
    parkingInstructions?: string | null;
 

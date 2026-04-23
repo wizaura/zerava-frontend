@@ -3,7 +3,7 @@ import SubscribeCall from "@/components/user/subscribe/Call";
 export default function SubscribePage() {
     return (
         <div>
-            <div className="min-h-[70vh] flex items-center justify-center px-6">
+            {/* <div className="min-h-[70vh] flex items-center justify-center px-6">
                 <div className="max-w-xl w-full text-center border border-white/10 bg-white/5 backdrop-blur-md rounded-2xl p-10">
 
                     <h1 className="text-2xl font-semibold text-white">
@@ -29,8 +29,8 @@ export default function SubscribePage() {
                     </div>
 
                 </div>
-            </div>
-            {/* <SubscribeCall /> */}
+            </div> */}
+            <SubscribeCall />
         </div>
     )
 }

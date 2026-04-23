@@ -10,15 +10,11 @@ import { CalendarSection } from "./CalenderSection";
 import { PostcodeSection } from "./PostcodeSection";
 import { SlotSection } from "./SlotSection";
 import { ScheduleFooter } from "./ScheduleFooter";
+import { openLoginModal } from "@/store/slices/authSlice";
+import { useDispatch, useSelector } from "react-redux";
 
-const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d{2}$/;
-const UK_POSTCODE_REGEX_FULL = /^[A-Z]{1,2}\d{2}\s?\d[A-Z]{2}$/i;
-
-type TemplateSlot = {
-    templateId: string;
-    startTime: string;
-    endTime: string;
-};
+const UK_POSTCODE_REGEX = /^[A-Z]{1,2}\d[A-Z\d]?$/;
+const UK_POSTCODE_REGEX_FULL = /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/i;
 
 type Props = {
     draft: SubscriptionDraft;
@@ -33,19 +29,23 @@ export default function SubscriptionScheduleStep({
     onBack,
     onContinue,
 }: Props) {
-    const [postcode, setPostcode] = useState(draft.postcode || "");
+
     const [serviceDays, setServiceDays] = useState<number[] | null>(null);
     const [zoneChecked, setZoneChecked] = useState(false);
     const [selectedDate, setSelectedDate] = useState<string | null>(
         draft.firstServiceDate
     );
-    const [slots, setSlots] = useState<TemplateSlot[]>([]);
+    const [slots, setSlots] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const prevOutwardRef = useRef<string | null>(null);
 
+    const postcode = draft.postcode || "";
     const outwardCode = postcode.toUpperCase().trim().split(" ")[0];
+
+    const { isAuthenticated } = useSelector((s: any) => s.auth);
+    const dispatch = useDispatch();
 
     /* ================= POSTCODE CHECK ================= */
 
@@ -74,10 +74,6 @@ export default function SubscriptionScheduleStep({
                 setZoneChecked(true);
                 setServiceDays(res.data.serviceDays);
 
-                setDraft((d) => ({
-                    ...d,
-                    postcode: postcode.trim().toUpperCase(),
-                }));
             } catch {
                 setError("Failed to check postcode");
             } finally {
@@ -107,6 +103,8 @@ export default function SubscriptionScheduleStep({
             );
 
             setSlots(res.data.slots || []);
+
+            console.log(slots, 'slots')
         } catch {
             setError("Failed to load time slots");
             setSlots([]);
@@ -115,23 +113,25 @@ export default function SubscriptionScheduleStep({
         }
     }
 
-    console.log(slots);
-
     useEffect(() => {
         if (!selectedDate) return;
         if (!zoneChecked) return;
 
         fetchAvailability(selectedDate);
-    }, [selectedDate]);
+    }, [selectedDate, zoneChecked]);
 
     /* ================= DATE SELECT ================= */
 
     function selectDate(localDate: string) {
         setSelectedDate(localDate);
 
+        const dateObj = new Date(localDate);
+        const preferredDay = dateObj.getDay();
+
         setDraft((d) => ({
             ...d,
             firstServiceDate: localDate,
+            preferredDay,
             templateId: null,
             timeFrom: null,
             timeTo: null,
@@ -151,25 +151,80 @@ export default function SubscriptionScheduleStep({
 
     /* ================= VALIDATION ================= */
 
-    const matchesFirstStage =
-        /^[A-Z]{1,2}\d{2}$/i.test(outwardCode);
-
     const matchesFullPostcode =
-        /^[A-Z]{1,2}\d{2}\s?\d[A-Z]{2}$/i.test(postcode.trim());
+        UK_POSTCODE_REGEX_FULL.test(postcode.trim());
 
-    const canSubmit =
-        zoneChecked &&
-        matchesFullPostcode &&
-        !!selectedDate;
-        // !!draft.templateId;
+    async function handleContinue() {
 
-    function handleContinue() {
-        if (!canSubmit) {
-            toast.error("Please complete schedule selection.");
+        if (!isAuthenticated) {
+            toast.error("Please login to continue.");
+            dispatch(openLoginModal());
             return;
         }
 
-        onContinue();
+        if (!postcode.trim()) {
+            toast.error("Please enter your postcode.");
+            return;
+        }
+
+        if (!draft.houseNumber?.trim()) {
+            toast.error("Please enter house number.");
+            return;
+        }
+
+        if (!matchesFullPostcode) {
+            toast.error("Please enter a valid UK postcode.");
+            return;
+        }
+
+        if (!zoneChecked) {
+            toast.error("We don’t currently serve this postcode.");
+            return;
+        }
+
+        if (!selectedDate) {
+            toast.error("Please select a service date.");
+            return;
+        }
+
+        if (!draft.timeFrom || !draft.timeTo || !draft.templateId) {
+            toast.error("Please select a time slot.");
+            return;
+        }
+
+        try {
+            setLoading(true);
+            setError(null);
+
+            const res = await api.post("/subscriptions/lock", {
+                templateId: draft.templateId,
+                date: draft.firstServiceDate,
+                timeFrom: draft.timeFrom,
+                timeTo: draft.timeTo,
+                postcode: draft.postcode,
+            });
+
+            setDraft((d) => ({
+                ...d,
+                lockId: res.data.lockId,
+                lockExpiresAt: res.data.expiresAt,
+            }));
+
+            onContinue();
+
+        } catch (err: any) {
+            setError(
+                err?.response?.data?.message ||
+                "Sorry, this slot was just taken. Please choose another."
+            );
+
+            if (draft.firstServiceDate) {
+                fetchAvailability(draft.firstServiceDate);
+            }
+
+        } finally {
+            setLoading(false);
+        }
     }
 
     /* ================= UI ================= */
@@ -181,9 +236,10 @@ export default function SubscriptionScheduleStep({
                 Choose your first service
             </h2>
 
+            {/* ✅ UPDATED POSTCODE SECTION */}
             <PostcodeSection
-                postcode={postcode}
-                setPostcode={setPostcode}
+                bookingDraft={draft}
+                setBookingDraft={setDraft}
                 loading={loading}
                 error={error}
             />

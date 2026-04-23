@@ -111,7 +111,7 @@ export default function AdminBookingNew() {
   }
 
   return (
-    <div className="min-h-screen bg-white rounded-2xl text-eco-black p-6">
+    <div className="min-h-screen bg-white rounded-2xl text-eco-black p-2 md:p-6">
 
       <div className="max-w-5xl mx-auto space-y-8">
 
@@ -127,7 +127,7 @@ export default function AdminBookingNew() {
           </button>
 
           {/* 🧾 TITLE */}
-          <h1 className="text-3xl font-semibold text-center flex-1">
+          <h1 className="text-2xl md:text-3xl font-semibold text-center flex-1">
             Manual Booking
           </h1>
 

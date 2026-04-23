@@ -44,7 +44,7 @@ export default function RebookSlots({
 
       {/* TITLE */}
       <p className="text-sm text-gray-600 font-medium">
-        Choose time slot (1h)
+        Choose arrival window (1h)
       </p>
 
       {/* LOADING */}
