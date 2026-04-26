@@ -142,6 +142,9 @@ export default function SubscriptionFinalDetailsStep({
     /* ---------------- SUBSCRIBE ---------------- */
 
     async function handleSubscribe() {
+        toast("Here coming")
+
+        console.log(stripe,'kk', elements)
         if (!stripe || !elements) return;
 
         if (!canSubmit) {
