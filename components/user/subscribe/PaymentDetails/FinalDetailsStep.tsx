@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import toast from "react-hot-toast";
-import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 import { SubscriptionDraft } from "../types";
 import { SubscriptionsAPI } from "@/lib/user/subscriptions.api";
@@ -25,8 +24,6 @@ export default function SubscriptionFinalDetailsStep({
     onBack,
     onSubscribe,
 }: Props) {
-    const stripe = useStripe();
-    const elements = useElements();
     const dispatch = useDispatch();
     const { isAuthenticated } = useSelector((s: any) => s.auth);
 
@@ -47,22 +44,6 @@ export default function SubscriptionFinalDetailsStep({
         const cleaned = reg.toUpperCase().replace(/\s/g, "");
         return cleaned.length >= 2 && cleaned.length <= 8;
     }
-
-    const canSubmit =
-        draft.name &&
-        draft.email &&
-        draft.phone &&
-        draft.address &&
-        draft.postcode &&
-        draft.templateId &&
-        draft.timeFrom &&
-        draft.timeTo &&
-        draft.servicePriceId &&
-        draft.stripePriceId &&
-        isValidUKReg(draft.registrationNumber || "") &&
-        draft.make &&
-        draft.model &&
-        draft.colour;
 
     /* ---------------- PROFILE AUTO-FILL ---------------- */
 
@@ -107,7 +88,6 @@ export default function SubscriptionFinalDetailsStep({
             setDraft((d) => ({
                 ...d,
                 make: res.data.make,
-                model: res.data.model,
                 colour: res.data.colour,
             }));
         } catch {
@@ -117,7 +97,6 @@ export default function SubscriptionFinalDetailsStep({
         }
     }
 
-    /* Debounce lookup */
     useEffect(() => {
         const reg = draft.registrationNumber;
 
@@ -142,15 +121,23 @@ export default function SubscriptionFinalDetailsStep({
     /* ---------------- SUBSCRIBE ---------------- */
 
     async function handleSubscribe() {
-        toast("Here coming")
-
-        console.log(stripe,'kk', elements)
-        if (!stripe || !elements) return;
-
-        if (!canSubmit) {
-            toast.error("Please complete all required fields");
-            return;
-        }
+        if (!draft.name) return toast.error("Name is required");
+        if (!draft.email) return toast.error("Email is required");
+        if (!draft.phone) return toast.error("Phone is required");
+        if (!draft.address) return toast.error("Address is required");
+        if (!draft.postcode) return toast.error("Postcode is required");
+        if (!draft.templateId) return toast.error("Service type missing");
+        if (!draft.timeFrom || !draft.timeTo)
+            return toast.error("Select a valid time slot");
+        if (!draft.servicePriceId || !draft.stripePriceId)
+            return toast.error("Pricing not selected");
+        if (!draft.registrationNumber)
+            return toast.error("Vehicle registration is required");
+        if (!isValidUKReg(draft.registrationNumber))
+            return toast.error("Invalid vehicle registration");
+        if (!draft.make) return toast.error("Vehicle make is required");
+        if (!draft.model) return toast.error("Vehicle model is required");
+        if (!draft.colour) return toast.error("Vehicle colour is required");
 
         if (!isAuthenticated) {
             setPendingSubmit(true);
@@ -161,50 +148,14 @@ export default function SubscriptionFinalDetailsStep({
         try {
             setLoading(true);
 
-            const { clientSecret } =
-                await SubscriptionsAPI.createSetupIntent();
+            const { draftId } = await SubscriptionsAPI.createDraft(draft);
 
-            const card = elements.getElement(CardElement);
-            if (!card) throw new Error("Card element not found");
+            const { url } =
+                await SubscriptionsAPI.createCheckoutSession({draftId});
 
-            const { setupIntent, error } =
-                await stripe.confirmCardSetup(clientSecret, {
-                    payment_method: { card },
-                });
-
-            if (error || !setupIntent?.payment_method) {
-                throw new Error(error?.message || "Card setup failed");
-            }
-
-            const subscriptionData = {
-                servicePriceId: draft.servicePriceId!,
-                stripePriceId: draft.stripePriceId!,
-                postcode: draft.postcode!,
-                address: draft.address!,
-                firstServiceDate: draft.firstServiceDate!,
-                preferredDay: draft.preferredDay!,
-                templateId: draft.templateId!,
-                timeFrom: draft.timeFrom!,
-                timeTo: draft.timeTo!,
-                name: draft.name!,
-                email: draft.email!,
-                phone: draft.phone!,
-                make: draft.make || undefined,
-                model: draft.model || undefined,
-                colour: draft.colour || undefined,
-                registrationNumber: draft.registrationNumber || undefined,
-                parkingInstructions: draft.parkingInstructions || undefined,
-            };
-
-            await SubscriptionsAPI.createSubscription({
-                paymentMethodId: setupIntent.payment_method as string,
-                subscriptionData,
-            });
-
-            toast.success("Subscription activated 🎉");
-            onSubscribe();
+            window.location.href = url;
         } catch (err: any) {
-            toast.error(err.message || "Payment failed");
+            toast.error(err.message || "Checkout failed");
         } finally {
             setLoading(false);
         }
@@ -285,20 +236,10 @@ export default function SubscriptionFinalDetailsStep({
                     />
                 </div>
 
-                {/* STRIPE */}
-                <div className="rounded-xl border p-4">
-                    <CardElement
-                        options={{
-                            hidePostalCode: true,
-                            style: {
-                                base: {
-                                    fontSize: "16px",
-                                    color: "#111",
-                                },
-                            },
-                        }}
-                    />
-                </div>
+                {/* INFO */}
+                <p className="text-xs text-gray-500">
+                    You will be redirected to a secure payment page to complete your subscription.
+                </p>
             </div>
 
             {/* SUMMARY */}
@@ -314,11 +255,11 @@ export default function SubscriptionFinalDetailsStep({
                 </button>
 
                 <button
-                    disabled={!canSubmit || loading}
+                    disabled={loading}
                     onClick={handleSubscribe}
                     className="rounded-full px-8 py-2 text-sm text-white bg-black"
                 >
-                    {loading ? "Processing…" : "Confirm & Subscribe"}
+                    {loading ? "Redirecting…" : "Continue to payment"}
                 </button>
             </div>
         </div>
@@ -327,7 +268,7 @@ export default function SubscriptionFinalDetailsStep({
 
 /* ---------- Input ---------- */
 
-function Input({ label, value, onChange, type = "text", disabled = false, }: any) {
+function Input({ label, value, onChange, type = "text", disabled = false }: any) {
     return (
         <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">
