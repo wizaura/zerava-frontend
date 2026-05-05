@@ -36,12 +36,6 @@ export default function SubscriptionSuccessPage() {
                     Your subscription has been successfully created.
                 </p>
 
-                {sessionId && (
-                    <p className="mt-4 rounded-lg bg-gray-100 py-2 text-sm">
-                        Session: <strong>{sessionId.substring(0,8)}...</strong>
-                    </p>
-                )}
-
                 <div className="mt-6 space-y-3">
                     <Link
                         href="/account/subscriptions"

@@ -9,6 +9,7 @@ import {
     MapPin,
     CreditCard,
     RefreshCcw,
+    Calendar1,
 } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -34,6 +35,8 @@ type Subscription = {
     postcode: string;
     address: string;
     nextBillingDate: string;
+    firstServiceDate: string;
+    cancelAtPeriodEnd: boolean;
     upcomingBookings: UpcomingBooking[];
 };
 
@@ -109,7 +112,7 @@ export default function SubscriptionPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 px-6 py-16">
-            <div className="mx-auto max-w-5xl space-y-14">
+            <div className="mx-auto max-w-5xl space-y-6">
 
                 {/* HEADER */}
                 <div className="max-w-3xl mx-auto">
@@ -120,6 +123,34 @@ export default function SubscriptionPage() {
                         Manage your recurring Zerava vehicle care.
                     </p>
                 </div>
+
+                {(subscription.status === "canceled" || subscription.cancelAtPeriodEnd) && (
+                    <div className="mt-6 border max-w-3xl mx-auto border-gray-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gray-50">
+
+                        <div>
+                            <p className="text-sm font-medium text-gray-800">
+                                Start a new subscription
+                            </p>
+                            <p className="text-xs text-gray-500">
+                                You can create a new plan once your current subscription ends or is cancelled.
+                            </p>
+                        </div>
+
+                        <button
+                            onClick={() => window.location.href = "/subscribe"}
+                            className="
+                            px-5 py-2 rounded-full font-medium
+                            bg-electric-teal text-white
+                            hover:bg-navy/90
+                            transition-all duration-200
+                            shadow-sm
+                        "
+                        >
+                            Add New Subscription
+                        </button>
+
+                    </div>
+                )}
 
                 {/* CREDIT CARD STYLE PANEL */}
                 <div className="relative max-w-3xl mx-auto rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
@@ -192,48 +223,68 @@ export default function SubscriptionPage() {
                                 title="Subscription ID"
                                 subtitle={subscription.id.slice(0, 12)}
                             />
+                            <DetailItemCard
+                                icon={<Calendar1 size={18} />}
+                                title="First Service Date"
+                                subtitle={formatDate(subscription.firstServiceDate)}
+                            />
                         </div>
 
                         {/* ACTIONS */}
-                        <div className="mt-10 flex flex-wrap gap-4 justify-between items-center">
+                        <div className="mt-10 flex flex-wrap gap-4 justify-end items-center">
 
-                            <Link
-                                // href={`/account/subscriptions/${subscription.id}/reschedule`}
-                                href={`/account/subscriptions`}
+                            {/* <Link
+                                href={`/account/subscriptions/${subscription.id}/reschedule`}
+                                // href={`/account/subscriptions`}
                                 className="rounded-full bg-white text-[#0B2E28] px-6 py-2 text-sm font-medium hover:opacity-90 transition"
                             >
                                 Reschedule Plan
-                            </Link>
+                            </Link> */}
 
-                            <div className="flex gap-6 text-sm">
+                            <div className="flex gap-3 text-sm">
 
-                                {subscription.status === "active" && (
+                                {subscription.status === "active" && !subscription.cancelAtPeriodEnd && (
                                     <button
                                         onClick={() =>
                                             setConfirmType(
-                                                subscription.isPaused
-                                                    ? "resume"
-                                                    : "pause"
+                                                subscription.isPaused ? "resume" : "pause"
                                             )
                                         }
-                                        className="text-yellow-300 hover:underline"
+                                        className={`
+                                            px-4 py-2 rounded-full font-medium
+                                            transition-all duration-200
+                                            shadow-sm
+                                            ${subscription.isPaused
+                                                ? "bg-green-100 text-green-700 hover:bg-green-200 hover:shadow"
+                                                : "bg-yellow-100 text-yellow-700 hover:bg-yellow-200 hover:shadow"
+                                            }
+                                        `}
                                     >
-                                        {subscription.isPaused
-                                            ? "Resume"
-                                            : "Pause"}
+                                        {subscription.isPaused ? "▶ Resume" : "⏸ Pause"}
                                     </button>
                                 )}
 
-                                {subscription.status !== "canceled" && (
+                                {subscription.status !== "canceled" && !subscription.cancelAtPeriodEnd && (
                                     <button
                                         onClick={() => setConfirmType("cancel")}
-                                        className="text-red-300 hover:underline"
+                                        className="
+                                            px-4 py-2 rounded-full font-medium
+                                            bg-red-100 text-red-600
+                                            hover:bg-red-200 hover:shadow
+                                            transition-all duration-200
+                                        "
                                     >
-                                        Cancel
+                                        ✖ Cancel
                                     </button>
                                 )}
+
                             </div>
                         </div>
+                        {subscription.cancelAtPeriodEnd && (
+                            <div className="mt-3 text-xs text-red-500 bg-red-950 border border-red-900 px-3 py-2 rounded-lg">
+                                ⚠️ This subscription will be cancelled at the end of the current billing period.
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -250,7 +301,7 @@ export default function SubscriptionPage() {
                                 booking={booking}
                                 onReschedule={() =>
                                     router.push(
-                                        `/account/bookings/${booking.id}/reschedule`
+                                        `/account/bookings`
                                     )
                                 }
                             />
@@ -340,7 +391,7 @@ function VisitItem({
                 onClick={onReschedule}
                 className="rounded-full border border-[#0B2E28] px-5 py-2 text-sm font-medium text-[#0B2E28] hover:bg-[#0B2E28] hover:text-white transition"
             >
-                Reschedule
+                Bookings
             </button>
         </div>
     );

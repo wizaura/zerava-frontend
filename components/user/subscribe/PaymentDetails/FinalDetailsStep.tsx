@@ -35,11 +35,6 @@ export default function SubscriptionFinalDetailsStep({
 
     /* ---------------- VALIDATION ---------------- */
 
-    function isValidUKReg(reg: string) {
-        const cleaned = reg.toUpperCase().replace(/\s/g, "");
-        return /^[A-Z]{2}[0-9]{2}[A-Z]{3}$/.test(cleaned);
-    }
-
     function isLikelyReg(reg: string) {
         const cleaned = reg.toUpperCase().replace(/\s/g, "");
         return cleaned.length >= 2 && cleaned.length <= 8;
@@ -133,7 +128,7 @@ export default function SubscriptionFinalDetailsStep({
             return toast.error("Pricing not selected");
         if (!draft.registrationNumber)
             return toast.error("Vehicle registration is required");
-        if (!isValidUKReg(draft.registrationNumber))
+        if (!isLikelyReg(draft.registrationNumber))
             return toast.error("Invalid vehicle registration");
         if (!draft.make) return toast.error("Vehicle make is required");
         if (!draft.model) return toast.error("Vehicle model is required");

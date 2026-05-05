@@ -5,15 +5,23 @@
 import { useEffect, useState } from "react";
 import { Quote, Star } from "lucide-react";
 import Image from "next/image";
+import api from "@/lib/user/axios";
 
 export default function TestimonialsSection() {
     const [reviews, setReviews] = useState<any[]>([]);
 
-    useEffect(() => {
-        fetch("/settings/google-reviews")
-            .then((res) => res.json())
-            .then((data) => setReviews(data));
-    }, []);
+    // useEffect(() => {
+    //     const fetchReviews = async () => {
+    //         try {
+    //             const res = await api.get("/settings/google-reviews");
+    //             setReviews(res.data);
+    //         } catch (err) {
+    //             console.error("Failed to fetch reviews:", err);
+    //         }
+    //     };
+
+    //     fetchReviews();
+    // }, []);
 
     return (
         <section className="bg-white px-6 py-24">
