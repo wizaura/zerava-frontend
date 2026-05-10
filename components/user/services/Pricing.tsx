@@ -10,7 +10,8 @@ import {
     Leaf,
     Clock,
     Check,
-    Star
+    Star,
+    RefreshCcw
 } from "lucide-react";
 
 const iconMap: Record<string, any> = {
@@ -256,137 +257,162 @@ export default function PricingSection() {
                     )}
 
                     {/* ---------- CARD ---------- */}
-                    <div className="grid gap-10 md:grid-cols-2 max-w-4xl mx-auto">
-                        {plansToRender.map((plan, index) => {
-                            const price = plan.prices?.[vehicleSize];
+                    {planType === "subscription" ? (
+                        <div className="max-w-2xl mx-auto">
+                            <div className="rounded-3xl border border-gray-200 bg-white p-12 text-center shadow-sm">
 
-                            const showPopular =
-                                planType === "oneoff"
-                                    ? plan.isPopular
-                                    : plan.billing === "monthly";
+                                <div className="mx-auto w-16 h-16 rounded-full bg-[#0B2E28]/10 flex items-center justify-center mb-6">
+                                    <RefreshCcw className="w-7 h-7 text-[#0B2E28]" />
+                                </div>
 
-                            const durationText = plan.name.includes("+")
-                                ? "75"
-                                : "45";
+                                <h3 className="text-2xl font-semibold text-gray-900">
+                                    No Active Subscription Plans
+                                </h3>
 
-                            return (
-                                <div
-                                    key={index}
-                                    className={`relative bg-white rounded-2xl border p-10 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${showPopular
-                                        ? "border-electric-teal"
-                                        : "border-gray-200"
-                                        }`}
-                                >
+                                <p className="mt-4 text-gray-600 leading-relaxed max-w-lg mx-auto">
+                                    Zerava subscription plans are currently unavailable while we
+                                    improve our recurring vehicle care experience.
+                                    Please check back soon.
+                                </p>
 
-                                    {/* Popular Badge */}
-                                    {showPopular && (
-                                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                                            <span className="flex items-center text-white gap-2 bg-electric-teal text-black text-xs px-4 py-1 rounded-full font-semibold shadow">
-                                                <Star className="text-white h-4 w-4" />
-                                                Most Popular
-                                            </span>
-                                        </div>
-                                    )}
+                            </div>
+                        </div>
 
-                                    {/* Header with Icon */}
-                                    <div className="flex items-center gap-3">
-                                        {plan.icon && iconMap[plan.icon] && (
-                                            <div className="p-2 rounded-xl bg-gray-100">
-                                                {React.createElement(iconMap[plan.icon], {
-                                                    className: "h-5 w-5 text-gray-700",
-                                                })}
+                    ) : (
+                        <div className="grid gap-10 md:grid-cols-2 max-w-4xl mx-auto">
+                            {plansToRender.map((plan, index) => {
+                                const price = plan.prices?.[vehicleSize];
+
+                                const showPopular =
+                                    planType === "oneoff"
+                                        ? plan.isPopular
+                                        : plan.billing === "monthly";
+
+                                const durationText = plan.name.includes("+")
+                                    ? "75"
+                                    : "45";
+
+                                return (
+                                    <div
+                                        key={index}
+                                        className={`relative bg-white rounded-2xl border p-10 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${showPopular
+                                            ? "border-electric-teal"
+                                            : "border-gray-200"
+                                            }`}
+                                    >
+
+                                        {/* Popular Badge */}
+                                        {showPopular && (
+                                            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                                                <span className="flex items-center text-white gap-2 bg-electric-teal text-black text-xs px-4 py-1 rounded-full font-semibold shadow">
+                                                    <Star className="text-white h-4 w-4" />
+                                                    Most Popular
+                                                </span>
                                             </div>
                                         )}
 
-                                        <h3 className="text-xl font-semibold text-gray-900">
-                                            {plan.name}
-                                        </h3>
-                                    </div>
-
-                                    {plan.billing && (
-                                        <p className="text-sm text-electric-teal mt-2 capitalize font-medium">
-                                            {plan.billing}
-                                        </p>
-                                    )}
-
-                                    <p className="mt-3 text-gray-600 text-sm leading-relaxed">
-                                        {plan.description}
-                                    </p>
-
-                                    {/* Price */}
-                                    <div className="mt-8">
-                                        <p className="text-5xl font-semibold text-gray-900">
-                                            £{price / 100}
-                                            {planType === "subscription" && (
-                                                <span className="text-base font-normal text-gray-500">
-                                                    {" "}
-                                                    /month
-                                                </span>
+                                        {/* Header with Icon */}
+                                        <div className="flex items-center gap-3">
+                                            {plan.icon && iconMap[plan.icon] && (
+                                                <div className="p-2 rounded-xl bg-gray-100">
+                                                    {React.createElement(iconMap[plan.icon], {
+                                                        className: "h-5 w-5 text-gray-700",
+                                                    })}
+                                                </div>
                                             )}
-                                        </p>
 
-                                        {planType === "subscription" && (
-                                            <p className="mt-2 text-sm text-gray-500">
-                                                {plan.name === "Fortnightly" ? 2 : 1} visit per month
+                                            <h3 className="text-xl font-semibold text-gray-900">
+                                                {plan.name}
+                                            </h3>
+                                        </div>
+
+                                        {plan.billing && (
+                                            <p className="text-sm text-electric-teal mt-2 capitalize font-medium">
+                                                {plan.billing}
                                             </p>
                                         )}
-                                        {plan.durationMin && (
-                                            <>
-                                                <p className="text-xs italic mt-3 text-gray-500">Time up to: {durationText} min</p>
-                                                <span className="text-xs italic mt-3 text-gray-500">{plan.vehicleConditionNote}</span>
-                                            </>
-                                        )}
-                                    </div>
 
-                                    {/* Divider */}
-                                    <div className="my-4 h-px bg-gray-200" />
+                                        <p className="mt-3 text-gray-600 text-sm leading-relaxed">
+                                            {plan.description}
+                                        </p>
 
-                                    {/* Features */}
-                                    <ul className="space-y-3 text-sm text-gray-700">
+                                        {/* Price */}
+                                        <div className="mt-8">
+                                            {/* <p className="text-5xl font-semibold text-gray-900">
+                                                £{price / 100}
+                                                {planType === "subscription" && (
+                                                    <span className="text-base font-normal text-gray-500">
+                                                        {" "}
+                                                        /month
+                                                    </span>
+                                                )}
+                                            </p>
 
-                                        {/* Subscription Benefits */}
-                                        {planType === "subscription" && plan.billing &&
-                                            subscriptionBenefits[plan.billing as "monthly" | "fortnightly"]?.map(
-                                                (benefit, i) => (
-                                                    <li key={`benefit-${i}`} className="flex items-start gap-2">
-                                                        <Check className="h-4 w-4 text-electric-teal mt-0.5" />
-                                                        {benefit}
-                                                    </li>
+                                            {planType === "subscription" && (
+                                                <p className="mt-2 text-sm text-gray-500">
+                                                    {plan.name === "Fortnightly" ? 2 : 1} visit per month
+                                                </p>
+                                            )} */}
+                                            {plan.durationMin && (
+                                                <>
+                                                    <p className="text-xs italic mt-3 text-gray-500">Time up to: {durationText} min</p>
+                                                    <span className="text-xs italic mt-3 text-gray-500">{plan.vehicleConditionNote}</span>
+                                                </>
+                                            )}
+                                        </div>
+
+                                        {/* Divider */}
+                                        <div className="my-4 h-px bg-gray-200" />
+
+                                        {/* Features */}
+                                        <ul className="space-y-3 text-sm text-gray-700">
+
+                                            {/* Subscription Benefits */}
+                                            {/* {planType === "subscription" && plan.billing &&
+                                                subscriptionBenefits[plan.billing as "monthly" | "fortnightly"]?.map(
+                                                    (benefit, i) => (
+                                                        <li key={`benefit-${i}`} className="flex items-start gap-2">
+                                                            <Check className="h-4 w-4 text-electric-teal mt-0.5" />
+                                                            {benefit}
+                                                        </li>
+                                                    )
                                                 )
-                                            )
-                                        }
+                                            } */}
 
-                                        {/* Core Service Features */}
-                                        {planType === "oneoff" && plan.features?.map((feature: string, i: number) => (
-                                            <li key={`feature-${i}`} className="flex items-start gap-2">
-                                                <Check className="h-4 w-4 text-electric-teal mt-0.5" />
-                                                {feature}
-                                            </li>
-                                        ))}
-                                    </ul>
+                                            {/* Core Service Features */}
+                                            {planType === "oneoff" && plan.features?.map((feature: string, i: number) => (
+                                                <li key={`feature-${i}`} className="flex items-start gap-2">
+                                                    <Check className="h-4 w-4 text-electric-teal mt-0.5" />
+                                                    {feature}
+                                                </li>
+                                            ))}
+                                        </ul>
 
-                                    {/* CTA */}
-                                    <Link
-                                        href={
-                                            planType === "subscription"
-                                                ? `/subscribe?serviceId=${plan.id}&billing=${plan.billing}`
-                                                : `/booking?serviceId=${plan.id}`
-                                        }
-                                        className={`mt-10 inline-flex w-full justify-center rounded-full px-8 py-3 font-medium transition ${showPopular
-                                            ? "bg-eco-black text-white hover:bg-electric-teal"
-                                            : "bg-gray-900 text-white hover:bg-electric-teal/70"
-                                            }`}
-                                    >
-                                        {planType === "subscription"
-                                            ? "Subscribe Now"
-                                            : "Book Now"}
-                                    </Link>
-                                </div>
-                            );
-                        })}
-                    </div>
+                                        {/* CTA */}
+                                        <Link
+                                            // href={
+                                            //     planType === "subscription"
+                                            //         ? `/subscribe?serviceId=${plan.id}&billing=${plan.billing}`
+                                            //         : `/booking?serviceId=${plan.id}`
+                                            // }
+                                            href={ `/booking?serviceId=${plan.id}`}
+                                            className={`mt-10 inline-flex w-full justify-center rounded-full px-8 py-3 font-medium transition ${showPopular
+                                                ? "bg-eco-black text-white hover:bg-electric-teal"
+                                                : "bg-gray-900 text-white hover:bg-electric-teal/70"
+                                                }`}
+                                        >
+                                            {/* {planType === "subscription"
+                                                ? "Subscribe Now"
+                                                : "Book Now"} */}
+                                                Book Now
+                                        </Link>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
-            </section>
+            </section >
         </>
     );
 }

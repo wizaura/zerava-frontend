@@ -10,18 +10,18 @@ import api from "@/lib/user/axios";
 export default function TestimonialsSection() {
     const [reviews, setReviews] = useState<any[]>([]);
 
-    // useEffect(() => {
-    //     const fetchReviews = async () => {
-    //         try {
-    //             const res = await api.get("/settings/google-reviews");
-    //             setReviews(res.data);
-    //         } catch (err) {
-    //             console.error("Failed to fetch reviews:", err);
-    //         }
-    //     };
+    useEffect(() => {
+        const fetchReviews = async () => {
+            try {
+                const res = await api.get("/settings/google-reviews");
+                setReviews(res.data);
+            } catch (err) {
+                console.error("Failed to fetch reviews:", err);
+            }
+        };
 
-    //     fetchReviews();
-    // }, []);
+        fetchReviews();
+    }, []);
 
     return (
         <section className="bg-white px-6 py-24">
