@@ -51,8 +51,6 @@ export default function RescheduleClient() {
             .then((res) => {
                 const booking = res.data;
 
-                console.log(booking, 'bk')
-
                 setDraft({
                     bookingId: booking.id,
 

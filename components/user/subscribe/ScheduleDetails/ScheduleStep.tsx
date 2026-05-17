@@ -103,8 +103,6 @@ export default function SubscriptionScheduleStep({
             );
 
             setSlots(res.data.slots || []);
-
-            console.log(slots, 'slots')
         } catch {
             setError("Failed to load time slots");
             setSlots([]);

@@ -108,8 +108,6 @@ export default function BookingClient({
     const [currentStep, setCurrentStep] = useState(0);
     const user = useSelector((state: any) => state.auth.user);
 
-    console.log(user, 'u')
-
     const [bookingDraft, setBookingDraft] = useState<BookingDraft>({
         servicePriceId: null,
 

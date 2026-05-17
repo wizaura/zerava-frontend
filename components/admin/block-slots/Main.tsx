@@ -31,7 +31,6 @@ export default function BlockedSlots() {
 
                 <button
                     onClick={() => {
-                        console.log("clicked");
                         setShowForm(v => !v);
                     }}
                     className="flex text-center items-center text-sm gap-2 bg-emerald-600 text-white px-4 py-2 rounded-full"

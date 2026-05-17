@@ -91,7 +91,6 @@ export default function PricingSection() {
         });
     }, []);
 
-    console.log(data, 'data')
     if (!data) return null;
 
     // 🔥 Get selected plan

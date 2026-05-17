@@ -14,8 +14,6 @@ export default function AdminSubscriptions() {
     >([]);
     const [loading, setLoading] = useState(false);
 
-    console.log(subscriptions,'sub')
-
     async function load(search?: string) {
         setLoading(true);
         try {

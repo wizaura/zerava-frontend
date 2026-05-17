@@ -260,7 +260,7 @@ export function InviteCard() {
             setLoading(true);
             await sendCustomerInvite(email);
 
-            toast.success("Invitation sent successfully 🎉");
+            toast.success("Invitation sent successfully");
             setEmail("");
         } catch (err: any) {
             toast.error(getApiError(err));

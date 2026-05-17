@@ -64,9 +64,6 @@ export default function ScheduleStep({
         postcode: draft.postcode,
     });
 
-
-    console.log(address, 'ad')
-
     /* ---------------- POSTCODE CHECK ---------------- */
 
     const outwardCode = postcode

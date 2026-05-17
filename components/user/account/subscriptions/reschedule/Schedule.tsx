@@ -36,7 +36,6 @@ export default function RescheduleScheduleStep({
     useEffect(() => {
         const postcode = draft.postcode?.trim().toUpperCase();
 
-        console.log(draft,'draft')
         if (!postcode || postcode.length < 4 || !draft.durationMin) return;
 
         const timeout = setTimeout(() => {

@@ -207,6 +207,10 @@ export default function PlanServiceStep({
                         const Icon =
                             serviceIconMap[s.icon] ?? Sparkles;
 
+                            const durationText = s.serviceName.includes("+")
+                            ? "75"
+                            : "45";
+
                         return (
                             <button
                                 key={s.servicePriceId}
@@ -262,7 +266,7 @@ export default function PlanServiceStep({
                                             )}
 
                                             <p className="text-xs text-gray-400 mt-1">
-                                                ⏱ Up to {s.durationMin} min
+                                                ⏱ Up to {durationText} min
                                             </p>
                                         </div>
                                     </div>
