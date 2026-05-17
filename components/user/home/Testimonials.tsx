@@ -34,7 +34,7 @@ export default function TestimonialsSection() {
 
             <div className="mx-auto max-w-7xl">
 
-                <div className="mb-8 flex items-center justify-between">
+                <div className="mb-4 sm:mb-8 flex flex-col space-y-4 md:space-y-0 sm:flex-row items-center justify-between">
 
                     <div>
 
@@ -57,7 +57,7 @@ export default function TestimonialsSection() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="
-            hidden md:inline-flex
+            flex md:inline-flex ml-auto
             items-center gap-2
             rounded-full border border-gray-200
             bg-white px-5 py-2.5
@@ -86,7 +86,7 @@ export default function TestimonialsSection() {
 
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-4 items-stretch">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 items-stretch">
 
                     {reviewData.slice(0, 4).map((item, i) => (
 
